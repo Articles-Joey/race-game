@@ -1,0 +1,97 @@
+@use "@/styles/components/global.scss" as *;
+
+.race-game-landing-page {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    min-height: calc(100vh - 100px);
+    // margin-bottom: calc(50px + 0.5rem);
+
+    // @include media-breakpoint-up(lg) {
+    //     height: calc(100vh - 100px);
+    // }
+
+    .ad-wrap {
+        position: fixed;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+
+        display: none;
+
+        @include media-breakpoint-up(lg) {
+            display: block;
+        }
+    }
+
+    .background-wrap {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .rules-media-wrap {
+        img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .image-wrap {
+        position: relative;
+        width: 15rem;
+        height: 15rem;
+        margin: 0 auto;
+
+        img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .servers {
+        display: grid;
+        grid-gap: 5px 5px;
+        grid-template-columns: repeat(2, 1fr);
+
+        .server {
+            // margin: 0.5rem;
+            padding: 0.5rem;
+            // width: calc(50% - 1rem);
+            border: 1px solid rgba(0, 0, 0, 0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+
+    .selection-grid {
+        display: grid;
+        grid-gap: 5px 5px;
+        grid-template-columns: repeat(2, 1fr);
+
+        .item {
+            cursor: pointer;
+            transition-duration: 200ms;
+
+            &:hover {
+                transform: scale(1.025);
+                @include shadow-articles;
+            }
+
+            &.active {
+                border: 2px solid #000;
+            }
+        }
+    }
+
+}
