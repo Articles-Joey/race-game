@@ -133,6 +133,11 @@ export default function SocketLogicHandler(props) {
 
         socket.on('userCount', userCount);
 
+        // socket.on('game:race-game-landing-details', function (msg) {
+        //     console.log('game:race-game-landing-details', msg)
+        //     // setLobbyDetails(msg)
+        // });
+
         console.log(`[📶 Socket] Page change emit`)
         socket.emit('activePage', pathname);
 
@@ -144,6 +149,7 @@ export default function SocketLogicHandler(props) {
             socket.off('force-page');
             socket.off('roomsList');
             socket.off('userCount', userCount);
+            // socket.off('game:race-game-landing-details');
             // router.events.off('routeChangeStart', handleRouteChange)
         };
 

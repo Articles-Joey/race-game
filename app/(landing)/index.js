@@ -11,6 +11,9 @@ const ChromePicker = dynamic(() => import('react-color'), {
     ssr: false,
 });
 
+import useUserDetails from '@/hooks/user/useUserDetails';
+import useUserToken from '@/hooks/user/useUserToken';
+
 import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 
 // import { useForm, useWatch } from "react-hook-form";
@@ -63,16 +66,36 @@ const assets_src = 'games/Race Game/'
 
 export default function RaceGameLandingPage() {
 
-    const {
-        socket,
-    } = useSocketStore(state => ({
-        socket: state.socket,
-    }));
+    // const {
+    //     socket,
+    // } = useSocketStore(state => ({
+    //     socket: state.socket,
+    // }));
+    const socket = useSocketStore((state) => state.socket)
+    const connectSocket = useSocketStore((state) => state.connectSocket)
+    const disconnectSocket = useSocketStore((state) => state.disconnectSocket)
+    const connected = useSocketStore((state) => state.connected)
 
     const [showInfoModal, setShowInfoModal] = useState(false)
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
     const userReduxState = false
+
+    const {
+        data: userToken,
+        error: userTokenError,
+        isLoading: userTokenLoading,
+        mutate: userTokenMutate
+    } = useUserToken();
+
+    const {
+        data: userDetails,
+        error: userDetailsError,
+        isLoading: userDetailsLoading,
+        mutate: userDetailsMutate
+    } = useUserDetails({
+        token: userToken
+    });
 
     const [rulesAnControls, setRulesAnControls] = useState(false);
 
@@ -110,7 +133,7 @@ export default function RaceGameLandingPage() {
             socket.emit('leave-room', 'game:race-game-landing')
         };
 
-    }, [])
+    }, [socket])
 
     useEffect(() => {
 
@@ -240,7 +263,7 @@ export default function RaceGameLandingPage() {
 
                             </div>
 
-                            <div className='lh-sm flex-grow-1'>
+                            <div className='lh-sm'>
 
                                 {/* <SingleInput
                                     value={nickname}
@@ -253,7 +276,7 @@ export default function RaceGameLandingPage() {
                                     autoComplete='off'
                                     // id={item_key}
                                     type="text"
-                                    className='text-center'
+                                    className=''
                                     // autoFocus={autoFocus && true}
                                     // onBlur={onBlur}
                                     // placeholder={placeholder}
@@ -282,6 +305,36 @@ export default function RaceGameLandingPage() {
                         </div>
 
                         <div className="card-body p-2">
+
+                            <ArticlesButton
+                                className={`w-100 mb-2`}
+                                small
+                                onClick={() => {
+                                    !userDetails?.user_id ?
+                                        window.location.href = process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS + '/login?redirect=' + window.location.href
+                                        :
+                                        fetch('/api/logout', { method: 'POST' }).then(() => {
+                                            userTokenMutate()
+                                            userDetailsMutate()
+                                        })
+                                }}
+                            >
+                                {!userDetails?.user_id ? 'Log In' : 'Log Out'}
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                className={`w-100 mb-2`}
+                                small
+                                onClick={() => {
+                                    if (connected) {
+                                        disconnectSocket()
+                                    } else {
+                                        connectSocket()
+                                    }
+                                }}
+                            >
+                                {connected ? 'Disconnect' : 'Connect'}
+                            </ArticlesButton>
 
                             <div className="fw-bold mb-1 small text-center">
                                 {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
@@ -416,7 +469,7 @@ export default function RaceGameLandingPage() {
                                 Rules & Controls
                             </ArticlesButton>
 
-                            {/* <Link href={ROUTES.GAMES} className='w-50'>
+                            <a className='w-50' target='_blank' href='https://github.com/Articles-Joey/race-game'>
                                 <ArticlesButton
                                     className={`w-100`}
                                     small
@@ -424,10 +477,10 @@ export default function RaceGameLandingPage() {
 
                                     }}
                                 >
-                                    <i className="fad fa-sign-out fa-rotate-180"></i>
-                                    Leave Game
+                                    <i className="fab fa-github"></i>
+                                    GitHub
                                 </ArticlesButton>
-                            </Link> */}
+                            </a>
 
                             <ArticlesButton
                                 className={`w-50`}

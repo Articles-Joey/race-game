@@ -67,9 +67,9 @@ export default function RaceGame() {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-    // const params = Object.fromEntries(searchParams.entries());
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
     const params = useParams()
-    const server = params?.server
+    const server = searchParamsObject?.server_id
     // const { server } = router.query
 
     const canvasRef = useRef(null);
@@ -586,9 +586,10 @@ export default function RaceGame() {
                                 </ArticlesButton>
 
                                 <div className='mb-2'>
-                                    {/* <Link
+
+                                    <Link
                                         className=""
-                                        href={ROUTES.RACE_GAME}
+                                        href={'/'}
                                     >
                                         <ArticlesButton
                                             small
@@ -597,7 +598,7 @@ export default function RaceGame() {
                                             <i className="fad fa-sign-out fa-rotate-180"></i>
                                             Leave Game
                                         </ArticlesButton>
-                                    </Link> */}
+                                    </Link>
 
                                     <ArticlesButton
                                         small
@@ -856,7 +857,7 @@ export default function RaceGame() {
                                 <div><b className="mb-0">Players</b></div>
 
                                 {players.map((obj, index) => (
-                                    <div key={obj.id}>
+                                    <div key={index + '-' + obj.id}>
                                         <div className="border p-1">
 
                                             <div>Id: {obj.id}</div>
@@ -1065,7 +1066,7 @@ export default function RaceGame() {
                                                 onClick={() => startGame()}
                                                 className="d-flex justify-content-center align-items-center w-50"
                                                 // disabled={Object.keys(players).length < 2}
-                                                disabled={gameState?.players?.length < 2}
+                                                // disabled={gameState?.players?.length < 2}
                                             >
                                                 Start Game
                                                 <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>

@@ -6,10 +6,10 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
-    min-height: calc(100vh - 50px);
+    min-height: calc(100vh - 0px);
     // padding: 1rem;
 
-    --top-position: 50px;
+    --top-position: 0px;
 
     @include media-breakpoint-up(lg) {
         flex-direction: row;
@@ -81,7 +81,7 @@
             display: flex;
             position: fixed;
             width: 100%;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 50px);
             overflow-y: auto;
             top: var(--top-position);
             left: 0;
@@ -104,6 +104,7 @@
             // left: 0;
             // top: 50px;
             width: 300px;
+            min-width: 300px;
             font-size: 0.8rem;
             height: calc(100vh - var(--top-position));
         }
