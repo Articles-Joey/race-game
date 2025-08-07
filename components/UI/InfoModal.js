@@ -34,7 +34,7 @@ export default function GameInfoModal({
 
                 <Modal.Body className="flex-column p-3">
 
-                    Get to the finish line first in this exciting multiplayer racing game! Don't get to greedy though, moving can only happen if no other player picks the same number of spaces as you.
+                    {`Get to the finish line first in this exciting multiplayer racing game! Don't get to greedy though, moving can only happen if no other player picks the same number of spaces as you.`}
 
                 </Modal.Body>
 

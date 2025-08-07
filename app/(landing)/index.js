@@ -448,9 +448,10 @@ export default function RaceGameLandingPage() {
                                         className={`mb-1`}
                                         onClick={() => {
                                             setCreateCustomGame({
-                                                url: 'custom',
+                                                url: `custom-${Math.random().toString(36).substring(2, 6)}`,
                                                 players: 4,
-                                                length: 16
+                                                length: 16,
+                                                maxMoves: 4
                                             })
                                         }}
                                     >
@@ -590,35 +591,70 @@ export default function RaceGameLandingPage() {
                                 </ArticlesButton>
                             </div>
 
-                            <div className="small text-muted">Board Length</div>
-                            <div className="d-flex align-items-center mb-3">
-                                <ArticlesButton
-                                    small
-                                    disabled={createCustomGame?.length <= 10}
-                                    className={`px-2`}
-                                    onClick={() => {
-                                        setCreateCustomGame(prev => ({
-                                            ...prev,
-                                            length: createCustomGame?.length - 1
-                                        }))
-                                    }}
-                                >
-                                    -
-                                </ArticlesButton>
-                                <b className='px-2'>{createCustomGame?.length}</b>
-                                <ArticlesButton
-                                    small
-                                    disabled={createCustomGame?.length >= 100}
-                                    className={`px-2`}
-                                    onClick={() => {
-                                        setCreateCustomGame(prev => ({
-                                            ...prev,
-                                            length: createCustomGame?.length + 1
-                                        }))
-                                    }}
-                                >
-                                    +
-                                </ArticlesButton>
+                            <div>
+                                <div className="small text-muted">Board Length</div>
+                                <div className="d-flex align-items-center mb-3">
+                                    <ArticlesButton
+                                        small
+                                        disabled={createCustomGame?.length <= 10}
+                                        className={`px-2`}
+                                        onClick={() => {
+                                            setCreateCustomGame(prev => ({
+                                                ...prev,
+                                                length: createCustomGame?.length - 1
+                                            }))
+                                        }}
+                                    >
+                                        -
+                                    </ArticlesButton>
+                                    <b className='px-2'>{createCustomGame?.length}</b>
+                                    <ArticlesButton
+                                        small
+                                        disabled={createCustomGame?.length >= 100}
+                                        className={`px-2`}
+                                        onClick={() => {
+                                            setCreateCustomGame(prev => ({
+                                                ...prev,
+                                                length: createCustomGame?.length + 1
+                                            }))
+                                        }}
+                                    >
+                                        +
+                                    </ArticlesButton>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="small text-muted">Max Moves</div>
+                                <div className="d-flex align-items-center mb-3">
+                                    <ArticlesButton
+                                        small
+                                        disabled={createCustomGame?.maxMoves <= 4}
+                                        className={`px-2`}
+                                        onClick={() => {
+                                            setCreateCustomGame(prev => ({
+                                                ...prev,
+                                                maxMoves: createCustomGame?.maxMoves - 1
+                                            }))
+                                        }}
+                                    >
+                                        -
+                                    </ArticlesButton>
+                                    <b className='px-2'>{createCustomGame?.maxMoves}</b>
+                                    <ArticlesButton
+                                        small
+                                        disabled={createCustomGame?.maxMoves >= 100}
+                                        className={`px-2`}
+                                        onClick={() => {
+                                            setCreateCustomGame(prev => ({
+                                                ...prev,
+                                                maxMoves: createCustomGame?.maxMoves + 1
+                                            }))
+                                        }}
+                                    >
+                                        +
+                                    </ArticlesButton>
+                                </div>
                             </div>
 
                         </div>
