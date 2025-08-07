@@ -12,7 +12,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import axios from "axios";
 
-import { useSocketStore } from "@/components/hooks/useSocketStore";
+import { useSocketStore } from "@/hooks/useSocketStore";
 
 // SocketContextControl
 export default function SocketLogicHandler(props) {
