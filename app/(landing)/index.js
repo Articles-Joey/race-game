@@ -11,10 +11,10 @@ const ChromePicker = dynamic(() => import('react-color'), {
     ssr: false,
 });
 
-import useUserDetails from '@/hooks/user/useUserDetails';
-import useUserToken from '@/hooks/user/useUserToken';
+import useUserDetails from '@/components/hooks/user/useUserDetails';
+import useUserToken from '@/components/hooks/user/useUserToken';
 
-import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
+import { useLocalStorageNew } from '@/components/hooks/useLocalStorageNew';
 
 // import { useForm, useWatch } from "react-hook-form";
 
@@ -55,12 +55,12 @@ const Witch = dynamic(
 
 // import SingleInput from '@/components/Articles/SingleInput';
 import IsDev from '@/components/UI/IsDev';
-import { useSocketStore } from '@/hooks/useSocketStore';
+import { useSocketStore } from '@/components/hooks/useSocketStore';
 import ArticlesAd from '@/components/ArticlesAd';
 import CreditsModal from '@/components/UI/CreditsModal';
 import { Settings } from '@mui/icons-material';
 import SettingsModal from '@/components/UI/SettingsModal';
-import { useStore } from '@/hooks/useStore';
+import { useStore } from '@/components/hooks/useStore';
 
 const InfoModal = dynamic(
     () => import('@/components/UI/InfoModal'),

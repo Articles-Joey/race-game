@@ -10,7 +10,7 @@ import ArticlesDate from "@/components/UI/ArticlesDate";
 // import ConfirmDelete from "../ConfirmDelete";
 import ArticlesButton from "./Button";
 // import UserProfilePhoto from "../SiteLayout/UserProfilePhoto";
-import useUserFriends from "@/hooks/User/useUserFriends";
+import useUserFriends from "@/components/hooks/User/useUserFriends";
 
 function InviteModal({
     show,
