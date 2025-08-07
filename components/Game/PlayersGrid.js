@@ -17,6 +17,7 @@ import Duck from './PlayerModels/Duck';
 import Dog from './PlayerModels/Dog';
 import Witch from './PlayerModels/Witch';
 import Bear from './PlayerModels/Bear';
+import { Billboard, Text } from '@react-three/drei';
 
 function RenderCharacter({ character }) {
 
@@ -89,6 +90,24 @@ function Box(props) {
                     />
                 }
 
+                <Billboard>
+                    <mesh position={[0, 1.5, -0.02]}>
+                        <planeGeometry args={[2.2, 0.7]} />
+                        <meshBasicMaterial color="black" transparent opacity={0.7} />
+                    </mesh>
+                    <Text
+                        position={[0, 1.5, 0]} // Adjust the Y-coordinate based on your preference
+                        fontSize={0.5}
+                        color="white"
+                        anchorX="center"
+                        anchorY="middle"
+                        side={'both'}
+                        rotation={[0, 0, 0]}
+                    >
+                        {colPlayer?.race_game?.nickname || 'No Name'}
+                    </Text>
+                </Billboard>
+
                 {/* For Testing */}
                 {/* <FloatingOrb
                     position={[0, 2, -1.5]}
@@ -151,8 +170,8 @@ export default function PlayersGrid(props) {
                             colPlayer={colPlayer}
                             valid={
                                 !players
-                                .filter((player) => player.id !== colPlayer.id)
-                                .find((player) => player.race_game.spaces === colPlayer?.race_game?.spaces)
+                                    .filter((player) => player.id !== colPlayer.id)
+                                    .find((player) => player.race_game.spaces === colPlayer?.race_game?.spaces)
                             }
                         />
                     );

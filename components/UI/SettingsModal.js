@@ -4,7 +4,7 @@ import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
 
-export default function FourFrogsSettingsModal({
+export default function SettingsModal({
     show,
     setShow,
 }) {
@@ -34,7 +34,7 @@ export default function FourFrogsSettingsModal({
                 size='md'
                 show={showModal}
                 // To much jumping with little content for now
-                // centered
+                centered
                 scrollable
                 onExited={() => {
                     setShow(false)
@@ -73,44 +73,21 @@ export default function FourFrogsSettingsModal({
                             <div>
                                 {[
                                     {
-                                        action: 'Move Up',
-                                        defaultKeyboardKey: 'W'
+                                        action: 'Move 1 Space',
+                                        defaultKeyboardKey: '1'
                                     },
                                     {
-                                        action: 'Move Down',
-                                        defaultKeyboardKey: 'S'
+                                        action: 'Move 2 Space',
+                                        defaultKeyboardKey: '2'
                                     },
                                     {
-                                        action: 'Move Left',
-                                        defaultKeyboardKey: 'A'
+                                        action: 'Move 3 Space',
+                                        defaultKeyboardKey: '3'
                                     },
                                     {
-                                        action: 'Move Right',
-                                        defaultKeyboardKey: 'D'
+                                        action: 'Move 4 Space',
+                                        defaultKeyboardKey: '4'
                                     },
-                                    {
-                                        action: 'Drop Insect',
-                                        defaultKeyboardKey: 'Space'
-                                    },
-                                    {
-                                        action: 'Stop Powerup',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Stick out Tongue',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Left',
-                                        defaultKeyboardKey: 'ArrowLeft'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Right',
-                                        defaultKeyboardKey: 'ArrowRight'
-                                    }
                                 ].map(obj =>
                                     <div key={obj.action}>
                                         <div className="flex-header border-bottom pb-1 mb-1">

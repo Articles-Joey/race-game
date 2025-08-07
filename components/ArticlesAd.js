@@ -15,7 +15,18 @@ export default function ArticlesAd({ style }) {
     }, []);
 
     return (
-        <div>
+        <>
+
+            {process.env.NODE_ENV === "development" ?
+                // `${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/js/ad.js`
+                <link
+                    rel="stylesheet"
+                    crossOrigin="anonymous"
+                    href={`${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/css/ad.css`}
+                />
+                :
+                "https://accounts.articles.media/js/ad.js"
+            }
 
             <Script
                 src={process.env.NODE_ENV === "development" ?
@@ -26,23 +37,23 @@ export default function ArticlesAd({ style }) {
                 }
                 strategy="afterInteractive"
                 data-version="1"
-                // data-articles-color-mode="Dark"
-                // data-articles-button-style={style}
-                // data-articles-client-id={process.env.NEXT_PUBLIC_ARTICLES_OAUTH_ID}
-                // data-articles-redirect-uri="https://localhost:3002"
-                // data-articles-redirect-uri={process.env.NEXT_PUBLIC_ARTICLES_REDIRECT_URI}
-                // data-articles-authHost={
-                //     process.env.NODE_ENV == "development" ? // "http://localhost:3001" 
-                //         process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS
-                //         :
-                //         "https://accounts.articles.media"
-                // }
+            // data-articles-color-mode="Dark"
+            // data-articles-button-style={style}
+            // data-articles-client-id={process.env.NEXT_PUBLIC_ARTICLES_OAUTH_ID}
+            // data-articles-redirect-uri="https://localhost:3002"
+            // data-articles-redirect-uri={process.env.NEXT_PUBLIC_ARTICLES_REDIRECT_URI}
+            // data-articles-authHost={
+            //     process.env.NODE_ENV == "development" ? // "http://localhost:3001" 
+            //         process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS
+            //         :
+            //         "https://accounts.articles.media"
+            // }
             />
 
             <div className={"articles-media-ad"}>
 
             </div>
 
-        </div>
+        </>
     );
 }

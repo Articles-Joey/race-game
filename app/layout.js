@@ -31,7 +31,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
 
       <head>
-        
+
         <link
           rel="stylesheet"
           href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
@@ -52,6 +52,7 @@ export default function RootLayout({ children }) {
             {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
+
       </body>
     </html>
   );

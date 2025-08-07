@@ -84,7 +84,7 @@ export default function SocketLogicHandler(props) {
         // Makes sure connect is only called once during reactStrictMode
         if (!initialized.current) {
             initialized.current = true
-            // connectSocket()
+            connectSocket()
         }
 
         // if (!socket.connected) return

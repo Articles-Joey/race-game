@@ -799,47 +799,51 @@ export default function RaceGame() {
                                         Generate Mystery Spots
                                     </ArticlesButton>
 
-                                    <div className="camera-controls">
-
-                                        {[
-                                            {
-                                                name: "Starting",
-                                                position: [19, 10, 15]
-                                            },
-                                            {
-                                                name: "Bleacher",
-                                                position: [28.32, 5.38, -6.30]
-                                            },
-                                            {
-                                                name: "First Person",
-                                                position: [0, 3.5, 0]
-                                            },
-                                            {
-                                                name: "Wind Turbine",
-                                                position: [42.50, 16.94, -125.86]
-                                            }
-                                        ].map(item => {
-                                            return (
-                                                <ArticlesButton
-                                                    key={item.name}
-                                                    small
-                                                    variant="warning"
-                                                    className=""
-                                                    onClick={() => {
-                                                        setCameraUpdate({
-                                                            position: item.position
-                                                        })
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </ArticlesButton>
-                                            )
-                                        })}
-
-                                    </div>
-
                                 </div>
                             </IsDev>
+
+                            <div className="text-center">
+                                Camera Positions
+                            </div>
+
+                            <div className="camera-controls">
+
+                                {[
+                                    {
+                                        name: "Starting",
+                                        position: [19, 10, 15]
+                                    },
+                                    {
+                                        name: "Bleacher",
+                                        position: [28.32, 5.38, -6.30]
+                                    },
+                                    {
+                                        name: "First Person",
+                                        position: [0, 3.5, 0]
+                                    },
+                                    {
+                                        name: "Wind Turbine",
+                                        position: [42.50, 16.94, -125.86]
+                                    }
+                                ].map(item => {
+                                    return (
+                                        <ArticlesButton
+                                            key={item.name}
+                                            small
+                                            variant=""
+                                            className=""
+                                            onClick={() => {
+                                                setCameraUpdate({
+                                                    position: item.position
+                                                })
+                                            }}
+                                        >
+                                            {item.name}
+                                        </ArticlesButton>
+                                    )
+                                })}
+
+                            </div>
 
                         </div>
 
@@ -1065,8 +1069,8 @@ export default function RaceGame() {
                                             <ArticlesButton
                                                 onClick={() => startGame()}
                                                 className="d-flex justify-content-center align-items-center w-50"
-                                                // disabled={Object.keys(players).length < 2}
-                                                // disabled={gameState?.players?.length < 2}
+                                            // disabled={Object.keys(players).length < 2}
+                                            // disabled={gameState?.players?.length < 2}
                                             >
                                                 Start Game
                                                 <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>

@@ -56,6 +56,11 @@ const Witch = dynamic(
 // import SingleInput from '@/components/Articles/SingleInput';
 import IsDev from '@/components/UI/IsDev';
 import { useSocketStore } from '@/hooks/useSocketStore';
+import ArticlesAd from '@/components/ArticlesAd';
+import CreditsModal from '@/components/UI/CreditsModal';
+import { Settings } from '@mui/icons-material';
+import SettingsModal from '@/components/UI/SettingsModal';
+import { useStore } from '@/hooks/useStore';
 
 const InfoModal = dynamic(
     () => import('@/components/UI/InfoModal'),
@@ -76,7 +81,19 @@ export default function RaceGameLandingPage() {
     const disconnectSocket = useSocketStore((state) => state.disconnectSocket)
     const connected = useSocketStore((state) => state.connected)
 
-    const [showInfoModal, setShowInfoModal] = useState(false)
+    const infoModal = useStore((state) => state.infoModal)
+    const setInfoModal = useStore((state) => state.setInfoModal)
+    // const toggleInfoModal = useStore((state) => state.toggleInfoModal)
+
+    const showSettingsModal = useStore((state) => state.showSettingsModal)
+    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
+    // const toggleSettingsModal = useStore((state) => state.toggleSettingsModal)
+
+    const showCreditsModal = useStore((state) => state.showCreditsModal)
+    const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
+
+    // const [showInfoModal, setShowInfoModal] = useState(false)
+    // const [showCreditsModal, setShowCreditsModal] = useState(false)
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
     const userReduxState = false
@@ -203,10 +220,24 @@ export default function RaceGameLandingPage() {
 
         <div className="race-game-landing-page">
 
-            {showInfoModal &&
+            {infoModal &&
                 <InfoModal
-                    show={showInfoModal}
-                    setShow={setShowInfoModal}
+                    show={infoModal}
+                    setShow={setInfoModal}
+                />
+            }
+
+            {showSettingsModal &&
+                <SettingsModal
+                    show={showSettingsModal}
+                    setShow={setShowSettingsModal}
+                />
+            }
+
+            {showCreditsModal &&
+                <CreditsModal
+                    show={showCreditsModal}
+                    setShow={setShowCreditsModal}
                 />
             }
 
@@ -230,7 +261,7 @@ export default function RaceGameLandingPage() {
                     &&
                     joinCustomGame === false
                 ) &&
-                    <div className="card card-articles card-sm mb-3" style={{ "width": "20rem" }}>
+                    <div className="card card-articles card-sm" style={{ "width": "20rem" }}>
 
                         <div className="card-header d-flex align-items-center">
 
@@ -449,7 +480,7 @@ export default function RaceGameLandingPage() {
                                 className={`w-50`}
                                 small
                                 onClick={() => {
-                                    // setShowSettingsModal(prev => !prev)
+                                    setShowSettingsModal(true)
                                 }}
                             >
                                 <i className="fad fa-cog"></i>
@@ -460,9 +491,7 @@ export default function RaceGameLandingPage() {
                                 className={`w-50`}
                                 small
                                 onClick={() => {
-                                    setShowInfoModal({
-                                        game: 'Race Game'
-                                    })
+                                    setInfoModal(true)
                                 }}
                             >
                                 <i className="fad fa-info-square"></i>
@@ -486,9 +515,7 @@ export default function RaceGameLandingPage() {
                                 className={`w-50`}
                                 small
                                 onClick={() => {
-                                    setShowInfoModal({
-                                        game: game_name
-                                    })
+                                    setShowCreditsModal(true)
                                 }}
                             >
                                 <i className="fad fa-users"></i>
@@ -831,7 +858,10 @@ export default function RaceGameLandingPage() {
                     </div>
                 }
 
-                {/* <Ad section={"Games"} section_id={'Race Game'} /> */}
+                <ArticlesAd
+                    section={"Games"}
+                    section_id={'Race Game'}
+                />
 
             </div>
         </div >

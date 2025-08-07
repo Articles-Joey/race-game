@@ -4,7 +4,7 @@ import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
 
-export default function GameInfoModal({
+export default function CreditsModal({
     show,
     setShow,
 }) {
@@ -29,12 +29,26 @@ export default function GameInfoModal({
             >
 
                 <Modal.Header closeButton>
-                    <Modal.Title>Race Game Info</Modal.Title>
+                    <Modal.Title>Race Game Credits</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body className="flex-column p-3">
 
-                    Get to the finish line first in this exciting multiplayer racing game! Don't get to greedy though, moving can only happen if no other player picks the same number of spaces as you.
+                    {/* <div></div> */}
+
+                    <div>Developed by: ArticlesJoey </div>
+                    <div>Published by: Articles Media </div>
+
+                    <div className="mb-3"></div>
+
+                    <div>Attributions</div>
+                    <div>Windmill Model:</div>
+                    <div>Player Models:</div>
+                    <div>Bleacher Model:</div>
+                    <div>Tree Model:</div>
+                    <div>Boat Model:</div>
+                    <div>Grass Texture:</div>
+                    <div>Water Texture:</div>
 
                 </Modal.Body>
 
