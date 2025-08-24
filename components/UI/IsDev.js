@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 // import { togglePrivacyMode } from "@/redux/actions/siteActions";
 import ArticlesButton from '@/components/UI/Button';
 
-import useUserDetails from '@/hooks/user/useUserDetails';
-import useUserToken from '@/hooks/user/useUserToken';
+import useUserDetails from '@/components/hooks/user/useUserDetails';
+import useUserToken from '@/components/hooks/user/useUserToken';
 
 export default function IsDev({className, noOutline, children, inline}) {
 
