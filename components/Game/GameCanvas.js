@@ -14,7 +14,7 @@ import PlayersGrid from "./PlayersGrid";
 import GrassPlane from "./Grass";
 import CameraControls from "./CameraControls";
 
-import { useSocketStore } from "hooks/useSocketStore";
+import { useSocketStore } from "@/hooks/useSocketStore";
 
 function GameCanvas(props) {
 

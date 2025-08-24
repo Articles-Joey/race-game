@@ -21,10 +21,10 @@ import ArticlesButton from '@/components/UI/Button';
 
 import { Form } from 'react-bootstrap';
 
-import useFullscreen from 'hooks/useFullScreen';
-import { useLocalStorageNew } from 'hooks/useLocalStorageNew';
+import useFullscreen from '@/hooks/useFullScreen';
+import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 import IsDev from '@/components/UI/IsDev';
-import { useSocketStore } from 'hooks/useSocketStore';
+import { useSocketStore } from '@/hooks/useSocketStore';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
