@@ -1,5 +1,7 @@
 # Race Game
 
+![Preview](/public/img/preview.webp)
+
 The objective is to reach the finish line first. For every round, players must pick a number between one through four. If any player chooses the same number as another player, they do not advance. The number chosen is the number of spaces that player advances.
 
 ## Getting Started
