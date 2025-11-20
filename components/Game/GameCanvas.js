@@ -15,20 +15,28 @@ import GrassPlane from "./Grass";
 import CameraControls from "./CameraControls";
 
 import { useSocketStore } from "@/components/hooks/useSocketStore";
+import useCameraStore from "../hooks/useCameraStore";
+import useGameStore from "../hooks/useGameStore";
 
 function GameCanvas(props) {
 
     // const GPUTier = useDetectGPU()
 
+    // const setCameraState = useCameraStore((state) => state?.setCameraState);
+    const cameraState = useCameraStore((state) => state?.cameraState);
+
+    const gameState = useGameStore((state) => state?.gameState);
+    const players = useGameStore((state) => state?.gameState?.players);
+
     const {
-        handleCameraChange,
-        gameState,
-        players,
+        // handleCameraChange,
+        // gameState,
+        // players,
         move,
-        cameraState,
+        // cameraState,
         cameraControlsRef,
-        cameraUpdate,
-        setCameraUpdate
+        // cameraUpdate,
+        // setCameraUpdate
     } = props;
 
     const {
@@ -48,10 +56,10 @@ function GameCanvas(props) {
             {/* <CameraController onCameraChange={handleCameraChange} /> */}
 
             <CameraControls
-                cameraState={cameraState}
-                onCameraChange={handleCameraChange}
-                cameraUpdate={cameraUpdate}
-                setCameraUpdate={setCameraUpdate}
+                // cameraState={cameraState}
+                // onCameraChange={handleCameraChange}
+                // cameraUpdate={cameraUpdate}
+                // setCameraUpdate={setCameraUpdate}
             />
 
             <Ocean position={[0, -0.3, 0]} />
@@ -131,8 +139,8 @@ function GameCanvas(props) {
             />
 
             <PlayersGrid
-                players={players}
-                gameState={gameState}
+                // players={players}
+                // gameState={gameState}
             // cameraInfo={cameraInfo}
             />
 

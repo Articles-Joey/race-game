@@ -18,25 +18,26 @@ import Dog from './PlayerModels/Dog';
 import Witch from './PlayerModels/Witch';
 import Bear from './PlayerModels/Bear';
 import { Billboard, Text } from '@react-three/drei';
+import useGameStore from '../hooks/useGameStore';
 
 function RenderCharacter({ character }) {
 
-    switch (character.model) {
+    switch (character?.model) {
 
         case 'Dog':
-            return <Dog color={character.color} />;
+            return <Dog color={character?.color} />;
 
         case 'Duck':
-            return <Duck color={character.color} />;
+            return <Duck color={character?.color} />;
 
         case 'Witch':
-            return <Witch color={character.color} />;
+            return <Witch color={character?.color} />;
 
         case 'Bear':
-            return <Bear color={character.color} />;
+            return <Bear color={character?.color} />;
 
         default:
-            return <Duck color={character.color} />;
+            return <Duck color={character?.color} />;
 
     }
 
@@ -147,7 +148,10 @@ function Box(props) {
 
 export default function PlayersGrid(props) {
 
-    const { players, gameState } = props;
+    // const { players, gameState } = props;
+    const gameState = useGameStore((state) => state?.gameState);
+    const players = useGameStore((state) => state?.gameState?.players);
+
     let starRows = [];
 
     for (let i = 0; i < 4; i++) {
@@ -169,9 +173,10 @@ export default function PlayersGrid(props) {
                             position={[(j + 1) * 2, 1, i * 2]}
                             colPlayer={colPlayer}
                             valid={
-                                !players
-                                    .filter((player) => player.id !== colPlayer.id)
-                                    .find((player) => player.race_game.spaces === colPlayer?.race_game?.spaces)
+                                true
+                                // !players
+                                //     .filter((player) => player.id !== colPlayer.id)
+                                //     .find((player) => player.race_game.spaces === colPlayer?.race_game?.spaces)
                             }
                         />
                     );

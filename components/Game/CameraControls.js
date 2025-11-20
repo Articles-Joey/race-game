@@ -3,9 +3,19 @@ import { useFrame, useThree } from "@react-three/fiber"
 
 import { OrbitControls, } from "@react-three/drei";
 
+import useCameraStore from '../hooks/useCameraStore';
+
 const CameraControls = (props) => {
 
-    const { onCameraChange, cameraUpdate, setCameraUpdate } = props;
+    // const cameraState = useCameraStore((state) => state?.cameraState);
+    const setCameraState = useCameraStore((state) => state?.setCameraState);
+    const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
+
+    const { 
+        // onCameraChange, 
+        // cameraUpdate, 
+        // setCameraUpdate 
+    } = props;
 
     const {
         camera,
@@ -17,7 +27,8 @@ const CameraControls = (props) => {
     useFrame(() => {
         // controls.current.update()
         // console.log(camera)
-        onCameraChange(camera)
+        // onCameraChange(camera)
+        setCameraState(camera)
     });
 
     useEffect(() => {

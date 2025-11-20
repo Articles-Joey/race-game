@@ -61,6 +61,8 @@ import CreditsModal from '@/components/UI/CreditsModal';
 import { Settings } from '@mui/icons-material';
 import SettingsModal from '@/components/UI/SettingsModal';
 import { useStore } from '@/components/hooks/useStore';
+// import usePeerConnection from '@/components/hooks/usePeerConnection';
+import PeerLogic from '@/components/PeerLogic';
 
 const InfoModal = dynamic(
     () => import('@/components/UI/InfoModal'),
@@ -70,6 +72,8 @@ const InfoModal = dynamic(
 const assets_src = 'games/Race Game/'
 
 export default function RaceGameLandingPage() {
+
+    // const peerId = usePeerConnection((state) => state?.peerId);
 
     // const {
     //     socket,
@@ -252,7 +256,7 @@ export default function RaceGameLandingPage() {
                 />
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
+            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">                
 
                 {(
                     !characterEdit
@@ -275,7 +279,7 @@ export default function RaceGameLandingPage() {
                                         <div>
                                             <Suspense>
                                                 <Viewer scale={13}>
-                                                    {characters.find(item => item.name == character.model)?.model}
+                                                    {characters.find(item => item.name == character?.model)?.model}
                                                 </Viewer>
                                             </Suspense>
                                         </div>
@@ -367,9 +371,24 @@ export default function RaceGameLandingPage() {
                                 {connected ? 'Disconnect' : 'Connect'}
                             </ArticlesButton>
 
+                            <Link href="/play?server_id=&server_type=room-play">
+                                <ArticlesButton
+                                    className={`w-100 mb-2`}
+                                    small
+                                    onClick={() => {
+                                        
+                                    }}
+                                >
+                                    <i className='fad fa-users'></i>
+                                    Room Play
+                                </ArticlesButton>
+                            </Link>
+
                             <div className="fw-bold mb-1 small text-center">
                                 {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
                             </div>
+
+                            <PeerLogic />
 
                             <div className="servers mb-2">
 
@@ -767,7 +786,7 @@ export default function RaceGameLandingPage() {
                             <div className="selection-grid mb-2">
                                 {characters.map(item => {
 
-                                    let active = character.model == item.name
+                                    let active = character?.model == item.name
 
                                     return (
                                         <div

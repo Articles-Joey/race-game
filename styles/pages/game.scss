@@ -77,12 +77,14 @@
     }
 
     .menu-card {
+        overflow-y: auto;
+
         @include media-breakpoint-down(lg) {
             display: flex;
             position: fixed;
             width: 100%;
             height: calc(100vh - 50px);
-            overflow-y: auto;
+            // overflow-y: auto;
             top: var(--top-position);
             left: 0;
             transform: translateX(-100%);

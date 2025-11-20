@@ -15,16 +15,33 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { QRCodeCanvas } from 'qrcode.react';
 
 // import { toggleDevDebug } from '@/redux/actions/siteActions';
-import Link from 'next/link';
+// import Link from 'next/link';
 
 import ArticlesButton from '@/components/UI/Button';
-
-import { Form } from 'react-bootstrap';
 
 import useFullscreen from '@/components/hooks/useFullScreen';
 import { useLocalStorageNew } from '@/components/hooks/useLocalStorageNew';
 import IsDev from '@/components/UI/IsDev';
 import { useSocketStore } from '@/components/hooks/useSocketStore';
+// import usePeerConnection from '@/components/hooks/usePeerConnection';
+
+import { useStore } from '@/components/hooks/useStore';
+import useCameraStore from '@/components/hooks/useCameraStore';
+import useGameStore from '@/components/hooks/useGameStore';
+
+// import GameCanvasFlat from '@/components/Game/GameCanvasFlat';
+const GameCanvasFlat = dynamic(() => import('@/components/Game/GameCanvasFlat'), {
+    ssr: false,
+});
+
+// import GameMenu from '@/components/UI/GameMenu';
+const GameMenu = dynamic(() => import('@/components/UI/GameMenu'), {
+    ssr: false,
+});
+
+const KickedModal = dynamic(() => import('@/components/UI/KickedModal'), {
+    ssr: false,
+});
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -60,32 +77,29 @@ export default function RaceGame() {
     // const dispatch = useDispatch()
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
-    // const dev_debug = useSelector((state) => state.site.dev_debug)
     const userReduxState = false
-    const dev_debug = false
 
-    const router = useRouter()
-    const pathname = usePathname()
+    // const router = useRouter()
+    // const pathname = usePathname()
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const params = useParams()
-    const server = searchParamsObject?.server_id
+    // const server = searchParamsObject?.server_id
+    const { server_id, server_type } = searchParamsObject
     // const { server } = router.query
-
-    const canvasRef = useRef(null);
-    const [canvasRefContext, setCanvasRefContext] = useState(null);
 
     const [showInviteModal, setShowInviteModal] = useState(false)
     const [showInfoModal, setShowInfoModal] = useState(false)
     const [showSettingsModal, setShowSettingsModal] = useState(false)
     const [activeMysterySpot, setActiveMysterySpot] = useState(false)
 
-    const [showMenu, setShowMenu] = useState(false)
+    const showMenu = useStore((state) => state?.showMenu);
+    const setShowMenu = useStore((state) => state?.setShowMenu);
+    // const [showMenu, setShowMenu] = useState(false)
 
-    const [audioSettings, setAudioSettings] = useState({
-        enabled: false,
-        volume: 0.25
-    })
+    // const [audioSettings, setAudioSettings] = useState({
+    //     enabled: false,
+    //     volume: 0.25
+    // })
 
     const [character, setCharacter] = useLocalStorageNew("game:race-game:character", {
         model: 'Duck',
@@ -101,321 +115,26 @@ export default function RaceGame() {
         alert("Gotta fix")
     });
 
-    const [mounted, setMounted] = useState(false)
-
-    useEffect(() => {
-
-        if (canvasRef && mounted) {
-            setCanvasRefContext(
-                canvasRef.current.getContext('2d')
-            )
-        }
-
-    }, [canvasRef, mounted]);
-
-    const canvasPlayersRef = useRef(null);
-    const [canvasPlayersRefContext, setCanvasPlayersRefContext] = useState(null);
+    const [mounted, setMounted] = useState(true)
 
     const [roundTimer, setRoundTimer] = useState(null);
 
-    const [players, setPlayers] = useState([]);
-    const [gameState, setGameState] = useState(false)
+    // const [players, setPlayers] = useState([]);
+
+    const gameState = useGameStore((state) => state?.gameState);
+    const players = useGameStore((state) => state?.gameState?.players);
+
+    const myId = useGameStore((state) => state?.myId);
+    const sendToHost = useGameStore((state) => state?.sendToHost);
+    // const [gameState, setGameState] = useState(false)
 
     // const [renderMode, setRenderMode] = useState('2D');
-    const [renderMode, setRenderMode] = useLocalStorageNew("game:race-game:renderMode", "2D")
-
-    const [threeDimensionalLoaded, setThreeDimensionalLoaded] = useState(false)
-
-    let music
-
-    if (typeof window !== 'undefined') {
-        music = new Audio(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/race-game-audio-loop.mp3`);
-        music.volume = audioSettings.enabled ? audioSettings.volume : 0; // Set volume based on initial state
-    }
+    const renderMode = useStore((state) => state?.renderMode);
+    // const [renderMode, setRenderMode] = useLocalStorageNew("game:race-game:renderMode", "2D")
 
     useEffect(() => {
-
-        if (audioSettings?.enabled) {
-            music.currentTime = 0;
-            music.play();
-
-            music.onended = function () {
-                console.log('audio ended');
-                music.currentTime = 0;
-                music.play();
-            };
-        }
-
-        return () => {
-            music.pause();
-        };
-    }, [audioSettings]);
-
-    useEffect(() => {
-
-        if (renderMode == "3D") {
-            setThreeDimensionalLoaded(true)
-        }
-
-    }, [renderMode])
-
-    const [boardPainted, setBoardPainted] = useState()
-    function drawBoard() {
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
-        // setCanvasRefContext(context)
-
-
-        // const contextPlayers = canvasPlayers.getContext('2d')
-        // setCanvasPlayersRefContext(contextPlayers)
-
-        canvasRef.current.width = 1500;
-        canvasRef.current.height = 400;
-
-
-
-        context.fillStyle = 'rgba(0, 0, 0, .5)';
-        context.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-        // Start
-        context.fillStyle = 'rgb(160, 120, 73)';
-        context.fillRect(1400, 0, 100, canvasRef.current.height);
-
-        // Finish
-        context.fillStyle = 'rgb(160, 120, 73)';
-        context.fillRect(0, 0, 100, canvasRef.current.height);
-
-        // context.fillStyle = '#000';
-        // context.font = "60px Arial";
-        // context.fillText("Start", 10, 50);
-
-        // context.fillStyle = '#000';
-        // context.font = "60px Arial";
-        // context.fillText("Finish", canvas.width - 170, 50);
-
-        // Vertical Lines
-        var i;
-        for (i = 100; i < 1600; i += 100) {
-            context.fillStyle = 'rgb(0 0 0 / 47%)';
-            context.fillRect(i, 0, 2, canvasRef.current.height);
-        }
-
-        // Horizontal Lines
-        var i;
-        for (i = 100; i < 400; i += 100) {
-            context.fillStyle = 'rgb(0 0 0 / 47%)';
-            context.fillRect(100, i, canvasRef.current.width - 200, 2);
-        }
-
-        // drawPlayer(10, 10);
-        // drawPlayer(10, 110);
-        // drawPlayer(10, 210);
-        // drawPlayer(10, 310);
-
-        // const context = canvasPlayersRef.current.getContext('2d')
-    }
-    useEffect(() => {
-        if (server && mounted && !boardPainted) {
-            drawBoard()
-            setBoardPainted(true)
-        }
-    }, [server, mounted])
-
-    useEffect(() => {
-
-        if (server) {
-            // console.log(Background)
-
-            // drawBoard()
-
-
-
-            socket.on('race-game-round-timer', function (msg) {
-                // console.log(`Just received this message from server`);
-                console.log('race-game-round-timer', msg)
-                setRoundTimer(msg)
-
-            });
-
-            socket.on(`game:race-game-room-${server}`, function (data) {
-
-                if (!mounted) return
-
-                const canvasPlayers = canvasPlayersRef.current
-                canvasPlayersRef.current.width = 1500;
-                canvasPlayersRef.current.height = 400;
-
-                const canvas = canvasPlayersRef.current
-                const context = canvas.getContext('2d')
-
-                // return
-                console.log(`race-game-room-${server}`);
-
-                console.log(data)
-
-                setPlayers(data?.players || [])
-
-                setGameState(data?.game_state)
-
-                if (data?.game_state?.activeMysterySpot) {
-                    console.log("activeMysterySpot found", data?.game_state?.activeMysterySpot)
-                    setActiveMysterySpot(data?.game_state?.activeMysterySpot)
-                } else {
-                    setActiveMysterySpot(false)
-                }
-
-                // return
-
-                // setRoundTimer(msg)
-
-                // setPlayers(playersObj)
-
-                // console.log(playersObj)
-
-                context.clearRect(0, 0, 1500, 400);
-
-                // msg.map(player => {
-                //     drawPlayer( player.x, player.y, context )
-                // })
-
-                data?.game_state?.mystery_spots?.map(mystery_obj => {
-                    drawMysterySpot(
-                        (mystery_obj.x * 100),
-                        (mystery_obj.y * 100),
-                        context,
-                        false,
-                    )
-                })
-
-                data?.players.map(player_obj => {
-                    drawPlayer(
-                        (player_obj.race_game.x * 100),
-                        (player_obj.race_game.y * 100),
-                        context,
-                        player_obj.id == socket.id,
-                        player_obj,
-                        data?.game_state?.movesShown,
-                    )
-                })
-
-                // for (var id in playersObj) {
-                //     var player = playersObj[id];
-                //     // console.log(`${player.x} - ${player.y}`)
-                //     drawPlayer(player.x, player.y, context, id == socket.id)
-                // }
-
-            });
-
-            socket.on('race-game-round-players-picks', function (playersObj) {
-                // return
-                // console.log(`Just received this message from server`);
-                // setRoundTimer(msg)
-
-                // setPlayers(playersObj)
-
-                // console.log("playersObj", playersObj)
-
-                // console.log(playersObj)
-
-                // context.clearRect(0, 0, 1500, 400);
-
-                // msg.map(player => {
-                //     drawPlayer( player.x, player.y, context )
-                // })
-
-                // for (var id in playersObj) {
-                //     var player = playersObj[id];
-                //     drawPlayerPick(player.x, player.y, context, id == socket.id)
-                // }
-
-            });
-
-        }
-
-        // return () => {
-        //     socket.off(`game:race-game-room-${server}`);
-        //     socket.off('race-game-round-timer');
-        //     socket.emit('leave-room', `game:race-game-room-${server}`, {
-        //         client_version: '1',
-        //         game_id: server
-        //     });
-        // }
-
-    }, [server, mounted]);
-
-    useEffect(() => {
-
-        // TODO - App Router - Double check
-        if (server) {
-            rejoin()
-        }
-
-        return () => {
-            if (server) {
-                socket.off(`game:race-game-room-${server}`);
-                socket.off('race-game-round-timer');
-                socket.emit('leave-room', `game:race-game-room-${server}`, {
-                    client_version: '1',
-                    game_id: server
-                });
-            }
-        }
-
-    }, [server]);
-
-    // useEffect(() => {
-
-    //     if (router.isReady && server) {
-    //         rejoin()
-    //     }
-
-    // }, [router])
-
-    useEffect(() => {
-
         setMounted(true)
-
     }, [])
-
-    function drawMysterySpot(x, y, context, isSelf) {
-        console.log("Drawing Player")
-
-        context.fillStyle = '#ffc107';
-        context.fillRect(x, y, 100, 100);
-
-        context.font = "10px Arial";
-        context.fillStyle = "#000";
-        context.textAlign = "center";
-
-        context.fillText(`?`, x + 50, y + 50);
-    };
-
-    function drawPlayer(x, y, context, isSelf, player_obj, movesShown) {
-
-        console.log("Drawing Player")
-
-        context.fillStyle = 'rgb( 255, 255, 255, .5 )';
-        context.fillRect(x, y, 100, 100);
-
-        context.font = "10px Arial";
-        context.fillStyle = "#000";
-        context.textAlign = "center";
-        // var playerNickname = player.nickname;
-        context.fillText(`${isSelf ? 'You' : (player_obj?.race_game?.nickname || '')}`, x + 50, y + 50);
-
-        if (player_obj?.race_game?.spaces) {
-            context.font = "16px Arial";
-            context.fillText(`🔒`, x + 50, y + 70);
-        }
-
-        if (movesShown > 0 && player_obj?.race_game?.spaces) {
-            context.font = "16px Arial";
-            context.fillText(`${player_obj?.race_game?.spaces}`, x + 50, y + 30);
-        }
-
-        context.font = "10px Arial";
-
-    };
 
     function inviteFriend(id) {
         console.log(`Inviting friend ${id}`)
@@ -423,9 +142,9 @@ export default function RaceGame() {
 
     function rejoin() {
 
-        socket.emit('join-room', `game:race-game-room-${server}`, {
+        socket.emit('join-room', `game:race-game-room-${server_id}`, {
             client_version: '1',
-            game_id: server,
+            game_id: server_id,
             character,
             nickname: (localStorage.getItem('game:nickname') ? JSON.parse(localStorage.getItem('game:nickname')) : userReduxState.username),
             ...(userReduxState?.profile_photo?.location &&
@@ -439,7 +158,7 @@ export default function RaceGame() {
     function startGame() {
 
         socket.emit('race-game-start', {
-            server: server,
+            server: server_id,
             settings: {}
         });
 
@@ -450,7 +169,7 @@ export default function RaceGame() {
     function addBot() {
 
         socket.emit('game:race-game:add-bot', {
-            server: server,
+            server: server_id,
             settings: {}
         });
 
@@ -460,16 +179,31 @@ export default function RaceGame() {
 
     function generateMysterySpots() {
         socket.emit('race-game-generate-mystery-spots', {
-            server: server,
+            server: server_id,
             settings: {}
         });
     }
 
     function move(spaces) {
-        socket.emit('race-game-player-move', {
-            server: server,
-            spaces: spaces
-        });
+
+        if (server_type == "room-play") {
+
+            sendToHost({
+                event: 'PlayerMove',
+                spaces: spaces
+            })
+
+        }
+
+        if (server_type == "online-socket") {
+
+            socket.emit('race-game-player-move', {
+                server: server_id,
+                spaces: spaces
+            });
+
+        }
+
     }
 
     useHotkeys('1', () => move(1));
@@ -477,9 +211,13 @@ export default function RaceGame() {
     useHotkeys('3', () => move(3));
     useHotkeys('4', () => move(4));
 
-    const [cameraUpdate, setCameraUpdate] = useState(false)
+    const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
+    const setCameraUpdate = useCameraStore((state) => state?.setCameraUpdate);
+    const cameraState = useCameraStore((state) => state?.cameraState);
+    const setCameraState = useCameraStore((state) => state?.setCameraState);
 
-    const [cameraState, setCameraState] = useState({ position: [0, 0, 5] });
+    // const [cameraUpdate, setCameraUpdate] = useState(false)
+    // const [cameraState, setCameraState] = useState({ position: [0, 0, 5] });
 
     // Handle camera change event
     const handleCameraChange = (event) => {
@@ -549,342 +287,14 @@ export default function RaceGame() {
                     </div>
                 } */}
 
-                    <div className={`menu-card card card-articles ${showMenu && 'show'}`}>
-
-                        <div className="card-body p-2 mt-auto d-flex flex-column">
-
-                            <div className='d-flex flex-column mb-2 mt-auto'>
-
-                                <div className='flex-header bg-dark text-white p-1 mb-2'>
-                                    <span>Room : {server}</span>
-                                    {gameState.status == 'In Lobby' &&
-                                        <span className='text-danger'>In Lobby | Need Players</span>
-                                    }
-                                    {gameState.status == 'In Progress' &&
-                                        <span className='text-success'>In Progress | Pick Space</span>
-                                    }
-                                </div>
-
-                                <ArticlesButton
-                                    small
-                                    className="w-100 mb-2"
-                                    // active={}
-                                    disabled={
-                                        players.length < 2
-                                        ||
-                                        gameState.status == 'In Progress'
-                                    }
-                                    onClick={() => {
-
-                                    }}
-                                >
-                                    <i className="fad fa-play"></i>
-                                    <span>Start Game</span>
-                                    <span className="badge bg-dark ms-2">
-                                        {players?.length || 0} / 2+
-                                    </span>
-                                </ArticlesButton>
-
-                                <div className='mb-2'>
-
-                                    <Link
-                                        className=""
-                                        href={'/'}
-                                    >
-                                        <ArticlesButton
-                                            small
-                                            className='w-50'
-                                        >
-                                            <i className="fad fa-sign-out fa-rotate-180"></i>
-                                            Leave Game
-                                        </ArticlesButton>
-                                    </Link>
-
-                                    <ArticlesButton
-                                        small
-                                        className="w-50"
-                                        active={isFullscreen}
-                                        onClick={() => {
-                                            if (isFullscreen) {
-                                                exitFullscreen()
-                                            } else {
-                                                requestFullscreen('race-game-game-page')
-                                            }
-                                        }}
-                                    >
-                                        {isFullscreen && <span>Exit </span>}
-                                        {!isFullscreen && <span><i className='fad fa-expand'></i></span>}
-                                        <span>Fullscreen</span>
-                                    </ArticlesButton>
-                                </div>
-
-                                <div className='d-flex'>
-                                    <ArticlesButton
-                                        small
-                                        className="w-50 mb-2"
-                                        onClick={() => {
-                                            setShowInfoModal({
-                                                game: 'Race Game'
-                                            })
-                                        }}
-                                    >
-                                        <i className="fad fa-info-circle"></i>
-                                        Info
-                                    </ArticlesButton>
-
-                                    <ArticlesButton
-                                        small
-                                        className="w-50 mb-2"
-                                        onClick={() => {
-                                            setShowSettingsModal({
-                                                game: 'Race Game'
-                                            })
-                                        }}
-                                    >
-                                        <i className="fad fa-cog"></i>
-                                        Settings
-                                    </ArticlesButton>
-                                </div>
-
-                            </div>
-
-                            <hr className='my-2' />
-
-                            <div className='d-flex flex-column flex-lg-row'>
-
-                                {/* Audio */}
-                                <div className='w-50 m-lg-1'>
-
-                                    <div className="small text-center">
-                                        Audio
-                                    </div>
-
-                                    <div className='d-flex'>
-
-                                        <ArticlesButton
-                                            small
-                                            className="w-50"
-                                            active={!audioSettings?.enabled}
-                                            onClick={() => {
-                                                setAudioSettings({
-                                                    ...audioSettings,
-                                                    enabled: false
-                                                })
-                                            }}
-                                        >
-                                            Off
-                                        </ArticlesButton>
-
-                                        <ArticlesButton
-                                            small
-                                            className="w-50"
-                                            active={audioSettings?.enabled}
-                                            onClick={() => {
-                                                setAudioSettings({
-                                                    ...audioSettings,
-                                                    enabled: true
-                                                })
-                                            }}
-                                        >
-                                            On
-                                        </ArticlesButton>
-
-                                    </div>
-
-                                </div>
-
-                                {/* Rendering */}
-                                <div className="w-50 m-lg-1">
-
-                                    <div className="small text-center">
-                                        Game Style
-                                    </div>
-
-                                    <div className='d-flex'>
-
-                                        <ArticlesButton
-                                            small
-                                            className="w-50 mb-2"
-                                            active={renderMode == "2D"}
-                                            onClick={() => {
-                                                setRenderMode("2D")
-                                            }}
-                                        >
-                                            2D
-                                        </ArticlesButton>
-
-                                        <ArticlesButton
-                                            small
-                                            className="w-50 mb-2"
-                                            active={renderMode == "3D"}
-                                            onClick={() => {
-                                                setRenderMode("3D")
-                                            }}
-                                        >
-                                            3D
-                                        </ArticlesButton>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            {audioSettings?.enabled && <div className="volume-control card-body text-center border p-1 py-2">
-                                <Form.Label className="small mb-0">Volume: {(audioSettings?.volume * 100).toFixed()}%</Form.Label>
-                                <Form.Range
-                                    className="mb-0"
-                                    value={audioSettings?.volume * 100}
-                                    onChange={(e) => {
-
-                                        console.log("Change", e.target.value)
-                                        const newVolume = parseFloat(e.target.value);
-                                        console.log(newVolume)
-
-                                        setAudioSettings({
-                                            ...audioSettings,
-                                            volume: newVolume / 100
-                                        })
-
-                                    }}
-                                />
-                            </div>}
-
-                            {/* <hr className='my-4' /> */}
-
-                            <IsDev>
-                                <hr className='my-2' />
-
-                                <div className="small text-center">
-                                    Dev Debug
-                                </div>
-
-                                <div className='d-flex flex-column mb-2'>
-
-                                    <ArticlesButton
-                                        small
-                                        variant="warning"
-                                        className="mb-2"
-                                        // active={renderMode == "2D"}
-                                        onClick={() => {
-                                            // setRenderMode("2D")
-                                        }}
-                                    >
-                                        Reset Room
-                                    </ArticlesButton>
-
-                                    <ArticlesButton
-                                        small
-                                        variant="warning"
-                                        className="mb-2"
-                                        // active={renderMode == "2D"}
-                                        onClick={() => {
-                                            // setRenderMode("2D")
-                                            startGame()
-                                        }}
-                                    >
-                                        Force Start
-                                    </ArticlesButton>
-
-                                    <ArticlesButton
-                                        small
-                                        variant="warning"
-                                        className="mb-2"
-                                        // active={renderMode == "2D"}
-                                        onClick={() => {
-                                            // setRenderMode("2D")
-                                            generateMysterySpots()
-                                        }}
-                                    >
-                                        Generate Mystery Spots
-                                    </ArticlesButton>
-
-                                </div>
-                            </IsDev>
-
-                            <div className="text-center">
-                                Camera Positions
-                            </div>
-
-                            <div className="camera-controls">
-
-                                {[
-                                    {
-                                        name: "Starting",
-                                        position: [19, 10, 15]
-                                    },
-                                    {
-                                        name: "Bleacher",
-                                        position: [28.32, 5.38, -6.30]
-                                    },
-                                    {
-                                        name: "First Person",
-                                        position: [0, 3.5, 0]
-                                    },
-                                    {
-                                        name: "Wind Turbine",
-                                        position: [42.50, 16.94, -125.86]
-                                    }
-                                ].map(item => {
-                                    return (
-                                        <ArticlesButton
-                                            key={item.name}
-                                            small
-                                            variant=""
-                                            className=""
-                                            onClick={() => {
-                                                setCameraUpdate({
-                                                    position: item.position
-                                                })
-                                            }}
-                                        >
-                                            {item.name}
-                                        </ArticlesButton>
-                                    )
-                                })}
-
-                            </div>
-
-                        </div>
-
-                        {dev_debug &&
-                            <div className="card rounded-0 p-2 m-2">
-
-                                <div><b className='mb-3'>Debug Info</b></div>
-
-                                <div className="small">
-                                    Push esc key to toggle
-                                </div>
-
-                                <hr className='my-4' />
-
-                                <div><b className="mb-0">Players</b></div>
-
-                                {players.map((obj, index) => (
-                                    <div key={index + '-' + obj.id}>
-                                        <div className="border p-1">
-
-                                            <div>Id: {obj.id}</div>
-                                            {obj.user_id && <div >User: {obj.user_id}</div>}
-
-                                            <div className='d-flex mt-2'>
-                                                <div className='me-4'>X = {obj.race_game.x}</div>
-                                                <div>Y = {obj.race_game.y}</div>
-                                            </div>
-
-                                            <div className='d-flex justify-content-between mt-2'>
-                                                <div className='me-4'>Row = {obj.race_game.row}</div>
-                                                <div>Picked = {obj.race_game.pickedSpace ? 'True' : 'False'} - {obj.race_game.spaces}</div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                ))}
-
-                            </div>
-                        }
-
-                    </div>
+                    <GameMenu
+                    // Causes non stop remounts for some reason
+                    // {...{
+                    //     isFullscreen,
+                    //     requestFullscreen,
+                    //     exitFullscreen
+                    // }}
+                    />
 
                     <div className='game-content'>
 
@@ -905,7 +315,7 @@ export default function RaceGame() {
                                             >
                                                 <div style={{ width: '150px', height: '150px', position: 'relative' }}>
                                                     <QRCodeCanvas
-                                                        value={`https://articles.media/community/games/race-game/${server}`}
+                                                        value={`https://race-game.articles.media/${server_id}`}
                                                         className=''
 
                                                         size={150}
@@ -1045,7 +455,7 @@ export default function RaceGame() {
                                                     setShowInviteModal({
                                                         type: 'Game',
                                                         game_name: 'Race Game',
-                                                        server_id: server
+                                                        server_id: server_id
                                                     })
                                                 }}
                                                 disabled={gameState?.players?.length >= 4}
@@ -1099,19 +509,19 @@ export default function RaceGame() {
                             </div>
                         </div> */}
 
-                        {(renderMode == "3D" || renderMode == "Both" || threeDimensionalLoaded) &&
+                        {(renderMode == "3D" || renderMode == "Both") &&
                             <div className={`canvas-three-wrap ${renderMode !== "3D" && 'd-none'}`}>
 
                                 <Suspense>
                                     <GameCanvas
-                                        cameraState={cameraState}
-                                        handleCameraChange={handleCameraChange}
                                         // cameraState={cameraState}
-                                        gameState={gameState}
-                                        players={players}
+                                        // handleCameraChange={handleCameraChange}
+                                        // cameraState={cameraState}
+                                        // gameState={gameState}
+                                        // players={players}
                                         move={move}
-                                        cameraUpdate={cameraUpdate}
-                                        setCameraUpdate={setCameraUpdate}
+                                    // cameraUpdate={cameraUpdate}
+                                    // setCameraUpdate={setCameraUpdate}
                                     // cameraState={cameraState}
                                     />
                                 </Suspense>
@@ -1119,17 +529,7 @@ export default function RaceGame() {
                             </div>
                         }
 
-                        <div className={`canvas-flat-wrap ${renderMode == '3D' && 'd-none'}`}>
-                            <canvas onClick={(e) => console.log(e)} className='fill' ref={canvasRef}></canvas>
-                            <canvas onClick={(e) => {
-                                const canvas = canvasPlayersRef.current;
-                                const rect = canvas.getBoundingClientRect();
-                                const x = e.clientX - rect.left;
-                                const y = e.clientY - rect.top;
-
-                                console.log(`Clicked at coordinates: (${x}, ${y})`);
-                            }} ref={canvasPlayersRef}></canvas>
-                        </div>
+                        {/* <GameCanvasFlat /> */}
 
                         <div className='info-controls card card-articles'>
 
@@ -1169,27 +569,47 @@ export default function RaceGame() {
                             </div>
 
                             <div>
-                                {players.find(player => player.id == socket.id) &&
+                                {
+                                    (
+                                        players.find(player => player.id == socket.id)
+                                        ||
+                                        (myId)
+                                        // TODO - Prevent on room play host
+                                    )
+                                    &&
 
                                     <div className="buttons">
 
                                         {[1, 2, 3, 4].map(space => {
 
-                                            let active = players.find(player => player.id == socket.id).race_game?.spaces == space
+                                            let active
+
+                                            if (server_type == "room-play") {
+                                                // Old socket structure of nested race_game, rather this just be gone
+                                                // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
+                                                active = players.find(player => player.peer == myId)?.spaces == space
+                                                // active = true
+                                            }
+
+                                            if (server_type == "online-socket") {
+                                                active = players.find(player => player.id == socket.id)?.race_game?.spaces == space
+                                            }                                            
 
                                             return (
                                                 <ArticlesButton
                                                     key={space}
                                                     disabled={
-                                                        players.find(player => player.id == socket.id).race_game?.pickedSpace
+                                                        gameState?.movesShown > 0
                                                         ||
-                                                        players.find(player => player.id == socket.id).race_game?.x >= 1400
+                                                        players.find(player => player.id == socket.id)?.race_game?.pickedSpace
+                                                        // ||
+                                                        // players.find(player => player.id == socket.id)?.race_game?.x >= 1400
                                                     }
                                                     active={active}
                                                     onClick={() => {
                                                         move(space)
                                                     }}
-                                                    className={`${active && 'bg-dark'}`}
+                                                    // className={``}
                                                 >
                                                     <span>{(space)}</span>
                                                     <span className='d-none d-lg-inline-block ms-2'>Space</span>
