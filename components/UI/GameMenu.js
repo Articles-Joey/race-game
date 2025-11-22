@@ -449,7 +449,7 @@ function GameMenu({
 
                 <hr className='my-2' />
 
-                <div className='d-flex flex-column flex-lg-row'>
+                <div className='d-flex'>
 
                     {/* Audio */}
                     <div className='w-50 m-lg-1'>

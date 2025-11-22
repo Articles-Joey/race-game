@@ -20,7 +20,8 @@ export default function ArticlesModal({
     centered,
     scrollable,
     size,
-    actionVariant
+    actionVariant,
+    footerOverride
 }) {
 
     const [showModal, setShowModal] = useState(true)
@@ -66,6 +67,8 @@ export default function ArticlesModal({
                 </Modal.Body>
 
                 <Modal.Footer className="justify-content-between">
+
+                    {footerOverride}
 
                     {!action && <div></div>}
 

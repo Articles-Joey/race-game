@@ -459,7 +459,7 @@ export default function RaceGameLandingPage() {
                                     <Popover id="popover-basic">
                                         <Popover.Header as="h3">Socket Multiplayer</Popover.Header>
                                         <Popover.Body>
-                                            Login required. Game takes place on a dedicated server. Join public lobbies and save stats.
+                                            Login required. Game takes place on a dedicated server. Anti-cheat! Join public lobbies, save stats, collect rewards!
                                         </Popover.Body>
                                     </Popover>
                                 }

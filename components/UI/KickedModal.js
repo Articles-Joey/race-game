@@ -1,19 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
 import { useStore } from "../hooks/useStore";
+import { useSearchParams } from "next/navigation";
 
 export default function KickedModal({
     show,
     setShow,
 }) {
 
-    const kicked = useStore((state) => state?.kicked);
-    const setKicked = useStore((state) => state?.setKicked);
+    const searchParams = useSearchParams()
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    const { kicked } = searchParamsObject
+
+    const kickedStore = useStore((state) => state?.kicked);
+    const setKickedStore = useStore((state) => state?.setKicked);
+
+    useEffect(() => {
+
+        if (kicked) {
+
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete("kicked");
+            window.history.replaceState({}, '', `${window.location.pathname}?${newSearchParams}`);
+
+            setKickedStore({
+                message: "You have been removed from the game by the host."
+            })
+
+        }
+
+    }, [kicked]);
 
     return (
         <>
@@ -21,14 +42,14 @@ export default function KickedModal({
             <Modal
                 className="articles-modal games-info-modal"
                 size='md'
-                show={kicked}
+                show={kickedStore}
                 centered
                 scrollable
                 onExited={() => {
-                    setKicked(false)
+                    setKickedStore(false)
                 }}
                 onHide={() => {
-                    setKicked(false)
+                    setKickedStore(false)
                 }}
             >
 
@@ -38,7 +59,7 @@ export default function KickedModal({
 
                 <Modal.Body className="flex-column p-3">
 
-                    Kicked: {kicked?.message}
+                    Kicked: {kickedStore?.message}
 
                 </Modal.Body>
 
@@ -47,7 +68,7 @@ export default function KickedModal({
                     <div></div>
 
                     <ArticlesButton variant="outline-dark" onClick={() => {
-                        setKicked(false)
+                        setKickedStore(false)
                     }}>
                         Close
                     </ArticlesButton>

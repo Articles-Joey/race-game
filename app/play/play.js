@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useContext, useRef, useState, Suspense } from 'react';
+import { useEffect, useContext, useRef, useState, Suspense, useMemo } from 'react';
 
 import { useSearchParams, useRouter, usePathname, useParams } from 'next/navigation';
 import dynamic from 'next/dynamic'
@@ -28,6 +28,7 @@ import { useSocketStore } from '@/components/hooks/useSocketStore';
 import { useStore } from '@/components/hooks/useStore';
 import useCameraStore from '@/components/hooks/useCameraStore';
 import useGameStore from '@/components/hooks/useGameStore';
+import classNames from 'classnames';
 
 // import GameCanvasFlat from '@/components/Game/GameCanvasFlat';
 const GameCanvasFlat = dynamic(() => import('@/components/Game/GameCanvasFlat'), {
@@ -63,6 +64,10 @@ const SettingsModal = dynamic(
 )
 
 const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
+    ssr: false,
+});
+
+const WinnerModal = dynamic(() => import('@/components/UI/WinnerModal'), {
     ssr: false,
 });
 
@@ -121,6 +126,7 @@ export default function RaceGame() {
 
     // const [players, setPlayers] = useState([]);
 
+    const isHost = useGameStore((state) => state.isHost);
     const gameState = useGameStore((state) => state?.gameState);
     const players = useGameStore((state) => state?.gameState?.players);
 
@@ -197,7 +203,7 @@ export default function RaceGame() {
 
         if (server_type == "online-peer") {
 
-            
+
 
         }
 
@@ -229,6 +235,18 @@ export default function RaceGame() {
     const handleCameraChange = (event) => {
         setCameraState(event);
     };
+
+    const showRoomPlayMoveButtons = useMemo(() => {
+
+        return (
+            server_type == "room-play"
+            &&
+            !isHost
+            &&
+            gameState?.roomPlayClientRender == false
+        ) ? true : false
+
+    }, [server_type, gameState, isHost]);
 
     return (
 
@@ -278,6 +296,10 @@ export default function RaceGame() {
 
                             </div>
                         </ArticlesModal>
+                    }
+
+                    {gameState?.winner &&
+                        <WinnerModal />
                     }
 
                     <img
@@ -394,10 +416,10 @@ export default function RaceGame() {
                                                         )
                                                     })}
 
-                                                    {[...Array((4 - gameState?.players?.length))].map(item => {
+                                                    {[...Array((4 - gameState?.players?.length))].map((item, index) => {
                                                         return (
                                                             <div
-                                                                key={item}
+                                                                key={index}
                                                                 style={{
                                                                     width: '30px',
                                                                     height: '30px'
@@ -445,10 +467,17 @@ export default function RaceGame() {
                                                     <Dropdown.Menu className="">
 
                                                         {userReduxState?.friends?.map((friend, i) => {
-                                                            return <Dropdown.Item key={friend.id} onClick={() => inviteFriend(friend.id)} className="" eventKey={i}>
-                                                                <i className="fad fa-user" aria-hidden="true"></i>
-                                                                {friend.nickname}
-                                                            </Dropdown.Item>
+                                                            return (
+                                                                <Dropdown.Item
+                                                                    key={`${i}-${friend.id}`}
+                                                                    onClick={() => inviteFriend(friend.id)}
+                                                                    className=""
+                                                                    eventKey={i}
+                                                                >
+                                                                    <i className="fad fa-user" aria-hidden="true"></i>
+                                                                    {friend.nickname}
+                                                                </Dropdown.Item>
+                                                            )
                                                         })}
 
                                                     </Dropdown.Menu>
@@ -515,28 +544,37 @@ export default function RaceGame() {
                             </div>
                         </div> */}
 
-                        {(renderMode == "3D" || renderMode == "Both") &&
-                            <div className={`canvas-three-wrap ${renderMode !== "3D" && 'd-none'}`}>
+                        {
+                            showRoomPlayMoveButtons ?
+                                <>
+                                    <RoomPlayMoveButtons />
+                                </>
+                                :
+                                <>
+                                    {(renderMode == "3D" || renderMode == "Both") &&
+                                        <div className={`canvas-three-wrap ${renderMode !== "3D" && 'd-none'}`}>
 
-                                <Suspense>
-                                    <GameCanvas
-                                        // cameraState={cameraState}
-                                        // handleCameraChange={handleCameraChange}
-                                        // cameraState={cameraState}
-                                        // gameState={gameState}
-                                        // players={players}
-                                        move={move}
-                                    // cameraUpdate={cameraUpdate}
-                                    // setCameraUpdate={setCameraUpdate}
-                                    // cameraState={cameraState}
-                                    />
-                                </Suspense>
+                                            <Suspense>
+                                                <GameCanvas
+                                                    // cameraState={cameraState}
+                                                    // handleCameraChange={handleCameraChange}
+                                                    // cameraState={cameraState}
+                                                    // gameState={gameState}
+                                                    // players={players}
+                                                    move={move}
+                                                // cameraUpdate={cameraUpdate}
+                                                // setCameraUpdate={setCameraUpdate}
+                                                // cameraState={cameraState}
+                                                />
+                                            </Suspense>
 
-                            </div>
-                        }
+                                        </div>
+                                    }
 
-                        {(renderMode == "2D" || renderMode == "Both") &&
-                            <GameCanvasFlat />
+                                    {(renderMode == "2D" || renderMode == "Both") &&
+                                        <GameCanvasFlat />
+                                    }
+                                </>
                         }
 
                         <div className='info-controls card card-articles'>
@@ -545,7 +583,7 @@ export default function RaceGame() {
                                 className={'d-lg-none'}
                                 active={showMenu}
                                 onClick={() => {
-                                    setShowMenu(prev => !prev)
+                                    setShowMenu(!showMenu)
                                 }}
                             >
                                 Menu
@@ -558,9 +596,15 @@ export default function RaceGame() {
                                 {gameState?.status == "In Lobby" && <h5 className="mb-0">{"In Lobby"}</h5>}
                                 {gameState?.status == "In Progress" && <h5 className="mb-0">{gameState?.time}</h5>}
 
+                                {/* <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span> */}
+
+                                {(gameState?.status == "In Progress" && gameState?.movesShown !== 0) &&
+                                    <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span>
+                                }
+
                             </div>
 
-                            <div className='small'>
+                            <div className='small d-none d-lg-block'>
 
                                 <div className='d-flex'>
                                     <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
@@ -576,59 +620,10 @@ export default function RaceGame() {
 
                             </div>
 
-                            <div>
-                                {
-                                    (
-                                        players.find(player => player.id == socket.id)
-                                        ||
-                                        (myId)
-                                        // TODO - Prevent on room play host
-                                    )
-                                    &&
-
-                                    <div className="buttons">
-
-                                        {[1, 2, 3, 4].map(space => {
-
-                                            let active
-
-                                            if (server_type == "room-play") {
-                                                // Old socket structure of nested race_game, rather this just be gone
-                                                // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
-                                                active = players.find(player => player.peer == myId)?.spaces == space
-                                                // active = true
-                                            }
-
-                                            if (server_type == "online-socket") {
-                                                active = players.find(player => player.id == socket.id)?.race_game?.spaces == space
-                                            }
-
-                                            return (
-                                                <ArticlesButton
-                                                    key={space}
-                                                    disabled={
-                                                        gameState?.movesShown > 0
-                                                        ||
-                                                        players.find(player => player.id == socket.id)?.race_game?.pickedSpace
-                                                        // ||
-                                                        // players.find(player => player.id == socket.id)?.race_game?.x >= 1400
-                                                    }
-                                                    active={active}
-                                                    onClick={() => {
-                                                        move(space)
-                                                    }}
-                                                // className={``}
-                                                >
-                                                    <span>{(space)}</span>
-                                                    <span className='d-none d-lg-inline-block ms-2'>Space</span>
-                                                </ArticlesButton>
-                                            )
-                                        })}
-
-                                    </div>
-
-                                }
-                            </div>
+                            {/* Never show if room play client */}
+                            {!showRoomPlayMoveButtons &&
+                                <MoveButtons />
+                            }
 
                         </div>
 
@@ -639,4 +634,103 @@ export default function RaceGame() {
         </>
 
     );
+}
+
+function MoveButtons() {
+
+    const {
+        socket,
+    } = useSocketStore(state => ({
+        socket: state.socket,
+    }));
+
+    const searchParams = useSearchParams()
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    // const server = searchParamsObject?.server_id
+    const { server_id, server_type } = searchParamsObject
+
+    const isHost = useGameStore((state) => state.isHost);
+    const gameState = useGameStore((state) => state?.gameState);
+    const players = useGameStore((state) => state?.gameState?.players);
+
+    const myId = useGameStore((state) => state?.myId);
+    const sendToHost = useGameStore((state) => state?.sendToHost);
+
+    return (
+        <div>
+            {
+                (
+                    players.find(player => player.id == socket.id)
+                    ||
+                    (myId)
+                    // TODO - Prevent on room play host
+                )
+                &&
+                <div className={classNames(
+                    `buttons`,
+                    {
+                        'd-none': isHost
+                    }
+                )}>
+
+                    {[
+                        1,
+                        2,
+                        3,
+                        4,
+                        ...(process.env.NODE_ENV === 'development' &&
+                            [
+                                gameState.boardLength,
+                            ]
+                        )
+                    ].map(space => {
+
+                        let active
+
+                        if (server_type == "room-play") {
+                            // Old socket structure of nested race_game, rather this just be gone
+                            // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
+                            active = players.find(player => player.peer == myId)?.spaces == space
+                            // active = true
+                        }
+
+                        if (server_type == "online-socket") {
+                            active = players.find(player => player.id == socket.id)?.race_game?.spaces == space
+                        }
+
+                        return (
+                            <ArticlesButton
+                                key={space}
+                                disabled={
+                                    gameState?.movesShown > 0
+                                    ||
+                                    players.find(player => player.id == socket.id)?.race_game?.pickedSpace
+                                    // ||
+                                    // players.find(player => player.id == socket.id)?.race_game?.x >= 1400
+                                }
+                                active={active}
+                                onClick={() => {
+                                    move(space)
+                                }}
+                            // className={``}
+                            >
+                                <span>{(space)}</span>
+                                <span className='d-none d-lg-inline-block ms-2'>Space</span>
+                            </ArticlesButton>
+                        )
+                    })}
+
+                </div>
+
+            }
+        </div>
+    )
+}
+
+function RoomPlayMoveButtons() {
+    return (
+        <div className={`room-play-move-buttons`}>
+            <MoveButtons />
+        </div>
+    )
 }

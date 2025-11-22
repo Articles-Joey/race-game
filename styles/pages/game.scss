@@ -92,8 +92,7 @@
             z-index: 10;
         }
 
-        @include media-breakpoint-up(lg) {
-        }
+        @include media-breakpoint-up(lg) {}
 
         &.show {
             transform: translateX(0%);
@@ -171,6 +170,7 @@
             @include media-breakpoint-up(lg) {
                 margin-top: 3rem;
             }
+
             // position: absolute;
             // top: 1rem;
             // left: 1rem;
@@ -244,6 +244,20 @@
                     //     width: initial;
                     // }
                 }
+            }
+        }
+    }
+
+    .room-play-move-buttons {
+
+        .buttons {
+            width: 300px;
+            display: flex;
+            flex-direction: column;
+
+            button {
+                padding: 0.5rem;
+                font-size: 1.5rem!important;
             }
         }
     }

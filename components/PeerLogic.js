@@ -32,6 +32,9 @@ const PeerLogic = () => {
     const removeConnection = useGameStore((state) => state.removeConnection);
     const isKicked = useGameStore((state) => state.isKicked);
 
+    const roomPlayClientRender = useGameStore((state) => state.gameState.roomPlayClientRender);
+    const toggleRoomPlayClientRender = useGameStore((state) => state.toggleRoomPlayClientRender);
+
     const handleStartHost = () => {
         startPeer(true);
     };
@@ -62,36 +65,53 @@ const PeerLogic = () => {
         myId, hostConn
     ]);
 
-    const hasAutoConnected = useRef(false);
-
+    const shouldBecomeHost = useRef(false);
     useEffect(() => {
 
-        console.log(
-            "Auto connect check DETECTED",
-            hasAutoConnected.current,
-            hostConn,
-            server_id,
-            myId
-        )
-
-        if (!hasAutoConnected.current && !hostConn && server_id) {
-            startPeer(false);
-            console.log("Auto connect check START CLIENT")
-            // setTargetId(server_id);
-            // connectToHost(server_id);
-            hasAutoConnected.current = true;
-        }
-
-        if (hasAutoConnected.current && !hostConn && server_id && myId) {
-            // startPeer(false);
-            console.log("Auto connect check PASSED")
-            setTargetId(server_id);
-            connectToHost(server_id);
-            // hasAutoConnected.current = true;
+        if (server_type == "room-play" && !server_id) {
+            shouldBecomeHost.current = true;
+            console.log("Auto become host check SET TRUE")
+            handleStartHost();
         }
 
     }, [
-        myId, server_id, hostConn
+        server_type,
+        server_id
+    ]);
+
+    const hasAutoConnected = useRef(false);
+    useEffect(() => {
+
+        if (server_type == "room-play") {
+
+            console.log(
+                "Auto connect check DETECTED",
+                hasAutoConnected.current,
+                hostConn,
+                server_id,
+                myId
+            )
+
+            if (!hasAutoConnected.current && !hostConn && server_id) {
+                startPeer(false);
+                console.log("Auto connect check START CLIENT")
+                // setTargetId(server_id);
+                // connectToHost(server_id);
+                hasAutoConnected.current = true;
+            }
+
+            if (hasAutoConnected.current && !hostConn && server_id && myId) {
+                // startPeer(false);
+                console.log("Auto connect check PASSED")
+                setTargetId(server_id);
+                connectToHost(server_id);
+                // hasAutoConnected.current = true;
+            }
+
+        }
+
+    }, [
+        myId, server_type, server_id, hostConn
     ]);
 
     return (
@@ -130,6 +150,13 @@ const PeerLogic = () => {
                 <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                     <button onClick={handleStartHost} style={{ padding: '5px 10px' }}>Start as Host</button>
                     <button onClick={handleStartClient} style={{ padding: '5px 10px' }}>Start as Client</button>
+                </div>
+            )}
+
+            {isHost && (
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                    {roomPlayClientRender ? 'True' : 'False'}
+                    <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
                 </div>
             )}
 
@@ -188,6 +215,12 @@ const PeerLogic = () => {
                                                 <div>Row: {c.row}</div>
                                                 <div>X: {c.x}</div>
                                                 <div>Spaces: {c.spaces}</div>
+                                                <div>race_game_dump:</div>
+                                                <div className='small'>
+                                                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                                                        {JSON.stringify(c.race_game, null, 2)}
+                                                    </pre>
+                                                </div>
                                                 <button
                                                     onClick={() => removeConnection(c.peer)}
                                                     style={{ padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
