@@ -195,6 +195,12 @@ export default function RaceGame() {
 
         }
 
+        if (server_type == "online-peer") {
+
+            
+
+        }
+
         if (server_type == "online-socket") {
 
             socket.emit('race-game-player-move', {
@@ -529,7 +535,9 @@ export default function RaceGame() {
                             </div>
                         }
 
-                        {/* <GameCanvasFlat /> */}
+                        {(renderMode == "2D" || renderMode == "Both") &&
+                            <GameCanvasFlat />
+                        }
 
                         <div className='info-controls card card-articles'>
 
@@ -593,7 +601,7 @@ export default function RaceGame() {
 
                                             if (server_type == "online-socket") {
                                                 active = players.find(player => player.id == socket.id)?.race_game?.spaces == space
-                                            }                                            
+                                            }
 
                                             return (
                                                 <ArticlesButton
@@ -609,7 +617,7 @@ export default function RaceGame() {
                                                     onClick={() => {
                                                         move(space)
                                                     }}
-                                                    // className={``}
+                                                // className={``}
                                                 >
                                                     <span>{(space)}</span>
                                                     <span className='d-none d-lg-inline-block ms-2'>Space</span>

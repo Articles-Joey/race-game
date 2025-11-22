@@ -342,7 +342,7 @@ const useGameStore = create((set, get) => ({
                         // If not colliding, ensure canMove is true (resetting previous state)
                         newPlayer.canMove = true;
 
-                        let tempNewPlayerX = (newPlayer.spaces * 100)
+                        let tempNewPlayerX = (newPlayer.spaces)
 
                         newPlayer.x += tempNewPlayerX;
                         newPlayer.spaces = 0;
@@ -351,7 +351,7 @@ const useGameStore = create((set, get) => ({
                         // newPlayer.x += newPlayer.spaces;
                         // newPlayer.spaces = 0;
 
-                        newPlayerRaceGame.x = tempNewPlayerX;
+                        newPlayerRaceGame.x += tempNewPlayerX;
 
                         newPlayer.race_game = newPlayerRaceGame;
                     }

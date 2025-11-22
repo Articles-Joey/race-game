@@ -16,8 +16,28 @@ Extra steps are required to get multiplayer via websockets working but this docu
 
 ## Multiplayer
 
-Aiming to have multiplayer via P2P and Websockets. Websocket backend code is not in this repo or available at this time. P2P code will be included here.
+Two types of multiplayer networking for this game
+
+- Websocket Server via socket.io 
+- WebRTC via peerjs
+
+When joining games a server_type is set that handles the different logic needed
+
+## Roadmap
+
+- Dynamic lane logic for any combination of player count and move count
+- Finish socket multiplayer option
 
 ## Inspiration
 
 Inspired by the Race Game from [Disney's ToonTown Online](https://toontownrewritten.fandom.com/wiki/Race_Game)
+
+## Attributions
+
+Windmill Model: [TODO](https://google.com)  
+Player Models: [TODO](https://google.com)  
+Bleacher Model: [TODO](https://google.com)  
+Tree Model: [TODO](https://google.com)  
+Boat Model: [TODO](https://google.com)  
+Grass Texture: [TODO](https://google.com)  
+Water Texture: [TODO](https://google.com)  

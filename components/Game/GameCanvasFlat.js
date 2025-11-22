@@ -2,6 +2,7 @@ import { useEffect, useContext, useRef, useState, Suspense } from 'react';
 
 import { useStore } from "../hooks/useStore";
 import { useSearchParams } from 'next/navigation';
+import { useSocketStore } from '../hooks/useSocketStore';
 
 export default function GameCanvasFlat() {
 
@@ -238,7 +239,7 @@ export default function GameCanvasFlat() {
 
         // TODO - App Router - Double check
         if (server) {
-            rejoin()
+            // rejoin()
         }
 
         return () => {

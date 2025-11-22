@@ -12,6 +12,10 @@ export const useStore = create()(
       setInfoModal: (value) => set({ infoModal: value }),
       toggleInfoModal: () => set({ infoModal: !get().infoModal }),
 
+      loginInfoModal: false,
+      setLoginInfoModal: (value) => set({ loginInfoModal: value }),
+      toggleLoginInfoModal: () => set({ loginInfoModal: !get().loginInfoModal }),
+
       showSettingsModal: false,
       setShowSettingsModal: (value) => set({ showSettingsModal: value }),
       toggleSettingsModal: () => set({ showSettingsModal: !get().showSettingsModal }),

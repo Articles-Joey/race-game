@@ -69,6 +69,14 @@ const InfoModal = dynamic(
     { ssr: false }
 )
 
+const LoginInfoModal = dynamic(
+    () => import('@/components/UI/LoginInfoModal'),
+    { ssr: false }
+)
+
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
+
 const assets_src = 'games/Race Game/'
 
 export default function RaceGameLandingPage() {
@@ -84,6 +92,9 @@ export default function RaceGameLandingPage() {
     const connectSocket = useSocketStore((state) => state.connectSocket)
     const disconnectSocket = useSocketStore((state) => state.disconnectSocket)
     const connected = useSocketStore((state) => state.connected)
+
+    const loginInfoModal = useStore((state) => state.loginInfoModal)
+    const toggleLoginInfoModal = useStore((state) => state.toggleLoginInfoModal)
 
     const infoModal = useStore((state) => state.infoModal)
     const setInfoModal = useStore((state) => state.setInfoModal)
@@ -220,6 +231,8 @@ export default function RaceGameLandingPage() {
     const [createCustomGame, setCreateCustomGame] = useState(false)
     const [joinCustomGame, setJoinCustomGame] = useState(false)
 
+    const [showServers, setShowServers] = useState(false)
+
     return (
 
         <div className="race-game-landing-page">
@@ -229,6 +242,10 @@ export default function RaceGameLandingPage() {
                     show={infoModal}
                     setShow={setInfoModal}
                 />
+            }
+
+            {loginInfoModal &&
+                <LoginInfoModal/>
             }
 
             {showSettingsModal &&
@@ -256,7 +273,7 @@ export default function RaceGameLandingPage() {
                 />
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">                
+            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
 
                 {(
                     !characterEdit
@@ -271,7 +288,7 @@ export default function RaceGameLandingPage() {
 
                             <div className='flex-shrink-0 me-2'>
 
-                                <div style={{ width: '50px', height: '50px' }} >
+                                <div style={{ width: '75px', height: '75px' }} >
                                     <div
                                         className="ratio ratio-1x1 mb-1"
 
@@ -300,40 +317,74 @@ export default function RaceGameLandingPage() {
 
                             <div className='lh-sm'>
 
-                                {/* <SingleInput
-                                    value={nickname}
-                                    setValue={setNickname}
-                                    item_key="Nickname"
-                                    label="Nickname"
-                                    noMargin
-                                /> */}
-                                <input
-                                    autoComplete='off'
-                                    // id={item_key}
-                                    type="text"
-                                    className=''
-                                    // autoFocus={autoFocus && true}
-                                    // onBlur={onBlur}
-                                    // placeholder={placeholder}
-                                    value={nickname}
-                                    // onKeyDown={onKeyDown}
-                                    onChange={(e) => {
-                                        setNickname(e.target.value)
-                                    }}
-                                />
-
-                                {/* <div className="form-group articles">
-                                    <label htmlFor="nickname">Nickname</label>
+                                <div className='spacer-wrapper' style={{ height: '75px' }}>
+                                    {/* <SingleInput
+                                        value={nickname}
+                                        setValue={setNickname}
+                                        item_key="Nickname"
+                                        label="Nickname"
+                                        noMargin
+                                    /> */}
                                     <input
-                                        {...register("nickname", { required: true })}
-                                        id="nickname"
-                                        placeholder=''
-                                        maxlength="15"
-                                        className="form-control with-label"
+                                        autoComplete='off'
+                                        // id={item_key}
+                                        type="text"
+                                        className=''
+                                        // autoFocus={autoFocus && true}
+                                        // onBlur={onBlur}
+                                        // placeholder={placeholder}
+                                        value={nickname}
+                                        // onKeyDown={onKeyDown}
+                                        onChange={(e) => {
+                                            setNickname(e.target.value)
+                                        }}
                                     />
-                                </div> */}
 
-                                <div className='mt-1' style={{ fontSize: '0.8rem' }}>Visible to all players</div>
+                                    {/* <div className="form-group articles">
+                                        <label htmlFor="nickname">Nickname</label>
+                                        <input
+                                            {...register("nickname", { required: true })}
+                                            id="nickname"
+                                            placeholder=''
+                                            maxlength="15"
+                                            className="form-control with-label"
+                                        />
+                                    </div> */}
+
+                                    <div className='mt-1' style={{ fontSize: '0.8rem' }}>Visible to all players</div>
+                                </div>
+
+                                <div className='w-100 d-flex'>
+
+                                    <ArticlesButton
+                                        className={`w-100`}
+                                        small
+                                        onClick={() => {
+                                            !userDetails?.user_id ?
+                                                window.location.href = process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS + '/login?redirect=' + window.location.href
+                                                :
+                                                fetch('/api/logout', { method: 'POST' }).then(() => {
+                                                    userTokenMutate()
+                                                    userDetailsMutate()
+                                                })
+                                        }}
+                                    >
+                                        {!userDetails?.user_id ? 'Log In' : 'Log Out'}
+                                    </ArticlesButton>
+
+                                    <ArticlesButton
+                                        className={``}
+                                        small
+                                        onClick={() => {                                            
+                                            toggleLoginInfoModal()
+                                        }}
+                                    >
+                                        <i className={`fad fa-info-circle`}></i>
+                                    </ArticlesButton>
+
+                                </div>
+
+
 
                             </div>
 
@@ -341,23 +392,7 @@ export default function RaceGameLandingPage() {
 
                         <div className="card-body p-2">
 
-                            <ArticlesButton
-                                className={`w-100 mb-2`}
-                                small
-                                onClick={() => {
-                                    !userDetails?.user_id ?
-                                        window.location.href = process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS + '/login?redirect=' + window.location.href
-                                        :
-                                        fetch('/api/logout', { method: 'POST' }).then(() => {
-                                            userTokenMutate()
-                                            userDetailsMutate()
-                                        })
-                                }}
-                            >
-                                {!userDetails?.user_id ? 'Log In' : 'Log Out'}
-                            </ArticlesButton>
-
-                            <ArticlesButton
+                            {/* <ArticlesButton
                                 className={`w-100 mb-2`}
                                 small
                                 onClick={() => {
@@ -369,95 +404,163 @@ export default function RaceGameLandingPage() {
                                 }}
                             >
                                 {connected ? 'Disconnect' : 'Connect'}
-                            </ArticlesButton>
+                            </ArticlesButton> */}
 
-                            <Link href="/play?server_id=&server_type=room-play">
-                                <ArticlesButton
-                                    className={`w-100 mb-2`}
-                                    small
-                                    onClick={() => {
-                                        
-                                    }}
-                                >
-                                    <i className='fad fa-users'></i>
-                                    Room Play
-                                </ArticlesButton>
-                            </Link>
+                            <OverlayTrigger placement="right"
+                                overlay={
+                                    <Popover id="popover-basic">
+                                        <Popover.Header as="h3">Room Play</Popover.Header>
+                                        <Popover.Body>
+                                            No login required. Similar to Jackbox Games, one player creates a room and shares the code with friends to join. Game will take place on the hosts screen and others play on their devices.
+                                        </Popover.Body>
+                                    </Popover>
+                                }
+                            >
+                                <Link href="/play?server_id=&server_type=room-play">
+                                    <ArticlesButton
+                                        className={`w-100 mb-2`}
+                                        small
+                                        onClick={() => {
 
-                            <div className="fw-bold mb-1 small text-center">
-                                {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
-                            </div>
+                                        }}
+                                    >
+                                        <i className='fad fa-house'></i>
+                                        Room Play
+                                    </ArticlesButton>
+                                </Link>
+                            </OverlayTrigger>
 
-                            <PeerLogic />
+                            <OverlayTrigger placement="right"
+                                overlay={
+                                    <Popover id="popover-basic">
+                                        <Popover.Header as="h3">Peer Multiplayer</Popover.Header>
+                                        <Popover.Body>
+                                            No login required. Connect directly to other players using Peer-to-Peer technology.
+                                        </Popover.Body>
+                                    </Popover>
+                                }
+                            >
+                                <Link href="/play?server_id=&server_type=online-peer">
+                                    <ArticlesButton
+                                        className={`w-100 mb-2`}
+                                        small
+                                        onClick={() => {
 
-                            <div className="servers mb-2">
+                                        }}
+                                    >
+                                        <i className='fad fa-link'></i>
+                                        Peer Multiplayer
+                                    </ArticlesButton>
+                                </Link>
+                            </OverlayTrigger>
 
-                                {[1, 2, 3, 4].map(id => {
+                            <OverlayTrigger placement="right"
+                                overlay={
+                                    <Popover id="popover-basic">
+                                        <Popover.Header as="h3">Socket Multiplayer</Popover.Header>
+                                        <Popover.Body>
+                                            Login required. Game takes place on a dedicated server. Join public lobbies and save stats.
+                                        </Popover.Body>
+                                    </Popover>
+                                }
+                            >
+                                <div>
+                                    <ArticlesButton
+                                        className={`w-100 mb-2`}
+                                        small
+                                        disabled
+                                        onClick={() => {
+                                            setShowServers(!showServers)
+                                        }}
+                                    >
+                                        <i className='fad fa-users'></i>
+                                        Socket Multiplayer
+                                        <span className='badge bg-secondary ms-2'>December</span>
+                                    </ArticlesButton>
+                                </div>
+                            </OverlayTrigger>
 
-                                    let lobbyLookup = lobbyDetails?.raceGameGlobalState?.games?.find(lobby =>
-                                        parseInt(lobby.server_id) == id
-                                    )
+                            {/* <PeerLogic /> */}
 
-                                    return (
-                                        <div key={id} className="server">
+                            {showServers &&
+                                <div>
 
-                                            <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
-                                                <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
-                                                <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
-                                            </div>
+                                    <div className="fw-bold mb-1 small text-center">
+                                        {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
+                                    </div>
 
-                                            <div className='d-flex justify-content-around w-100 mb-1'>
-                                                {[1, 2, 3, 4].map(player_count => {
+                                    <div className="servers mb-2">
 
-                                                    let playerLookup = false
+                                        {[1, 2, 3, 4].map(id => {
 
-                                                    if (lobbyLookup?.players?.length >= player_count) playerLookup = true
+                                            let lobbyLookup = lobbyDetails?.raceGameGlobalState?.games?.find(lobby =>
+                                                parseInt(lobby.server_id) == id
+                                            )
 
-                                                    return (
-                                                        <div
-                                                            key={player_count}
-                                                            className="icon"
-                                                            style={{
-                                                                width: '20px',
-                                                                height: '20px',
-                                                                ...(playerLookup ? {
-                                                                    backgroundColor: 'black',
-                                                                } : {
-                                                                    backgroundColor: 'gray',
-                                                                }),
-                                                                border: '1px solid black'
-                                                            }}
+                                            return (
+                                                <div key={id} className="server">
+
+                                                    <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
+                                                        <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
+                                                        <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
+                                                    </div>
+
+                                                    <div className='d-flex justify-content-around w-100 mb-1'>
+                                                        {[1, 2, 3, 4].map(player_count => {
+
+                                                            let playerLookup = false
+
+                                                            if (lobbyLookup?.players?.length >= player_count) playerLookup = true
+
+                                                            return (
+                                                                <div
+                                                                    key={player_count}
+                                                                    className="icon"
+                                                                    style={{
+                                                                        width: '20px',
+                                                                        height: '20px',
+                                                                        ...(playerLookup ? {
+                                                                            backgroundColor: 'black',
+                                                                        } : {
+                                                                            backgroundColor: 'gray',
+                                                                        }),
+                                                                        border: '1px solid black'
+                                                                    }}
+                                                                >
+
+                                                                </div>
+                                                            )
+
+                                                        })}
+                                                    </div>
+
+                                                    <Link
+                                                        className={``}
+                                                        href={{
+                                                            pathname: `/play`,
+                                                            query: {
+                                                                server_id: id,
+                                                                server_type: 'online-socket',
+                                                            }
+                                                        }}
+                                                    >
+                                                        <ArticlesButton
+                                                            small
+                                                            className="px-5"
                                                         >
+                                                            Join
+                                                        </ArticlesButton>
+                                                    </Link>
 
-                                                        </div>
-                                                    )
+                                                </div>
+                                            )
 
-                                                })}
-                                            </div>
+                                        })}
 
-                                            <Link
-                                                className={``}
-                                                href={{
-                                                    pathname: `/play`,
-                                                    query: {
-                                                        server_id: id,
-                                                    }
-                                                }}
-                                            >
-                                                <ArticlesButton
-                                                    small
-                                                    className="px-5"
-                                                >
-                                                    Join
-                                                </ArticlesButton>
-                                            </Link>
+                                    </div>
 
-                                        </div>
-                                    )
-
-                                })}
-
-                            </div>
+                                </div>
+                            }
 
                             <IsDev>
                                 <div className='d-flex flex-column align-items-center py-3'>

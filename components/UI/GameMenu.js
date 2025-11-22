@@ -34,9 +34,9 @@ function GameMenu({
     // const pathname = usePathname()
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const { 
-        server_id, 
-        server_type 
+    const {
+        server_id,
+        server_type
     } = searchParamsObject
 
     const showMenu = useStore((state) => state?.showMenu);
@@ -64,6 +64,8 @@ function GameMenu({
     const isHost = useGameStore((state) => state.isHost);
 
     const [peerId, setPeerId] = useState(false);
+
+    const shareLink = `/play?server_id=${peerId}&server_type=${server_type || 'error'}`
 
     // const peerRef = usePeerConnection((state) => state?.peerRef);
     // const connections = usePeerConnection((state) => state?.connections);
@@ -210,7 +212,7 @@ function GameMenu({
                         <PeerLogic />
                     </div>
 
-                    <div className='bg-dark text-white p-1 mb-2'>
+                    <div className='border p-1 mb-2'>
 
                         {/* <ArticlesButton
                             className={`w-100 mb-2`}
@@ -283,26 +285,60 @@ function GameMenu({
                             Disconnect
                         </ArticlesButton>} */}
 
-                        <div>{peerId}</div>
+                        {/* <div>{peerId}</div> */}
 
-                        <a
-                            href={`/play?server_id=${peerId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <div>
-                                {window.location.hostname}
-                            </div>
-                        </a>
+                        <div className='d-flex'>
+                            {/* <a
+                                href={shareLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className='w-50'
+                            > */}
+                            {/* {window.location.hostname} */}
+                            <ArticlesButton
+                                small
+                                className="w-50 mb-2"
+                                // disabled={}
+                                onClick={() => {
+                                    navigator.clipboard.writeText(`${window.location.host}${shareLink}`);
+                                }}
+                            >
+                                <i className="fad fa-clipboard"></i>
+                                Share Link
+                            </ArticlesButton>
+                            {/* </a> */}
 
-                        {peerId &&
-                            <QRCodeCanvas
-                                value={`${window.location.hostname}/play?server_id=${peerId}`}
-                                className=''
+                            <a
+                                href={shareLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className='w-50'
+                            >
+                                {/* {window.location.hostname} */}
+                                <ArticlesButton
+                                    small
+                                    className="w-100 mb-2"
+                                    // disabled={}
+                                    onClick={() => {
 
-                                size={150}
-                            />
-                        }
+                                    }}
+                                >
+                                    <i className="fad fa-link"></i>
+                                    Dev
+                                </ArticlesButton>
+                            </a>
+                        </div>
+
+                        <div className='d-flex justify-content-center mb-1'>
+                            {peerId &&
+                                <QRCodeCanvas
+                                    value={`${window.location.host}${shareLink}`}
+                                    className=''
+
+                                    size={150}
+                                />
+                            }
+                        </div>
 
                     </div>
 
@@ -322,7 +358,7 @@ function GameMenu({
                             if (server_type == 'room-play') {
 
                                 if (isHost) {
-                                    
+
                                     startGame()
                                     broadcastGameState()
 

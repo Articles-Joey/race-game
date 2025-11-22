@@ -3,11 +3,15 @@ import { useState } from "react";
 import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
+import { useStore } from "../hooks/useStore";
 
-export default function CreditsModal({
-    show,
-    setShow,
+export default function LoginInfoModal({
+    // show,
+    // setShow,
 }) {
+
+    const loginInfoModal = useStore((state) => state.loginInfoModal)
+    const toggleLoginInfoModal = useStore((state) => state.toggleLoginInfoModal)
 
     const [showModal, setShowModal] = useState(true)
 
@@ -21,28 +25,20 @@ export default function CreditsModal({
                 centered
                 scrollable
                 onExited={() => {
-                    setShow(false)
+                    setShowModal(false)
                 }}
                 onHide={() => {
-                    setShowModal(false)
+                    toggleLoginInfoModal(false)
                 }}
             >
 
                 <Modal.Header closeButton>
-                    <Modal.Title>Race Game Credits</Modal.Title>
+                    <Modal.Title>Login Details</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body className="flex-column p-3">
 
-                    {/* <div></div> */}
-
-                    <div>Developed by: ArticlesJoey </div>
-                    <div>Published by: Articles Media </div>
-
-                    <div className="mb-3"></div>
-
-                    <div>Attributions</div>
-                    <a href="https://github.com/Articles-Joey/race-game/blob/main/README.md" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                    {`...`}
 
                 </Modal.Body>
 
@@ -51,7 +47,7 @@ export default function CreditsModal({
                     <div></div>
 
                     <ArticlesButton variant="outline-dark" onClick={() => {
-                        setShow(false)
+                        setShowModal(false)
                     }}>
                         Close
                     </ArticlesButton>
