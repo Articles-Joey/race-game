@@ -10,6 +10,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Line, Plane } from '@react-three/drei';
 import { DoubleSide, Vector3 } from 'three';
 import { Star } from './Star';
+import useGameStore from '../hooks/useGameStore';
 
 const SquareWithLines = (props) => {
     const squareSize = 2;
@@ -203,6 +204,8 @@ function GameGrid(props) {
 
     const [hoveredList, setHoveredList] = useState([])
 
+    const boardLength = useGameStore((state) => state.gameState.boardLength);
+
     useEffect(() => {
         
         if (hoveredList.length > 0) {
@@ -219,12 +222,12 @@ function GameGrid(props) {
 
         let starCol = []
 
-        for (var j = 1; j < 16; j++) {
+        for (var j = 1; j < boardLength + 1; j++) {
 
             // j is the column
             // i is the row
 
-            let edgeTile = (j == 1 || j == 15)
+            let edgeTile = (j == 1 || j == boardLength)
 
             let hasMysteryLookup = (
                 mystery_spots?.find((player) => (player.row === i + 1 && player.x === j - 1))
@@ -257,7 +260,7 @@ function GameGrid(props) {
 
             starCol[j - 1] = (
                 <Box
-                    key={j - 1}
+                    key={`box-${i}-${j}`}
                     box_index={j - 1}
                     color={
                         (edgeTile) ? 'rgb(160, 120, 73)' : (clickable ? 'rgb(19, 197, 197)' : ((hasMysteryLookup && !usedMysteryLookup) ? 'rgb(255, 193, 7)' : ''))

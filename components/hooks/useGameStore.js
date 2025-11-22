@@ -441,6 +441,20 @@ const useGameStore = create((set, get) => ({
 
     },
 
+    setBoardLength: (size) => {
+        const { broadcastGameState } = get();
+
+        set((state) => ({
+            gameState: {
+                ...state.gameState,
+                boardLength: size,
+            }
+        }));
+
+        broadcastGameState();
+
+    },
+
     restartGame: () => {
         const { timerInterval, broadcastGameState } = get();
         if (timerInterval) clearInterval(timerInterval);

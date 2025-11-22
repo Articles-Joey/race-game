@@ -21,12 +21,21 @@ Two types of multiplayer networking for this game
 - Websocket Server via socket.io 
 - WebRTC via peerjs
 
+Game Server Types
+
+- **Room Play** - Non-player Peer host with single shared screen for players.  
+- **Peer Multiplayer** - Player Peer host, all players render their own game.
+- **Socket Multiplayer** - Server hosted games, enables anti cheat, saved stats, rewards, server browser.  
+
 When joining games a server_type is set that handles the different logic needed
 
 ## Roadmap
 
 - Dynamic lane logic for any combination of player count and move count
-- Finish socket multiplayer option
+- Finish socket multiplayer logic
+- Finish game chat
+- AMCOT MMO Intergration - Mini-game logic
+- ToonTown Mode - Reskins game to be ToonTown graphics
 
 ## Inspiration
 

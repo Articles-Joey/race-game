@@ -268,7 +268,8 @@ export default function RaceGameLandingPage() {
                     fill
                     alt=""
                     style={{
-                        objectFit: 'cover'
+                        objectFit: 'cover',
+                        filter: 'blur(3px)',
                     }}
                 />
             </div>
@@ -475,7 +476,7 @@ export default function RaceGameLandingPage() {
                                     >
                                         <i className='fad fa-users'></i>
                                         Socket Multiplayer
-                                        <span className='badge bg-secondary ms-2'>December</span>
+                                        <span className='badge bg-secondary ms-2'>Offline</span>
                                     </ArticlesButton>
                                 </div>
                             </OverlayTrigger>

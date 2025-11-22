@@ -12,12 +12,13 @@ import IsDev from '@/components/UI/IsDev';
 import { useStore } from '../hooks/useStore';
 import { useSearchParams } from 'next/navigation';
 import usePeerConnection from '../hooks/usePeerConnection';
-import { memo, useEffect, useState } from 'react';
+import { memo, Suspense, useEffect, useState } from 'react';
 import { connect } from 'socket.io-client';
 import PeerLogic from '../PeerLogic';
 import useGameStore from '../hooks/useGameStore';
 import useFullscreen from '../hooks/useFullScreen';
 import useCameraStore from '../hooks/useCameraStore';
+import GameChat from './GameChat';
 
 function GameMenu({
     // isFullscreen,
@@ -209,7 +210,7 @@ function GameMenu({
                     </div>
 
                     <div className='p-1 mb-2'>
-                        <PeerLogic />
+                        <Suspense><PeerLogic /></Suspense>
                     </div>
 
                     <div className='border p-1 mb-2'>
@@ -645,6 +646,8 @@ function GameMenu({
                 </div>
 
             </div>
+
+            <GameChat />
 
             {devDebug &&
                 <>

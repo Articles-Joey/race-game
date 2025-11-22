@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware'
 
 export const useStore = create()(
   persist(
-    (set, get) => ({
+    (set, get, store) => ({
 
       darkMode: true,
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
@@ -53,6 +53,13 @@ export const useStore = create()(
 
       kicked: null,
       setKicked: (reason) => set({ kicked: reason }),
+
+      socketServerHost: process.env.NEXT_PUBLIC_NODE_SERVER,
+      setSocketServerHost: (host) => set({ socketServerHost: host }),
+
+      reset: () => {
+        set(store.getInitialState())
+      },
 
     }),
     {

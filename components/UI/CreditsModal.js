@@ -41,8 +41,18 @@ export default function CreditsModal({
 
                     <div className="mb-3"></div>
 
-                    <div>Attributions</div>
-                    <a href="https://github.com/Articles-Joey/race-game/blob/main/README.md" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                    <div>Attributions:</div>
+                    <a
+                        href="https://github.com/Articles-Joey/race-game/blob/main/README.md"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {/* View on GitHub */}
+                        <ArticlesButton>
+                            <i className="fab fa-github"></i>
+                            View on GitHub
+                        </ArticlesButton>
+                    </a>
 
                 </Modal.Body>
 

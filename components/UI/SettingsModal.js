@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
+import { useStore } from "../hooks/useStore";
 
 export default function SettingsModal({
     show,
@@ -14,6 +15,10 @@ export default function SettingsModal({
     const [lightboxData, setLightboxData] = useState(null)
 
     const [tab, setTab] = useState('Controls')
+
+    const socketServerHost = useStore((state) => state.socketServerHost);
+    const setSocketServerHost = useStore((state) => state.setSocketServerHost);
+    const reset = useStore((state) => state.reset);
 
     return (
         <>
@@ -54,7 +59,8 @@ export default function SettingsModal({
                         {[
                             'Controls',
                             'Audio',
-                            'Chat'
+                            'Multiplayer'
+                            // 'Chat'
                         ].map(item =>
                             <ArticlesButton
                                 key={item}
@@ -122,6 +128,17 @@ export default function SettingsModal({
                                 <Form.Range />
                             </>
                         }
+                        {tab == 'Multiplayer' &&
+                            <div className="p-2">
+                                <Form.Label className="mb-0">Socket Server Host</Form.Label>
+                                <Form.Control 
+                                    type="text"
+                                    value={socketServerHost}
+                                    onChange={(e) => setSocketServerHost(e.target.value)}
+                                />
+                                <Form.Label className="mb-0">Edit this to connect to a different multiplayer host!</Form.Label>
+                            </div>
+                        }
                         {tab == 'Chat' &&
                             <>
                                 <Form.Check
@@ -164,7 +181,8 @@ export default function SettingsModal({
                         <ArticlesButton
                             variant="outline-danger ms-3"
                             onClick={() => {
-                                setShow(false)
+                                reset()
+                                // setShow(false)
                             }}
                         >
                             Reset

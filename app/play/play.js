@@ -547,7 +547,9 @@ export default function RaceGame() {
                         {
                             showRoomPlayMoveButtons ?
                                 <>
-                                    <RoomPlayMoveButtons />
+                                    <RoomPlayMoveButtons
+                                        move={move}
+                                    />
                                 </>
                                 :
                                 <>
@@ -572,7 +574,7 @@ export default function RaceGame() {
                                     }
 
                                     {(renderMode == "2D" || renderMode == "Both") &&
-                                        <GameCanvasFlat />
+                                        <Suspense><GameCanvasFlat /></Suspense>
                                     }
                                 </>
                         }
@@ -622,7 +624,9 @@ export default function RaceGame() {
 
                             {/* Never show if room play client */}
                             {!showRoomPlayMoveButtons &&
-                                <MoveButtons />
+                                <MoveButtons
+                                    move={move}
+                                />
                             }
 
                         </div>
@@ -636,7 +640,9 @@ export default function RaceGame() {
     );
 }
 
-function MoveButtons() {
+function MoveButtons({
+    move
+}) {
 
     const {
         socket,
@@ -727,10 +733,14 @@ function MoveButtons() {
     )
 }
 
-function RoomPlayMoveButtons() {
+function RoomPlayMoveButtons({
+    move
+}) {
     return (
         <div className={`room-play-move-buttons`}>
-            <MoveButtons />
+            <MoveButtons
+                move={move}
+            />
         </div>
     )
 }

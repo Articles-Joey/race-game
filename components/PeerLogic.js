@@ -32,6 +32,8 @@ const PeerLogic = () => {
     const removeConnection = useGameStore((state) => state.removeConnection);
     const isKicked = useGameStore((state) => state.isKicked);
 
+    const setBoardLength = useGameStore((state) => state.setBoardLength);
+
     const roomPlayClientRender = useGameStore((state) => state.gameState.roomPlayClientRender);
     const toggleRoomPlayClientRender = useGameStore((state) => state.toggleRoomPlayClientRender);
 
@@ -154,9 +156,31 @@ const PeerLogic = () => {
             )}
 
             {isHost && (
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    {roomPlayClientRender ? 'True' : 'False'}
-                    <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
+                <div>
+
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        {roomPlayClientRender ? 'True' : 'False'}
+                        <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <button
+                            onClick={() => {
+                                setBoardLength(gameState?.boardLength - 1);
+                            }}
+                            style={{ padding: '5px 10px' }}>
+                            -
+                        </button>
+                        {gameState?.boardLength}
+                        <button
+                            onClick={() => {
+                                setBoardLength(gameState?.boardLength + 1);
+                            }}
+                            style={{ padding: '5px 10px' }}>
+                            +
+                        </button>
+                    </div>
+
                 </div>
             )}
 

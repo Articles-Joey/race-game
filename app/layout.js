@@ -14,6 +14,7 @@ import SocketLogicHandler from "@/components/SocketLogicHandler";
 import AudioHandler from '@/components/AudioHandler';
 // import PeerHandlerTest from '@/components/PeerHandlerTest';
 import KickedModal from '@/components/UI/KickedModal';
+import { Suspense } from 'react';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -60,7 +61,7 @@ export default function RootLayout({ children }) {
 
             {children}
 
-            <KickedModal />
+            <Suspense><KickedModal /></Suspense>
 
           </ThemeProvider>
         </AppRouterCacheProvider>
