@@ -34,6 +34,7 @@ When joining games a server_type is set that handles the different logic needed
 - Dynamic lane logic for any combination of player count and move count
 - Finish socket multiplayer logic
 - Finish game chat
+- Arcade Mode
 - AMCOT MMO Intergration - Mini-game logic
 - ToonTown Mode - Reskins game to be ToonTown graphics
 

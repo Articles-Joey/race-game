@@ -38,9 +38,15 @@ export const useStore = create()(
 
       audioSettings: {
         enabled: false,
-        volume: 0.25
+        // Stored as number from 0 to 100 and converted to 0 to 1 in AudioHandler
+        game_volume: 50,
+        music_volume: 50,
       },
       setAudioSettings: (settings) => set({ audioSettings: settings }),
+
+      // Automates end of game and starting new ones for hands off arcade fun
+      arcadeMode: false,
+      setArcadeMode: (arcadeMode) => set({ arcadeMode }),
 
       character: {
         model: 'Duck',

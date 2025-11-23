@@ -34,6 +34,7 @@ export default function WinnerModal() {
                                             broadcastToClients({ event: 'ReturnToLobby' });
 
                                             // TODO - Then return self to lobby
+                                            window.location.href = '/';
                                         }}
                                     >
                                         Close Lobby

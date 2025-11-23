@@ -53,15 +53,15 @@ const InviteModal = dynamic(
     { ssr: false }
 )
 
-const InfoModal = dynamic(
-    () => import('@/components/UI/InfoModal'),
-    { ssr: false }
-)
+// const InfoModal = dynamic(
+//     () => import('@/components/UI/InfoModal'),
+//     { ssr: false }
+// )
 
-const SettingsModal = dynamic(
-    () => import('@/components/UI/SettingsModal'),
-    { ssr: false }
-)
+// const SettingsModal = dynamic(
+//     () => import('@/components/UI/SettingsModal'),
+//     { ssr: false }
+// )
 
 const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
     ssr: false,
@@ -93,8 +93,8 @@ export default function RaceGame() {
     // const { server } = router.query
 
     const [showInviteModal, setShowInviteModal] = useState(false)
-    const [showInfoModal, setShowInfoModal] = useState(false)
-    const [showSettingsModal, setShowSettingsModal] = useState(false)
+    // const [showInfoModal, setShowInfoModal] = useState(false)
+    // const [showSettingsModal, setShowSettingsModal] = useState(false)
     const [activeMysterySpot, setActiveMysterySpot] = useState(false)
 
     const showMenu = useStore((state) => state?.showMenu);
@@ -128,7 +128,9 @@ export default function RaceGame() {
 
     const isHost = useGameStore((state) => state.isHost);
     const gameState = useGameStore((state) => state?.gameState);
+    const setGameState = useGameStore((state) => state?.setGameState);
     const players = useGameStore((state) => state?.gameState?.players);
+    const createBot = useGameStore((state) => state?.createBot);
 
     const myId = useGameStore((state) => state?.myId);
     const sendToHost = useGameStore((state) => state?.sendToHost);
@@ -174,10 +176,20 @@ export default function RaceGame() {
 
     function addBot() {
 
-        socket.emit('game:race-game:add-bot', {
-            server: server_id,
-            settings: {}
-        });
+        if (
+            server_type == "room-play"
+            ||
+            server_type == "online-peer"
+        ) {
+            createBot()
+        }
+
+        if (server_type == "online-socket") {
+            socket.emit('game:race-game:add-bot', {
+                server: server_id,
+                settings: {}
+            });
+        }
 
         // generateMysterySpots()
 
@@ -192,7 +204,11 @@ export default function RaceGame() {
 
     function move(spaces) {
 
-        if (server_type == "room-play") {
+        if (
+            server_type == "room-play"
+            ||
+            (server_type == "online-peer" && isHost === false)
+        ) {
 
             sendToHost({
                 event: 'PlayerMove',
@@ -201,9 +217,42 @@ export default function RaceGame() {
 
         }
 
-        if (server_type == "online-peer") {
+        // Online peer host handles their moves directly
+        if (
+            server_type == "online-peer"
+            &&
+            isHost === true
+        ) {
 
+            console.log("online-peer PlayerMove data received", spaces);
 
+            let tempPlayers = gameState.players;
+
+            const newPlayers = tempPlayers.map(player => {
+                if (player.peer === myId) {
+                    return {
+                        ...player,
+                        spaces: spaces,
+                        race_game: {
+                            ...player.race_game,
+                            spaces: spaces
+                        }
+                    };
+                }
+                return player;
+            });
+
+            setGameState({
+                ...gameState,
+                players: newPlayers
+            })
+
+            // set({
+            //     gameState: {
+            //         ...gameState,
+            //         players: newPlayers
+            //     }
+            // });
 
         }
 
@@ -261,19 +310,19 @@ export default function RaceGame() {
                         />
                     }
 
-                    {showInfoModal &&
+                    {/* {showInfoModal &&
                         <InfoModal
                             show={showInfoModal}
                             setShow={setShowInfoModal}
                         />
-                    }
+                    } */}
 
-                    {showSettingsModal &&
+                    {/* {showSettingsModal &&
                         <SettingsModal
                             show={showSettingsModal}
                             setShow={setShowSettingsModal}
                         />
-                    }
+                    } */}
 
                     {(activeMysterySpot?.timer >= 0) &&
                         <ArticlesModal
@@ -675,7 +724,7 @@ function MoveButtons({
                 <div className={classNames(
                     `buttons`,
                     {
-                        'd-none': isHost
+                        'd-none': isHost && server_type == "room-play",
                     }
                 )}>
 
@@ -698,6 +747,10 @@ function MoveButtons({
                             // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
                             active = players.find(player => player.peer == myId)?.spaces == space
                             // active = true
+                        }
+
+                        if (server_type == "online-peer") {
+                            active = players.find(player => player.peer == myId)?.spaces == space
                         }
 
                         if (server_type == "online-socket") {

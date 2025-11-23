@@ -4,6 +4,7 @@ import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "../hooks/useStore";
+import useChatStore from "../hooks/useChatStore";
 
 export default function SettingsModal({
     show,
@@ -19,6 +20,15 @@ export default function SettingsModal({
     const socketServerHost = useStore((state) => state.socketServerHost);
     const setSocketServerHost = useStore((state) => state.setSocketServerHost);
     const reset = useStore((state) => state.reset);
+
+    const enabled = useChatStore((state) => state.enabled);
+    const speechBubblesEnabled = useChatStore((state) => state.speechBubblesEnabled);
+
+    const audioSettings = useStore((state) => state.audioSettings);
+    const setAudioSettings = useStore((state) => state.setAudioSettings);
+
+    const arcadeMode = useStore((state) => state.arcadeMode);
+    const setArcadeMode = useStore((state) => state.setArcadeMode);
 
     return (
         <>
@@ -59,8 +69,9 @@ export default function SettingsModal({
                         {[
                             'Controls',
                             'Audio',
-                            'Multiplayer'
-                            // 'Chat'
+                            'Multiplayer',
+                            'Chat',
+                            'Other',
                         ].map(item =>
                             <ArticlesButton
                                 key={item}
@@ -75,6 +86,7 @@ export default function SettingsModal({
                     <hr className="my-0" />
 
                     <div className="p-2">
+
                         {tab == 'Controls' &&
                             <div>
                                 {[
@@ -107,7 +119,7 @@ export default function SettingsModal({
 
                                                 <div className="badge badge-hover bg-articles me-1">{obj.defaultKeyboardKey}</div>
 
-                                                <ArticlesButton 
+                                                <ArticlesButton
                                                     className=""
                                                     small
                                                 >
@@ -123,41 +135,100 @@ export default function SettingsModal({
                         {tab == 'Audio' &&
                             <>
                                 <Form.Label className="mb-0">Game Volume</Form.Label>
-                                <Form.Range />
+                                <Form.Range 
+                                    value={audioSettings?.game_volume}
+                                    onChange={(value) => {
+                                        console.log("Value", value)
+                                        setAudioSettings({
+                                            ...audioSettings,
+                                            game_volume: value.target.value
+                                        });
+                                    }}
+                                />
+
                                 <Form.Label className="mb-0">Music Volume</Form.Label>
-                                <Form.Range />
+                                <Form.Range 
+                                    value={audioSettings?.music_volume}
+                                    onChange={(value) => {
+                                        console.log("Value", value)
+                                        setAudioSettings({
+                                            ...audioSettings,
+                                            music_volume: value.target.value
+                                        });
+                                    }}
+                                />
                             </>
                         }
                         {tab == 'Multiplayer' &&
                             <div className="p-2">
+
                                 <Form.Label className="mb-0">Socket Server Host</Form.Label>
-                                <Form.Control 
+                                <Form.Control
                                     type="text"
                                     value={socketServerHost}
                                     onChange={(e) => setSocketServerHost(e.target.value)}
                                 />
                                 <Form.Label className="mb-0">Edit this to connect to a different multiplayer host!</Form.Label>
+
+                                <div className="mt-3">
+                                    <ArticlesButton
+                                        className="mb-1"
+                                    >
+                                        Retry
+                                    </ArticlesButton>
+                                    <div>Status: <span className="badge bg-danger">Offline</span></div>
+                                </div>
+
                             </div>
                         }
                         {tab == 'Chat' &&
-                            <>
+                            <div className="mx-4">
                                 <Form.Check
                                     type="switch"
-                                    id="custom-switch"
+                                    id="chat-enabled-switch"
                                     label="Game chat panel"
+                                    // value={enabled}
+                                    checked={enabled}
+                                    onChange={() => {
+                                        console.log("TEST")
+                                        useChatStore.setState({ enabled: !enabled });
+                                    }}
                                 />
-                                <Form.Check
+                                {/* <Form.Check
                                     type="switch"
                                     id="custom-switch"
                                     label="Censor chat"
-                                />
+                                /> */}
                                 <Form.Check
                                     type="switch"
-                                    id="custom-switch"
+                                    id="chat-speech-bubbles-switch"
                                     label="Game chat speech bubbles"
+                                    checked={speechBubblesEnabled}                                    
+                                    onChange={() => {
+                                        console.log("TEST")
+                                        useChatStore.setState({ speechBubblesEnabled: !speechBubblesEnabled });
+                                    }}
                                 />
-                            </>
+                            </div>
                         }
+                        {tab == 'Other' &&
+                            <div className="mx-4">
+                                <div className="d-flex align-items-center">
+                                    <Form.Check
+                                        type="switch"
+                                        id="arcade-mode-switch"
+                                        label="Arcade Mode"
+                                        // value={enabled}
+                                        checked={arcadeMode}
+                                        onChange={() => {
+                                            setArcadeMode(!arcadeMode);
+                                        }}
+                                    />
+                                </div>
+                                <div className="small mt-2">Arcade Mode automates the end of game and starting new ones for hands off arcade fun.</div>
+                            </div>
+                        }
+
                     </div>
 
                 </Modal.Body>

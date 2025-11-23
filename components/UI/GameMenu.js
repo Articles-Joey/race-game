@@ -54,6 +54,10 @@ function GameMenu({
 
     const devDebug = useStore((state) => state?.devDebug);
 
+    const setInfoModal = useStore((state) => state.setInfoModal)
+
+    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
+
     // const peerId = usePeerConnection((state) => state?.peerId);
 
     // const [players, setPlayers] = useState([]);
@@ -348,11 +352,34 @@ function GameMenu({
                         className="w-100 mb-2"
                         // active={}
                         disabled={
-                            connections.length < 1
+                            // Disable for non-hosts
+                            (
+                                (
+                                    server_type == 'online-peer'
+                                    ||
+                                    server_type == 'room-play'
+                                )
+                                &&
+                                !isHost
+                            )
                             ||
-                            gameState.status == 'In Progress'
-                            &&
-                            isHost
+                            // Disable in progress on hosts
+                            (
+                                (
+                                    server_type == 'online-peer'
+                                    ||
+                                    server_type == 'room-play'
+                                )
+                                &&
+                                gameState?.status == 'In Progress'
+                                &&
+                                isHost
+                            )
+                            ||
+                            (server_type == 'online-socket' && false)
+                            // connections.length < 1
+                            // ||
+
                         }
                         onClick={() => {
 
@@ -368,6 +395,13 @@ function GameMenu({
                             }
 
                             if (server_type == 'online-peer') {
+
+                                if (isHost) {
+
+                                    startGame()
+                                    broadcastGameState()
+
+                                }
 
                             }
 
@@ -423,22 +457,19 @@ function GameMenu({
                             small
                             className="w-50 mb-2"
                             onClick={() => {
-                                setShowInfoModal({
-                                    game: 'Race Game'
-                                })
+                                setInfoModal(true)
                             }}
                         >
-                            <i className="fad fa-info-circle"></i>
-                            Info
+                            {/* <i className="fad fa-info-circle"></i> */}
+                            <i className="fad fa-info-square"></i>
+                            Info & Rules
                         </ArticlesButton>
 
                         <ArticlesButton
                             small
                             className="w-50 mb-2"
                             onClick={() => {
-                                setShowSettingsModal({
-                                    game: 'Race Game'
-                                })
+                                setShowSettingsModal(true)
                             }}
                         >
                             <i className="fad fa-cog"></i>

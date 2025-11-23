@@ -14,6 +14,10 @@ const useChatStore = create((set, get) => ({
     })),
     setMessages: (messages) => set({ messages }),
 
+    speechBubblesEnabled: false,
+    setSpeechBubblesEnabled: (speechBubblesEnabled) => set({ speechBubblesEnabled }),
+    toggleSpeechBubblesEnabled: () => set((state) => ({ speechBubblesEnabled: !state.speechBubblesEnabled })),
+
     enabled: false,
     setEnabled: (enabled) => set({ enabled }),
     toggleEnabled: () => set((state) => ({ enabled: !state.enabled })),

@@ -13,8 +13,9 @@ import SocketLogicHandler from "@/components/SocketLogicHandler";
 // import PeerHandler from '@/components/PeerHandler';
 import AudioHandler from '@/components/AudioHandler';
 // import PeerHandlerTest from '@/components/PeerHandlerTest';
-import KickedModal from '@/components/UI/KickedModal';
+import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import { Suspense } from 'react';
+// import dynamic from 'next/dynamic';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -26,12 +27,19 @@ import { Suspense } from 'react';
 //   subsets: ["latin"],
 // });
 
+// import InfoModal from '@/components/UI/InfoModal';
+// const InfoModal = dynamic(
+//     () => import('@/components/UI/InfoModal'),
+//     { ssr: false }
+// )
+
 export const metadata = {
   title: "Race Game",
   description: "Race to the finish line by strategically picking your moves and outsmarting your opponents.",
 };
 
 export default function RootLayout({ children }) {
+
   return (
     <html lang="en">
 
@@ -53,6 +61,10 @@ export default function RootLayout({ children }) {
         {/* <PeerHandlerTest /> */}
         <AudioHandler />
 
+        <Suspense>
+          <GlobalClientModals />
+        </Suspense>
+
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <ThemeProvider theme={theme}>
 
@@ -60,8 +72,6 @@ export default function RootLayout({ children }) {
             <CssBaseline />
 
             {children}
-
-            <Suspense><KickedModal /></Suspense>
 
           </ThemeProvider>
         </AppRouterCacheProvider>

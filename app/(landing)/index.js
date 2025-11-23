@@ -59,15 +59,12 @@ import { useSocketStore } from '@/components/hooks/useSocketStore';
 import ArticlesAd from '@/components/ArticlesAd';
 import CreditsModal from '@/components/UI/CreditsModal';
 import { Settings } from '@mui/icons-material';
-import SettingsModal from '@/components/UI/SettingsModal';
+
 import { useStore } from '@/components/hooks/useStore';
 // import usePeerConnection from '@/components/hooks/usePeerConnection';
-import PeerLogic from '@/components/PeerLogic';
+// import PeerLogic from '@/components/PeerLogic';
 
-const InfoModal = dynamic(
-    () => import('@/components/UI/InfoModal'),
-    { ssr: false }
-)
+
 
 const LoginInfoModal = dynamic(
     () => import('@/components/UI/LoginInfoModal'),
@@ -100,7 +97,7 @@ export default function RaceGameLandingPage() {
     const setInfoModal = useStore((state) => state.setInfoModal)
     // const toggleInfoModal = useStore((state) => state.toggleInfoModal)
 
-    const showSettingsModal = useStore((state) => state.showSettingsModal)
+    // const showSettingsModal = useStore((state) => state.showSettingsModal)
     const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
     // const toggleSettingsModal = useStore((state) => state.toggleSettingsModal)
 
@@ -237,23 +234,18 @@ export default function RaceGameLandingPage() {
 
         <div className="race-game-landing-page">
 
-            {infoModal &&
+            {/* {infoModal &&
                 <InfoModal
                     show={infoModal}
                     setShow={setInfoModal}
                 />
-            }
+            } */}
 
             {loginInfoModal &&
-                <LoginInfoModal/>
+                <LoginInfoModal />
             }
 
-            {showSettingsModal &&
-                <SettingsModal
-                    show={showSettingsModal}
-                    setShow={setShowSettingsModal}
-                />
-            }
+            
 
             {showCreditsModal &&
                 <CreditsModal
@@ -376,7 +368,7 @@ export default function RaceGameLandingPage() {
                                     <ArticlesButton
                                         className={``}
                                         small
-                                        onClick={() => {                                            
+                                        onClick={() => {
                                             toggleLoginInfoModal()
                                         }}
                                     >
@@ -411,8 +403,15 @@ export default function RaceGameLandingPage() {
                                 overlay={
                                     <Popover id="popover-basic">
                                         <Popover.Header as="h3">Room Play</Popover.Header>
-                                        <Popover.Body>
-                                            No login required. Similar to Jackbox Games, one player creates a room and shares the code with friends to join. Game will take place on the hosts screen and others play on their devices.
+                                        <Popover.Body
+                                            className="py-2"
+                                        >
+                                            <div className="mb-1">
+                                                <span className='badge bg-success'>
+                                                    No login required.
+                                                </span>
+                                            </div>
+                                            Similar to Jackbox Games, one player creates a room and shares the code with friends to join. Game will take place on the hosts screen and others play on their devices.
                                         </Popover.Body>
                                     </Popover>
                                 }
@@ -435,8 +434,15 @@ export default function RaceGameLandingPage() {
                                 overlay={
                                     <Popover id="popover-basic">
                                         <Popover.Header as="h3">Peer Multiplayer</Popover.Header>
-                                        <Popover.Body>
-                                            No login required. Connect directly to other players using Peer-to-Peer technology.
+                                        <Popover.Body
+                                            className="py-2"
+                                        >
+                                            <div className="mb-1">
+                                                <span className='badge bg-success'>
+                                                    No login required.
+                                                </span>
+                                            </div>
+                                            Connect directly to other players using Peer-to-Peer technology.
                                         </Popover.Body>
                                     </Popover>
                                 }
@@ -459,8 +465,15 @@ export default function RaceGameLandingPage() {
                                 overlay={
                                     <Popover id="popover-basic">
                                         <Popover.Header as="h3">Socket Multiplayer</Popover.Header>
-                                        <Popover.Body>
-                                            Login required. Game takes place on a dedicated server. Anti-cheat! Join public lobbies, save stats, collect rewards!
+                                        <Popover.Body
+                                            className="py-2"
+                                        >
+                                            <div className="mb-1">
+                                                <span className='badge bg-warning text-black'>
+                                                    Login required.
+                                                </span>
+                                            </div>
+                                            Game takes place on a dedicated server. Anti-cheat! Join public lobbies, save stats, collect rewards!
                                         </Popover.Body>
                                     </Popover>
                                 }
@@ -619,7 +632,7 @@ export default function RaceGameLandingPage() {
                                 }}
                             >
                                 <i className="fad fa-info-square"></i>
-                                Rules & Controls
+                                Info & Rules
                             </ArticlesButton>
 
                             <a className='w-50' target='_blank' href='https://github.com/Articles-Joey/race-game'>

@@ -12,6 +12,74 @@ function getFirstAvailableRow(players) {
     return row;
 }
 
+// Shared function to minimize code
+function createPlayer(id, players, bot) {
+
+    let firstAvailableRow = getFirstAvailableRow(players);
+
+    let duplicateStructure = {
+        position: 0,
+        nickname: 'Guest',
+        x: 0,
+        row: firstAvailableRow,
+        spaces: 0,
+        model: "Duck",
+        color: "Yellow",
+        bot: bot || false,
+    }
+
+    return {
+        peer: id,
+        ...duplicateStructure,
+        race_game: {
+            ...duplicateStructure
+        }
+    }
+
+}
+
+function setPlayerMove(peerId, spaces) {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const server_type = urlParams.get('server_type');
+
+    if (server_type == 'online-peer') {
+
+    }
+
+    if (server_type == 'room-play') {
+
+    }
+
+    if (server_type == 'online-socket') {
+
+    }
+
+    return;
+
+    // unverified code below
+
+    const tempPlayers = get().gameState.players;
+
+    const newPlayers = tempPlayers.map(player => {
+        if (player.peer === peerId) {
+            return {
+                ...player,
+                spaces: spaces,
+            };
+        }
+        return player;
+    });
+
+    set({
+        gameState: {
+            ...get().gameState,
+            players: newPlayers
+        }
+    });
+
+}
+
 const useGameStore = create((set, get) => ({
     peer: null,
     myId: null,
@@ -30,6 +98,33 @@ const useGameStore = create((set, get) => ({
         movesShown: 0,
         boardLength: 15,
     },
+    setGameState: (newState) => {
+
+        set({
+            gameState: newState
+        });
+
+        get().handleGameTimer();
+
+    },
+    createBot: () => {
+        const botId = `Bot_${Math.floor(Math.random() * 10000)}`;
+
+        let newPlayers = get().gameState.players;
+        newPlayers.push(
+            createPlayer(
+                botId,
+                newPlayers,
+                true
+            ),
+        );
+        set({
+            gameState: {
+                ...get().gameState,
+                players: newPlayers
+            }
+        });
+    },
     kickedIds: [],
     isKicked: false,
 
@@ -43,8 +138,37 @@ const useGameStore = create((set, get) => ({
         const peer = new Peer();
 
         peer.on('open', (id) => {
+
             console.log('Peer opened with ID:', id);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const server_type = urlParams.get('server_type')
+            console.log('server_type:', server_type);
+
             set({ peer, myId: id, isHost });
+
+            if (server_type == 'online-peer') {
+
+                let newPlayers = get().gameState.players
+
+                newPlayers.push(
+                    createPlayer(
+                        id,
+                        newPlayers
+                    ),
+                );
+
+                console.log('New players with injected host for online-peer game!:', newPlayers);
+
+                set({
+                    gameState: {
+                        ...get().gameState,
+                        players: newPlayers
+                    }
+                });
+
+            }
+
         });
 
         peer.on('connection', (conn) => {
@@ -66,25 +190,32 @@ const useGameStore = create((set, get) => ({
 
                 let newPlayers = get().gameState.players
 
-                let firstAvailableRow = getFirstAvailableRow(newPlayers);
+                // let firstAvailableRow = getFirstAvailableRow(newPlayers);
 
-                let duplicateStructure = {
-                    position: 0,
-                    nickname: 'Guest',
-                    x: 0,
-                    row: firstAvailableRow,
-                    spaces: 0,
-                    model: "Duck",
-                    color: "Yellow"
-                }
+                // let duplicateStructure = {
+                //     position: 0,
+                //     nickname: 'Guest',
+                //     x: 0,
+                //     row: firstAvailableRow,
+                //     spaces: 0,
+                //     model: "Duck",
+                //     color: "Yellow"
+                // }
 
-                newPlayers.push({
-                    peer: conn.peer,
-                    ...duplicateStructure,
-                    race_game: {
-                        ...duplicateStructure
-                    }
-                });
+                // newPlayers.push({
+                //     peer: conn.peer,
+                //     ...duplicateStructure,
+                //     race_game: {
+                //         ...duplicateStructure
+                //     }
+                // });
+
+                newPlayers.push(
+                    createPlayer(
+                        conn.peer,
+                        newPlayers
+                    ),
+                );
 
                 set((state) => ({
 
@@ -324,7 +455,13 @@ const useGameStore = create((set, get) => ({
 
                         // If duplicate spaces found, set canMove to false
                         if (spacesCounts[newPlayer.spaces] > 1) {
+
                             newPlayer.canMove = false;
+
+                            newPlayer.spaces = 0;
+                            newPlayerRaceGame.spaces = 0;
+                            newPlayer.race_game = newPlayerRaceGame;
+
                         } else {
                             // If not colliding, ensure canMove is true (resetting previous state)
                             newPlayer.canMove = true;
@@ -380,7 +517,7 @@ const useGameStore = create((set, get) => ({
                 return;
             }
 
-            const allPlayersPicked = gameState.players.length > 0 && gameState.players.every(p => p.spaces !== 0);
+            const allPlayersPicked = gameState.players.length > 0 && gameState.players.every(p => p.bot || p.spaces !== 0);
 
             let newTime = gameState.time - 1;
 
@@ -390,6 +527,29 @@ const useGameStore = create((set, get) => ({
 
             if (newTime < 0) {
                 console.log("Timer hit 0");
+
+                const currentPlayers = get().gameState.players;
+                const playersWithBotMoves = currentPlayers.map((player) => {
+                    if (player.bot) {
+                        const randomSpaces = Math.floor(Math.random() * 4) + 1;
+                        return {
+                            ...player,
+                            spaces: randomSpaces,
+                            race_game: {
+                                ...player.race_game,
+                                spaces: randomSpaces
+                            }
+                        };
+                    }
+                    return player;
+                });
+
+                set((state) => ({
+                    gameState: {
+                        ...state.gameState,
+                        players: playersWithBotMoves
+                    }
+                }));
 
                 set((state) => ({
                     gameState: {
@@ -423,6 +583,7 @@ const useGameStore = create((set, get) => ({
                 time: 10
             }
         });
+
         get().handleGameTimer();
 
     },
