@@ -3,17 +3,40 @@ import dynamic from "next/dynamic";
 
 import useGameStore from "../hooks/useGameStore";
 import ArticlesButton from "./Button";
+import { useEffect } from "react";
+import { useStore } from "../hooks/useStore";
 
 const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
     ssr: false,
 });
 
 export default function WinnerModal() {
-    
+
     const gameState = useGameStore((state) => state.gameState);
     const isHost = useGameStore((state) => state.isHost);
     const broadcastToClients = useGameStore((state) => state.broadcastToClients);
     const restartGame = useGameStore((state) => state.restartGame);
+    const arcadeMode = useStore((state) => state.arcadeMode);
+
+    useEffect(() => {
+
+        if (arcadeMode && gameState?.winner) {
+
+            console.log("WinnerModal: Detected winner in arcade mode, restarting game in 5 seconds.");
+
+            setTimeout(() => {
+
+                // Not only restart game but dump all players and connections
+                // restartGame();
+                // setGameState()
+
+                // Easier to just refresh the page, assumes room-play and also dumps all connections and memory to avoid long term leaks
+                window.location.reload();
+
+            }, 5000);
+        }
+
+    }, [gameState, arcadeMode]);
 
     return (
         <>
@@ -69,7 +92,7 @@ export default function WinnerModal() {
                         {/* <div className='fw-bold mb-3'>Congratulations!</div> */}
 
                     </div>
-                   
+
                 </ArticlesModal>
             }
         </>

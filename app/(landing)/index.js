@@ -205,25 +205,25 @@ export default function RaceGameLandingPage() {
         {
             name: "Duck",
             image: `${process.env.NEXT_PUBLIC_CDN}${assets_src}duck.png`,
-            model: <Duck color={character.color} />,
+            model: <Duck color={character?.color || '#FFF'} />,
             defaultColor: '#FFFFFF',
         },
         {
             name: "Dog",
             image: `${process.env.NEXT_PUBLIC_CDN}${assets_src}dog.png`,
-            model: <Dog color={character.color} />,
+            model: <Dog color={character?.color || '#FFF'} />,
             defaultColor: '',
         },
         {
             name: "Bear",
             image: `${process.env.NEXT_PUBLIC_CDN}${assets_src}bear.png`,
-            model: <Bear color={character.color} />,
+            model: <Bear color={character?.color || '#FFF'} />,
             defaultColor: '',
         },
         {
             name: "Witch",
             image: `${process.env.NEXT_PUBLIC_CDN}${assets_src}witch.jpg`,
-            model: <Witch color={character.color} />,
+            model: <Witch color={character?.color || '#FFF'} />,
             defaultColor: '',
         },
     ]
@@ -952,7 +952,7 @@ export default function RaceGameLandingPage() {
                                     <ChromePicker
                                         // color={color}
                                         width={"100%"}
-                                        color={character.color}
+                                        color={character?.color || '#000000'}
                                         onChange={(color, e) => {
 
                                             console.log(color)
@@ -975,7 +975,7 @@ export default function RaceGameLandingPage() {
                                 <ArticlesButton
                                     small
                                     className="w-50"
-                                    disabled={!character.color}
+                                    disabled={!character?.color}
                                     onClick={() => {
 
                                         let character_copy = { ...character }

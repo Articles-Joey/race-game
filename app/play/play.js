@@ -308,6 +308,8 @@ export default function RaceGame() {
 
     }, [server_type, gameState, isHost]);
 
+    const shareLink = mounted ? `${window?.location?.host}/play?server_type=${server_type}&server_id=${isHost ? myId : server_id}` : '';
+
     return (
 
         <>
@@ -405,7 +407,7 @@ export default function RaceGame() {
                                                 {mounted &&
                                                     <QRCodeCanvas
                                                         value={
-                                                            `${window.location.host}?server_type=${server_type}&server_id=${server_id}`
+                                                            shareLink
                                                         }
                                                         className=''
 
@@ -626,19 +628,45 @@ export default function RaceGame() {
                                             </Dropdown>
                                         }
 
-                                        <ArticlesButton
+                                        {/* <ArticlesButton
                                             onClick={() => {
+
                                                 setShowInviteModal({
                                                     type: 'Game',
                                                     game_name: 'Race Game',
                                                     server_id: server_id
                                                 })
+                                                
                                             }}
                                             disabled={gameState?.players?.length >= 4}
                                             className="d-flex justify-content-center align-items-center w-50"
                                         >
                                             Invite
                                             <i className="fad fa-paper-plane fa-lg ms-2 me-0"></i>
+                                        </ArticlesButton> */}
+
+                                        <ArticlesButton
+                                            onClick={() => {
+
+                                                // setShowInviteModal({
+                                                //     type: 'Game',
+                                                //     game_name: 'Race Game',
+                                                //     server_id: server_id
+                                                // })
+
+                                                window.navigator.clipboard.writeText(
+                                                    shareLink
+                                                )
+
+                                            }}
+                                            disabled={
+                                                false
+                                                // (gameState?.players?.length || 0) >= 4
+                                            }
+                                            className="d-flex justify-content-center align-items-center w-50"
+                                        >
+                                            <i className="fad fa-copy fa-lg me-2"></i>
+                                            Invite Link
                                         </ArticlesButton>
 
                                         <ArticlesButton
@@ -835,7 +863,7 @@ function MoveButtons({
                         4,
                         ...(process.env.NODE_ENV === 'development' &&
                             [
-                                gameState.boardLength,
+                                gameState?.boardLength,
                             ]
                         )
                     ].map(space => {

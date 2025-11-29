@@ -231,6 +231,17 @@ const useGameStore = create((set, get) => ({
                     ),
                 );
 
+                const arcadeMode = useStore.getState().arcadeMode;
+
+                if (
+                    newPlayers?.length >= 2
+                    &&
+                    arcadeMode
+                ) {
+                    console.log("TODO - Arcade mode logic");
+                    // Let any user start game in arcade mode or auto start when enough players?
+                }
+
                 set((state) => ({
 
                     connections: [...state.connections, conn],
@@ -242,8 +253,8 @@ const useGameStore = create((set, get) => ({
 
                 }));
 
-                // TODO - Call this or just have this being called periodically during game 
-                // broadcastGameState();
+                const { broadcastGameState } = get();
+                broadcastGameState();
 
             });
 
@@ -283,9 +294,8 @@ const useGameStore = create((set, get) => ({
 
                 }
 
-                if (data?.event === 'PlayerNickname') {
-
-                    // Does nickname and character state update
+                // Does nickname and character state update
+                if (data?.event === 'PlayerNickname') {                    
 
                     console.log("PlayerNickname data received", conn.peer, data);
 
