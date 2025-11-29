@@ -1,3 +1,4 @@
+"use client"
 import { create } from 'zustand';
 import Peer from 'peerjs';
 import { useStore } from './useStore';
@@ -15,13 +16,14 @@ function getFirstAvailableRow(players) {
 }
 
 // Shared function to minimize code
-function createPlayer(id, players, bot, nickname) {
+function createPlayer(id, players, bot, nickname, character) {
 
     let firstAvailableRow = getFirstAvailableRow(players);
 
     let duplicateStructure = {
         position: 0,
         nickname: nickname || 'Guest',
+        character: character || false,
         x: 0,
         row: firstAvailableRow,
         spaces: 0,
@@ -156,14 +158,17 @@ const useGameStore = create((set, get) => ({
             if (server_type == 'online-peer') {
 
                 let newPlayers = get().gameState.players
+
                 const nickname = useStore.getState().nickname || "Guest";
+                const character = useStore.getState().character
 
                 newPlayers.push(
                     createPlayer(
                         id,
                         newPlayers,
                         false,
-                        nickname
+                        nickname,
+                        character || false
                     ),
                 );
 
@@ -280,6 +285,8 @@ const useGameStore = create((set, get) => ({
 
                 if (data?.event === 'PlayerNickname') {
 
+                    // Does nickname and character state update
+
                     console.log("PlayerNickname data received", conn.peer, data);
 
                     // const newCharacterState = data.characterState;
@@ -291,9 +298,11 @@ const useGameStore = create((set, get) => ({
                             return {
                                 ...player,
                                 nickname: data.nickname,
+                                character: data.character,
                                 race_game: {
                                     ...player.race_game,
-                                    nickname: data.nickname
+                                    nickname: data.nickname,
+                                    character: data.character
                                 }
                             };
                         }
@@ -320,6 +329,7 @@ const useGameStore = create((set, get) => ({
                     console.log("ChatMessage data received", conn.peer, data, playerNicknameLookup);
 
                     const simpleCensor = (text) => {
+                        // TODO - Use package for better censorship
                         // const bannedWords = ['retard', 'nigger'];
                         // for (const word of bannedWords) {
                         //     const regex = new RegExp(word, 'gi');

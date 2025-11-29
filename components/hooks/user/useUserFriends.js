@@ -11,10 +11,10 @@ const useUserFriends = () => {
     // const url = userId ? `/api/posts?userId=${userId}` : "/api/posts";
 
     // const userReduxState = useSelector((state) => state.auth.user_details)
-    const userReduxState = false
+    const userReduxState = {}
 
     const { data, error, isLoading, mutate } = useSWR(
-        (userReduxState._id ?
+        (userReduxState?._id ?
             "/api/user/friends"
             :
             null

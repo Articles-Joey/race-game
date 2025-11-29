@@ -193,10 +193,13 @@ export default function RaceGameLandingPage() {
 
     }, [socket.connected]);
 
-    const [character, setCharacter] = useLocalStorageNew("game:race-game:character", {
-        model: 'Duck',
-        color: '#000000'
-    })
+    // const [character, setCharacter] = useLocalStorageNew("game:race-game:character", {
+    //     model: 'Duck',
+    //     color: '#000000'
+    // })
+
+    const character = useStore((state) => state.character)
+    const setCharacter = useStore((state) => state.setCharacter)
 
     const characters = [
         {

@@ -120,7 +120,7 @@ export default function RaceGame() {
         alert("Gotta fix")
     });
 
-    const [mounted, setMounted] = useState(true)
+    const [mounted, setMounted] = useState(false)
 
     const [roundTimer, setRoundTimer] = useState(null);
 
@@ -311,97 +311,98 @@ export default function RaceGame() {
     return (
 
         <>
-            {mounted &&
-                <div className={`race-game-game-page ${isFullscreen && 'fullscreen'}`} id={'race-game-game-page'}>
+            {/* {mounted && */}
+            <div className={`race-game-game-page ${isFullscreen && 'fullscreen'}`} id={'race-game-game-page'}>
 
-                    {showInviteModal &&
-                        <InviteModal
-                            show={showInviteModal}
-                            setShow={setShowInviteModal}
-                        />
-                    }
+                {showInviteModal &&
+                    <InviteModal
+                        show={showInviteModal}
+                        setShow={setShowInviteModal}
+                    />
+                }
 
-                    {/* {showInfoModal &&
+                {/* {showInfoModal &&
                         <InfoModal
                             show={showInfoModal}
                             setShow={setShowInfoModal}
                         />
                     } */}
 
-                    {/* {showSettingsModal &&
+                {/* {showSettingsModal &&
                         <SettingsModal
                             show={showSettingsModal}
                             setShow={setShowSettingsModal}
                         />
                     } */}
 
-                    {(activeMysterySpot?.timer >= 0) &&
-                        <ArticlesModal
-                            show={(activeMysterySpot?.timer >= 0)}
-                            setShow={setActiveMysterySpot}
-                            title="Mystery Spot!"
-                            disableClose
-                        // action={(setShowModal) => {
-                        //     saveDocument(setShowModal)
-                        // }}
-                        // actionText={'Save'}
-                        >
-                            <div>
-
-                                <div className='mb-2'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} landed on a mystery spot!`}</div>
-
-                                <div className='fw-bold mb-3'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} goes ${activeMysterySpot?.action?.direction} ${activeMysterySpot?.action?.spaces} spaces!`}</div>
-
-                                <div className='text-muted'>{`Continuing in ${activeMysterySpot?.timer}...`}</div>
-
-                            </div>
-                        </ArticlesModal>
-                    }
-
-                    {gameState?.winner &&
-                        <WinnerModal />
-                    }
-
-                    <img
-                        className="background"
-                        src={`${`${process.env.NEXT_PUBLIC_CDN}games/Race Game/background.jpg`}`}
+                {(activeMysterySpot?.timer >= 0) &&
+                    <ArticlesModal
+                        show={(activeMysterySpot?.timer >= 0)}
+                        setShow={setActiveMysterySpot}
+                        title="Mystery Spot!"
+                        disableClose
+                    // action={(setShowModal) => {
+                    //     saveDocument(setShowModal)
+                    // }}
+                    // actionText={'Save'}
                     >
+                        <div>
 
-                    </img>
+                            <div className='mb-2'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} landed on a mystery spot!`}</div>
 
-                    {/* {showMenu &&
+                            <div className='fw-bold mb-3'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} goes ${activeMysterySpot?.action?.direction} ${activeMysterySpot?.action?.spaces} spaces!`}</div>
+
+                            <div className='text-muted'>{`Continuing in ${activeMysterySpot?.timer}...`}</div>
+
+                        </div>
+                    </ArticlesModal>
+                }
+
+                {gameState?.winner &&
+                    <WinnerModal />
+                }
+
+                <img
+                    className="background"
+                    src={`${`${process.env.NEXT_PUBLIC_CDN}games/Race Game/background.jpg`}`}
+                >
+
+                </img>
+
+                {/* {showMenu &&
                     <div>
     
                     </div>
                 } */}
 
-                    <GameMenu
-                    // Causes non stop remounts for some reason
-                    // {...{
-                    //     isFullscreen,
-                    //     requestFullscreen,
-                    //     exitFullscreen
-                    // }}
-                    />
+                <GameMenu
+                // Causes non stop remounts for some reason
+                // {...{
+                //     isFullscreen,
+                //     requestFullscreen,
+                //     exitFullscreen
+                // }}
+                />
 
-                    <div className='game-content'>
+                <div className='game-content'>
 
-                        {gameState?.status == "In Lobby" &&
-                            <div className="lobby-screen">
+                    {gameState?.status == "In Lobby" &&
+                        <div className="lobby-screen">
 
-                                <div className="lobby-screen-blur"></div>
+                            <div className="lobby-screen-blur"></div>
 
-                                <div className="lobby-card">
+                            <div className="lobby-card">
 
-                                    <div className="card card-articles w-100">
+                                <div className="card card-articles w-100">
 
-                                        <div className="card-header  py-3 d-flex flex-column justify-content-center align-items-center">
+                                    <div className="card-header  py-3 d-flex flex-column justify-content-center align-items-center">
 
-                                            <div
-                                                style={{ height: '150px', position: 'relative' }}
-                                                className='d-flex justify-content-center w-100 mb-3'
-                                            >
-                                                <div style={{ width: '150px', height: '150px', position: 'relative' }}>
+                                        <div
+                                            style={{ height: '150px', position: 'relative' }}
+                                            className='d-flex justify-content-center w-100 mb-3'
+                                        >
+                                            <div style={{ width: '150px', height: '150px', position: 'relative' }}>
+                                                {mounted &&
                                                     <QRCodeCanvas
                                                         value={
                                                             `${window.location.host}?server_type=${server_type}&server_id=${server_id}`
@@ -410,130 +411,131 @@ export default function RaceGame() {
 
                                                         size={150}
                                                     />
-                                                </div>
+                                                }
                                             </div>
-
-                                            <div className='mb-2'>
-                                                <i style={{ fontSize: '1.75rem' }} className="fad fa-hourglass fa-spin"></i>
-                                            </div>
-
-                                            <b className="mb-0">Waiting on more players | {players.length}/4</b>
-                                            <small>Need at least 2 players to start.</small>
-
                                         </div>
 
-                                        <div className='card-body py-1 d-flex flex-column justify-content-center align-items-center'>
+                                        <div className='mb-2'>
+                                            <i style={{ fontSize: '1.75rem' }} className="fad fa-hourglass fa-spin"></i>
+                                        </div>
 
-                                            {(
+                                        <b className="mb-0">Waiting on more players | {players.length}/4</b>
+                                        <small>Need at least 2 players to start.</small>
+
+                                    </div>
+
+                                    <div className='card-body py-1 d-flex flex-column justify-content-center align-items-center'>
+
+                                        {(
+                                            (
+                                                server_type == "online-socket"
+                                                &&
+                                                players.find(player => player.id == socket.id)
+                                            )
+                                            ||
+                                            (
                                                 (
-                                                    server_type == "online-socket"
-                                                    &&
-                                                    players.find(player => player.id == socket.id)
+                                                    server_type == "online-peer"
+                                                    ||
+                                                    server_type == "room-play"
                                                 )
-                                                ||
-                                                (
-                                                    (
+                                                &&
+                                                gameState?.players?.length > 0
+                                            )
+                                        )
+                                            ?
+                                            <div className='d-flex flex-column' style={{ minWidth: '200px' }}>
+
+                                                {gameState?.players?.map((item, item_i) => {
+
+                                                    let player_lookup = null;
+
+                                                    if (server_type == "online-socket") {
+                                                        player_lookup = players?.find(player => player.id == item)
+                                                    }
+
+                                                    if (
                                                         server_type == "online-peer"
                                                         ||
                                                         server_type == "room-play"
-                                                    )
-                                                    &&
-                                                    gameState?.players?.length > 0
-                                                )
-                                            )
-                                                ?
-                                                <div className='d-flex flex-column' style={{ minWidth: '200px' }}>
+                                                    ) {
+                                                        player_lookup = item
+                                                    }
 
-                                                    {gameState?.players?.map((item, item_i) => {
-
-                                                        let player_lookup = null;
-
-                                                        if (server_type == "online-socket") {
-                                                            player_lookup = players?.find(player => player.id == item)
-                                                        }
-
-                                                        if (
-                                                            server_type == "online-peer"
-                                                            ||
-                                                            server_type == "room-play"
-                                                        ) {
-                                                            player_lookup = item
-                                                        }
-
-                                                        return (
+                                                    return (
+                                                        <div
+                                                            key={item_i}
+                                                            className='d-flex align-items-center mb-1'
+                                                        >
                                                             <div
-                                                                key={item_i}
-                                                                className='d-flex align-items-center mb-1'
-                                                            >
-                                                                <div
-                                                                    style={{
-                                                                        width: '30px',
-                                                                        height: '30px'
-                                                                    }}
-                                                                    className='bg-dark m-1'
-                                                                ></div>
+                                                                style={{
+                                                                    width: '30px',
+                                                                    height: '30px'
+                                                                }}
+                                                                className='bg-dark m-1'
+                                                            ></div>
 
-                                                                <div>
+                                                            <div>
 
-                                                                    <div className='small'>
-                                                                        {player_lookup?.race_game?.nickname || player_lookup?.user_id || 'No Nickname'}
-                                                                    </div>
+                                                                <div className='small'>
+                                                                    {player_lookup?.race_game?.nickname || player_lookup?.user_id || 'No Nickname'}
+                                                                </div>
 
-                                                                    {/* <div className='small'>
+                                                                {/* <div className='small'>
                                                                         {player_lookup.peer}
                                                                     </div> */}
 
-                                                                    <div className='small'>
-                                                                        {player_lookup?.bot &&
-                                                                            // <div className='small'>
-                                                                            <span className='badge bg-black small'>
-                                                                                <i className='fad fa-robot'></i>
-                                                                                Bot
-                                                                                {/* {item == "Bot" && "Bot"} */}
-                                                                                {/* {player_lookup?.bot && "Bot"} */}
-                                                                            </span>
-                                                                            // </div>
-                                                                        }
+                                                                <div className='small'>
+                                                                    {player_lookup?.bot &&
+                                                                        // <div className='small'>
+                                                                        <span className='badge bg-black small'>
+                                                                            <i className='fad fa-robot'></i>
+                                                                            Bot
+                                                                            {/* {item == "Bot" && "Bot"} */}
+                                                                            {/* {player_lookup?.bot && "Bot"} */}
+                                                                        </span>
+                                                                        // </div>
+                                                                    }
 
-                                                                        {
+                                                                    {
+                                                                        (
                                                                             (
-                                                                                (
-                                                                                    item !== socket.id
-                                                                                    &&
-                                                                                    server_type == "online-socket"
-                                                                                )
-                                                                                ||
-                                                                                (
-                                                                                    (server_type == "room-play" || server_type == "online-peer")
-                                                                                    &&
-                                                                                    true
-                                                                                )
+                                                                                item !== socket.id
+                                                                                &&
+                                                                                server_type == "online-socket"
                                                                             )
-                                                                                ?
-                                                                                <div
-                                                                                    className="badge bg-danger badge-hover"
-                                                                                    onClick={() => {
+                                                                            ||
+                                                                            (
+                                                                                (server_type == "room-play" || server_type == "online-peer")
+                                                                                &&
+                                                                                true
+                                                                            )
+                                                                        )
+                                                                            ?
+                                                                            <div
+                                                                                className="badge bg-danger badge-hover"
+                                                                                onClick={() => {
 
-                                                                                        // TODO fix for sockets
+                                                                                    // TODO fix for sockets
 
-                                                                                        if (item.bot) {
-                                                                                            removeBot(item.peer)
-                                                                                        } else {
-                                                                                            removeConnection(item.peer)
-                                                                                        }
+                                                                                    if (item.bot) {
+                                                                                        removeBot(item.peer)
+                                                                                    } else {
+                                                                                        removeConnection(item.peer)
+                                                                                    }
 
-                                                                                    }}
-                                                                                >
-                                                                                    Remove
-                                                                                </div>
-                                                                                :
-                                                                                <div className="badge bg-black">
-                                                                                    Game Leader
-                                                                                </div>
-                                                                        }
-                                                                    </div>
+                                                                                }}
+                                                                            >
+                                                                                Remove
+                                                                            </div>
+                                                                            :
+                                                                            <div className="badge bg-black">
+                                                                                Game Leader
+                                                                            </div>
+                                                                    }
+                                                                </div>
 
-                                                                    {/* {item.user_id &&
+                                                                {/* {item.user_id &&
                                                                         <div className='small'>
                                                                             <div className='small'>
                                                                                 {item.id}
@@ -541,140 +543,140 @@ export default function RaceGame() {
                                                                         </div>
                                                                     } */}
 
-                                                                </div>
                                                             </div>
+                                                        </div>
 
-                                                        )
-                                                    })}
+                                                    )
+                                                })}
 
-                                                    {gameState?.players?.length < 4 && [...Array((4 - gameState?.players?.length))].map((item, index) => {
-                                                        return (
+                                                {gameState?.players?.length < 4 && [...Array((4 - gameState?.players?.length))].map((item, index) => {
+                                                    return (
+                                                        <div
+                                                            key={index}
+                                                            className='d-flex align-items-center'
+                                                        >
+
                                                             <div
-                                                                key={index}
-                                                                className='d-flex align-items-center'
+                                                                style={{
+                                                                    width: '30px',
+                                                                    height: '30px'
+                                                                }}
+                                                                className='bg-light border-dark m-1 border'
                                                             >
 
-                                                                <div
-                                                                    style={{
-                                                                        width: '30px',
-                                                                        height: '30px'
-                                                                    }}
-                                                                    className='bg-light border-dark m-1 border'
-                                                                >
-
-                                                                </div>
-
-                                                                <span className='text-muted small'>Available spot</span>
-
                                                             </div>
+
+                                                            <span className='text-muted small'>Available spot</span>
+
+                                                        </div>
+                                                    )
+                                                })}
+
+                                            </div>
+                                            :
+                                            <div>
+
+                                                <div className='alert alert-danger mb-0 mt-2' style={{ fontSize: '0.8rem' }}>
+                                                    You are not playing, please wait for next game or find another lobby.
+                                                </div>
+
+                                                <div>
+
+                                                    <ArticlesButton
+                                                        onClick={() => rejoin()}
+                                                        className="d-block mx-auto mt-2"
+                                                    >
+                                                        Reconnect
+                                                    </ArticlesButton>
+
+                                                </div>
+
+                                            </div>
+                                        }
+
+                                    </div>
+
+                                    <div className='card-footer d-flex p-2'>
+
+                                        {false &&
+                                            <Dropdown className="notification-badge d-flex w-50">
+
+                                                <Dropdown.Toggle variant='articles w-100 d-flex align-items-center'>
+                                                    Invite Friends
+                                                </Dropdown.Toggle>
+
+                                                <Dropdown.Menu className="">
+
+                                                    {userReduxState?.friends?.map((friend, i) => {
+                                                        return (
+                                                            <Dropdown.Item
+                                                                key={`${i}-${friend.id}`}
+                                                                onClick={() => inviteFriend(friend.id)}
+                                                                className=""
+                                                                eventKey={i}
+                                                            >
+                                                                <i className="fad fa-user" aria-hidden="true"></i>
+                                                                {friend.nickname}
+                                                            </Dropdown.Item>
                                                         )
                                                     })}
 
-                                                </div>
-                                                :
-                                                <div>
+                                                </Dropdown.Menu>
 
-                                                    <div className='alert alert-danger mb-0 mt-2' style={{ fontSize: '0.8rem' }}>
-                                                        You are not playing, please wait for next game or find another lobby.
-                                                    </div>
+                                            </Dropdown>
+                                        }
 
-                                                    <div>
+                                        <ArticlesButton
+                                            onClick={() => {
+                                                setShowInviteModal({
+                                                    type: 'Game',
+                                                    game_name: 'Race Game',
+                                                    server_id: server_id
+                                                })
+                                            }}
+                                            disabled={gameState?.players?.length >= 4}
+                                            className="d-flex justify-content-center align-items-center w-50"
+                                        >
+                                            Invite
+                                            <i className="fad fa-paper-plane fa-lg ms-2 me-0"></i>
+                                        </ArticlesButton>
 
-                                                        <ArticlesButton
-                                                            onClick={() => rejoin()}
-                                                            className="d-block mx-auto mt-2"
-                                                        >
-                                                            Reconnect
-                                                        </ArticlesButton>
-
-                                                    </div>
-
-                                                </div>
+                                        <ArticlesButton
+                                            onClick={() => {
+                                                addBot()
+                                            }}
+                                            disabled={
+                                                // Allow dynamic 
+                                                // gameState?.players?.length >= 4
+                                                false
                                             }
+                                            className="d-flex justify-content-center align-items-center w-50"
+                                        >
+                                            Add Bot
+                                            <i className="fad fa-robot fa-lg ms-2 me-0"></i>
+                                        </ArticlesButton>
 
-                                        </div>
-
-                                        <div className='card-footer d-flex p-2'>
-
-                                            {false &&
-                                                <Dropdown className="notification-badge d-flex w-50">
-
-                                                    <Dropdown.Toggle variant='articles w-100 d-flex align-items-center'>
-                                                        Invite Friends
-                                                    </Dropdown.Toggle>
-
-                                                    <Dropdown.Menu className="">
-
-                                                        {userReduxState?.friends?.map((friend, i) => {
-                                                            return (
-                                                                <Dropdown.Item
-                                                                    key={`${i}-${friend.id}`}
-                                                                    onClick={() => inviteFriend(friend.id)}
-                                                                    className=""
-                                                                    eventKey={i}
-                                                                >
-                                                                    <i className="fad fa-user" aria-hidden="true"></i>
-                                                                    {friend.nickname}
-                                                                </Dropdown.Item>
-                                                            )
-                                                        })}
-
-                                                    </Dropdown.Menu>
-
-                                                </Dropdown>
-                                            }
-
-                                            <ArticlesButton
-                                                onClick={() => {
-                                                    setShowInviteModal({
-                                                        type: 'Game',
-                                                        game_name: 'Race Game',
-                                                        server_id: server_id
-                                                    })
-                                                }}
-                                                disabled={gameState?.players?.length >= 4}
-                                                className="d-flex justify-content-center align-items-center w-50"
-                                            >
-                                                Invite
-                                                <i className="fad fa-paper-plane fa-lg ms-2 me-0"></i>
-                                            </ArticlesButton>
-
-                                            <ArticlesButton
-                                                onClick={() => {
-                                                    addBot()
-                                                }}
-                                                disabled={
-                                                    // Allow dynamic 
-                                                    // gameState?.players?.length >= 4
-                                                    false
-                                                }
-                                                className="d-flex justify-content-center align-items-center w-50"
-                                            >
-                                                Add Bot
-                                                <i className="fad fa-robot fa-lg ms-2 me-0"></i>
-                                            </ArticlesButton>
-
-                                            <ArticlesButton
-                                                onClick={() => prepareGame()}
-                                                className="d-flex justify-content-center align-items-center w-50"
-                                            // disabled={Object.keys(players).length < 2}
-                                            // disabled={gameState?.players?.length < 2}
-                                            >
-                                                Start Game
-                                                <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>
-                                            </ArticlesButton>
-
-                                        </div>
+                                        <ArticlesButton
+                                            onClick={() => prepareGame()}
+                                            className="d-flex justify-content-center align-items-center w-50"
+                                        // disabled={Object.keys(players).length < 2}
+                                        // disabled={gameState?.players?.length < 2}
+                                        >
+                                            Start Game
+                                            <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>
+                                        </ArticlesButton>
 
                                     </div>
 
                                 </div>
 
                             </div>
-                        }
 
-                        {/* Not really needed, visible in 2d but not 3d? */}
-                        {/* <div
+                        </div>
+                    }
+
+                    {/* Not really needed, visible in 2d but not 3d? */}
+                    {/* <div
                             className="card card-articles text-center d-none d-lg-block"
                             style={{
                                 position: 'absolute',
@@ -687,97 +689,97 @@ export default function RaceGame() {
                             </div>
                         </div> */}
 
-                        {
-                            showRoomPlayMoveButtons ?
-                                <>
-                                    <RoomPlayMoveButtons
-                                        move={move}
-                                    />
-                                </>
-                                :
-                                <>
-                                    {(renderMode == "3D" || renderMode == "Both") &&
-                                        <div className={`canvas-three-wrap ${renderMode !== "3D" && 'd-none'}`}>
-
-                                            <Suspense>
-                                                <GameCanvas
-                                                    // cameraState={cameraState}
-                                                    // handleCameraChange={handleCameraChange}
-                                                    // cameraState={cameraState}
-                                                    // gameState={gameState}
-                                                    // players={players}
-                                                    move={move}
-                                                // cameraUpdate={cameraUpdate}
-                                                // setCameraUpdate={setCameraUpdate}
-                                                // cameraState={cameraState}
-                                                />
-                                            </Suspense>
-
-                                        </div>
-                                    }
-
-                                    {(renderMode == "2D" || renderMode == "Both") &&
-                                        <Suspense><GameCanvasFlat /></Suspense>
-                                    }
-                                </>
-                        }
-
-                        <div className='info-controls card card-articles'>
-
-                            <ArticlesButton
-                                className={'d-lg-none'}
-                                active={showMenu}
-                                onClick={() => {
-                                    setShowMenu(!showMenu)
-                                }}
-                            >
-                                Menu
-                            </ArticlesButton>
-
-                            <div className="timer">
-
-                                <i style={{ fontSize: '1.75rem' }} className="fad fa-alarm-clock"></i>
-
-                                {gameState?.status == "In Lobby" && <h5 className="mb-0">{"In Lobby"}</h5>}
-                                {gameState?.status == "In Progress" && <h5 className="mb-0">{gameState?.time}</h5>}
-
-                                {/* <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span> */}
-
-                                {(gameState?.status == "In Progress" && gameState?.movesShown !== 0) &&
-                                    <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span>
-                                }
-
-                            </div>
-
-                            <div className='small d-none d-lg-block'>
-
-                                <div className='d-flex'>
-                                    <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
-                                    <div className='me-2'>Y: {cameraState?.position?.y?.toFixed(2)}</div>
-                                    <div>Z: {cameraState?.position?.z?.toFixed(2)}</div>
-                                </div>
-
-                                <div className='d-flex'>
-                                    <div className='me-2'>X: {cameraState?.rotation?.x.toFixed(2)}</div>
-                                    <div className='me-2'>Y: {cameraState?.rotation?.y.toFixed(2)}</div>
-                                    <div>Z: {cameraState?.rotation?.z.toFixed(2)}</div>
-                                </div>
-
-                            </div>
-
-                            {/* Never show if room play client */}
-                            {!showRoomPlayMoveButtons &&
-                                <MoveButtons
+                    {
+                        showRoomPlayMoveButtons ?
+                            <>
+                                <RoomPlayMoveButtons
                                     move={move}
                                 />
+                            </>
+                            :
+                            <>
+                                {(renderMode == "3D" || renderMode == "Both") &&
+                                    <div className={`canvas-three-wrap ${renderMode !== "3D" && 'd-none'}`}>
+
+                                        <Suspense>
+                                            <GameCanvas
+                                                // cameraState={cameraState}
+                                                // handleCameraChange={handleCameraChange}
+                                                // cameraState={cameraState}
+                                                // gameState={gameState}
+                                                // players={players}
+                                                move={move}
+                                            // cameraUpdate={cameraUpdate}
+                                            // setCameraUpdate={setCameraUpdate}
+                                            // cameraState={cameraState}
+                                            />
+                                        </Suspense>
+
+                                    </div>
+                                }
+
+                                {(renderMode == "2D" || renderMode == "Both") &&
+                                    <Suspense><GameCanvasFlat /></Suspense>
+                                }
+                            </>
+                    }
+
+                    <div className='info-controls card card-articles'>
+
+                        <ArticlesButton
+                            className={'d-lg-none'}
+                            active={showMenu}
+                            onClick={() => {
+                                setShowMenu(!showMenu)
+                            }}
+                        >
+                            Menu
+                        </ArticlesButton>
+
+                        <div className="timer">
+
+                            <i style={{ fontSize: '1.75rem' }} className="fad fa-alarm-clock"></i>
+
+                            {gameState?.status == "In Lobby" && <h5 className="mb-0">{"In Lobby"}</h5>}
+                            {gameState?.status == "In Progress" && <h5 className="mb-0">{gameState?.time}</h5>}
+
+                            {/* <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span> */}
+
+                            {(gameState?.status == "In Progress" && gameState?.movesShown !== 0) &&
+                                <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span>
                             }
 
                         </div>
 
+                        <div className='small d-none d-lg-block'>
+
+                            <div className='d-flex'>
+                                <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
+                                <div className='me-2'>Y: {cameraState?.position?.y?.toFixed(2)}</div>
+                                <div>Z: {cameraState?.position?.z?.toFixed(2)}</div>
+                            </div>
+
+                            <div className='d-flex'>
+                                <div className='me-2'>X: {cameraState?.rotation?.x.toFixed(2)}</div>
+                                <div className='me-2'>Y: {cameraState?.rotation?.y.toFixed(2)}</div>
+                                <div>Z: {cameraState?.rotation?.z.toFixed(2)}</div>
+                            </div>
+
+                        </div>
+
+                        {/* Never show if room play client */}
+                        {!showRoomPlayMoveButtons &&
+                            <MoveButtons
+                                move={move}
+                            />
+                        }
+
                     </div>
 
                 </div>
-            }
+
+            </div>
+            {/* } */}
         </>
 
     );
@@ -804,6 +806,10 @@ function MoveButtons({
 
     const myId = useGameStore((state) => state?.myId);
     const sendToHost = useGameStore((state) => state?.sendToHost);
+
+    if (gameState?.status !== "In Progress") {
+        return null
+    }
 
     return (
         <div>

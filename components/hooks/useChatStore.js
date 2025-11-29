@@ -1,3 +1,4 @@
+"use client"
 import { add } from 'date-fns';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';

@@ -14,7 +14,7 @@ export async function GET(req) {
 
         const cookieStore = await cookies();
 
-        const session_token = cookieStore.get('sess')?.value
+        const session_token = cookieStore.get('sess')?.value || null;
 
         const oauth_token = session_token;
 

@@ -61,6 +61,7 @@ const PeerLogic = () => {
     };
 
     const nickname = useStore((state) => state.nickname)
+    const character = useStore((state) => state.character)
 
     useEffect(() => {
 
@@ -70,11 +71,12 @@ const PeerLogic = () => {
 
         sendToHost({
             event: "PlayerNickname",
-            nickname: nickname
+            nickname: nickname,
+            character: character
         })
 
     }, [
-        myId, hostConn, nickname
+        myId, hostConn, nickname, character
     ]);
 
     const shouldBecomeHost = useRef(false);
@@ -268,7 +270,7 @@ const PeerLogic = () => {
                                                 <li key={i} style={{ border: '1px solid black' }}>
                                                     <div>ID: {c.peer}</div>
                                                     <div>Nickname: {c.nickname}</div>
-                                                    <div>Character: {c.character}</div>
+                                                    <div>Character: {JSON.stringify(c.character)}</div>
                                                     <div>Row: {c.row}</div>
                                                     <div>X: {c.x}</div>
                                                     <div>Spaces: {c.spaces}</div>
