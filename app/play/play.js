@@ -134,6 +134,9 @@ export default function RaceGame() {
 
     const myId = useGameStore((state) => state?.myId);
     const sendToHost = useGameStore((state) => state?.sendToHost);
+    const startGame = useGameStore((state) => state.startGame);
+    const removeConnection = useGameStore((state) => state.removeConnection);
+    const removeBot = useGameStore((state) => state.removeBot);
     // const [gameState, setGameState] = useState(false)
 
     // const [renderMode, setRenderMode] = useState('2D');
@@ -163,14 +166,22 @@ export default function RaceGame() {
 
     }
 
-    function startGame() {
+    function prepareGame() {
 
-        socket.emit('race-game-start', {
-            server: server_id,
-            settings: {}
-        });
+        if (server_type == "room-play" || server_type == "online-peer") {
+            startGame()
+        }
 
-        generateMysterySpots()
+        if (server_type == "online-socket") {
+
+            socket.emit('race-game-start', {
+                server: server_id,
+                settings: {}
+            });
+
+            // generateMysterySpots()
+
+        }
 
     }
 
@@ -392,7 +403,9 @@ export default function RaceGame() {
                                             >
                                                 <div style={{ width: '150px', height: '150px', position: 'relative' }}>
                                                     <QRCodeCanvas
-                                                        value={`https://race-game.articles.media/${server_id}`}
+                                                        value={
+                                                            `${window.location.host}?server_type=${server_type}&server_id=${server_id}`
+                                                        }
                                                         className=''
 
                                                         size={150}
@@ -411,12 +424,41 @@ export default function RaceGame() {
 
                                         <div className='card-body py-1 d-flex flex-column justify-content-center align-items-center'>
 
-                                            {players.find(player => player.id == socket.id) ?
+                                            {(
+                                                (
+                                                    server_type == "online-socket"
+                                                    &&
+                                                    players.find(player => player.id == socket.id)
+                                                )
+                                                ||
+                                                (
+                                                    (
+                                                        server_type == "online-peer"
+                                                        ||
+                                                        server_type == "room-play"
+                                                    )
+                                                    &&
+                                                    gameState?.players?.length > 0
+                                                )
+                                            )
+                                                ?
                                                 <div className='d-flex flex-column' style={{ minWidth: '200px' }}>
 
                                                     {gameState?.players?.map((item, item_i) => {
 
-                                                        let player_lookup = players.find(player => player.id == item)
+                                                        let player_lookup = null;
+
+                                                        if (server_type == "online-socket") {
+                                                            player_lookup = players?.find(player => player.id == item)
+                                                        }
+
+                                                        if (
+                                                            server_type == "online-peer"
+                                                            ||
+                                                            server_type == "room-play"
+                                                        ) {
+                                                            player_lookup = item
+                                                        }
 
                                                         return (
                                                             <div
@@ -434,22 +476,62 @@ export default function RaceGame() {
                                                                 <div>
 
                                                                     <div className='small'>
-                                                                        {player_lookup?.race_game?.nickname || player_lookup?.user_id}
+                                                                        {player_lookup?.race_game?.nickname || player_lookup?.user_id || 'No Nickname'}
                                                                     </div>
+
+                                                                    {/* <div className='small'>
+                                                                        {player_lookup.peer}
+                                                                    </div> */}
 
                                                                     <div className='small'>
-                                                                        {item == "Bot" && "Bot"}
-                                                                    </div>
+                                                                        {player_lookup?.bot &&
+                                                                            // <div className='small'>
+                                                                            <span className='badge bg-black small'>
+                                                                                <i className='fad fa-robot'></i>
+                                                                                Bot
+                                                                                {/* {item == "Bot" && "Bot"} */}
+                                                                                {/* {player_lookup?.bot && "Bot"} */}
+                                                                            </span>
+                                                                            // </div>
+                                                                        }
 
-                                                                    {item !== socket.id ?
-                                                                        <div className="badge bg-danger badge-hover">
-                                                                            Remove
-                                                                        </div>
-                                                                        :
-                                                                        <div className="badge bg-black">
-                                                                            Game Leader
-                                                                        </div>
-                                                                    }
+                                                                        {
+                                                                            (
+                                                                                (
+                                                                                    item !== socket.id
+                                                                                    &&
+                                                                                    server_type == "online-socket"
+                                                                                )
+                                                                                ||
+                                                                                (
+                                                                                    (server_type == "room-play" || server_type == "online-peer")
+                                                                                    &&
+                                                                                    true
+                                                                                )
+                                                                            )
+                                                                                ?
+                                                                                <div
+                                                                                    className="badge bg-danger badge-hover"
+                                                                                    onClick={() => {
+
+                                                                                        // TODO fix for sockets
+
+                                                                                        if (item.bot) {
+                                                                                            removeBot(item.peer)
+                                                                                        } else {
+                                                                                            removeConnection(item.peer)
+                                                                                        }
+
+                                                                                    }}
+                                                                                >
+                                                                                    Remove
+                                                                                </div>
+                                                                                :
+                                                                                <div className="badge bg-black">
+                                                                                    Game Leader
+                                                                                </div>
+                                                                        }
+                                                                    </div>
 
                                                                     {/* {item.user_id &&
                                                                         <div className='small'>
@@ -465,16 +547,24 @@ export default function RaceGame() {
                                                         )
                                                     })}
 
-                                                    {[...Array((4 - gameState?.players?.length))].map((item, index) => {
+                                                    {gameState?.players?.length < 4 && [...Array((4 - gameState?.players?.length))].map((item, index) => {
                                                         return (
                                                             <div
                                                                 key={index}
-                                                                style={{
-                                                                    width: '30px',
-                                                                    height: '30px'
-                                                                }}
-                                                                className='bg-light border-dark m-1'
+                                                                className='d-flex align-items-center'
                                                             >
+
+                                                                <div
+                                                                    style={{
+                                                                        width: '30px',
+                                                                        height: '30px'
+                                                                    }}
+                                                                    className='bg-light border-dark m-1 border'
+                                                                >
+
+                                                                </div>
+
+                                                                <span className='text-muted small'>Available spot</span>
 
                                                             </div>
                                                         )
@@ -553,7 +643,11 @@ export default function RaceGame() {
                                                 onClick={() => {
                                                     addBot()
                                                 }}
-                                                disabled={gameState?.players?.length >= 4}
+                                                disabled={
+                                                    // Allow dynamic 
+                                                    // gameState?.players?.length >= 4
+                                                    false
+                                                }
                                                 className="d-flex justify-content-center align-items-center w-50"
                                             >
                                                 Add Bot
@@ -561,7 +655,7 @@ export default function RaceGame() {
                                             </ArticlesButton>
 
                                             <ArticlesButton
-                                                onClick={() => startGame()}
+                                                onClick={() => prepareGame()}
                                                 className="d-flex justify-content-center align-items-center w-50"
                                             // disabled={Object.keys(players).length < 2}
                                             // disabled={gameState?.players?.length < 2}

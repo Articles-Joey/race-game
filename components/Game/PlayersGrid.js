@@ -154,7 +154,15 @@ export default function PlayersGrid(props) {
 
     let starRows = [];
 
-    for (let i = 0; i < 4; i++) {
+    let lanes = 4;
+
+    if (
+        players?.length > 4
+    ) {
+        lanes = players?.length
+    }
+
+    for (let i = 0; i < lanes; i++) {
         let starCol = [];
 
         let rowPlayers = players.filter((player) => player.race_game.row === i + 1);
@@ -173,7 +181,8 @@ export default function PlayersGrid(props) {
                             position={[(j + 1) * 2, 1, i * 2]}
                             colPlayer={colPlayer}
                             valid={
-                                true
+                                colPlayer?.canMove || false
+                                // true
                                 // !players
                                 //     .filter((player) => player.id !== colPlayer.id)
                                 //     .find((player) => player.race_game.spaces === colPlayer?.race_game?.spaces)

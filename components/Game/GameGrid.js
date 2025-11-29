@@ -205,6 +205,7 @@ function GameGrid(props) {
     const [hoveredList, setHoveredList] = useState([])
 
     const boardLength = useGameStore((state) => state.gameState.boardLength);
+    const mysterySpots = useGameStore((state) => state.gameState.mysterySpots);
 
     useEffect(() => {
         
@@ -218,7 +219,15 @@ function GameGrid(props) {
 
     }, [hoveredList])
 
-    for (var i = 0; i < 4; i++) {
+    let lanes = 4;
+
+    if (
+        gameState?.players?.length > 4
+    ) {
+        lanes = gameState?.players?.length
+    }
+
+    for (var i = 0; i < lanes; i++) {
 
         let starCol = []
 
@@ -231,6 +240,8 @@ function GameGrid(props) {
 
             let hasMysteryLookup = (
                 mystery_spots?.find((player) => (player.row === i + 1 && player.x === j - 1))
+                ||
+                mysterySpots?.find((spot) => (spot.row === i + 1 && spot.x === j - 1))
             );
 
             let usedMysteryLookup = gameState?.used_mystery_spots?.find((spot_player) => (spot_player?.race_game?.row == (i + 1)))

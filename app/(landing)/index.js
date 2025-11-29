@@ -137,7 +137,10 @@ export default function RaceGameLandingPage() {
 
     // const nickname = watch("nickname", false);
 
-    const [nickname, setNickname] = useLocalStorageNew("game:nickname", userReduxState.display_name)
+    // const [nickname, setNickname] = useLocalStorageNew("game:nickname", userReduxState.display_name)
+
+    const nickname = useStore((state) => state.nickname)
+    const setNickname = useStore((state) => state.setNickname)
 
     const [lobbyDetails, setLobbyDetails] = useState({
         players: [],

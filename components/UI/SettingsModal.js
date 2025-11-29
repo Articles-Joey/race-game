@@ -30,6 +30,12 @@ export default function SettingsModal({
     const arcadeMode = useStore((state) => state.arcadeMode);
     const setArcadeMode = useStore((state) => state.setArcadeMode);
 
+    const toontownMode = useStore((state) => state.toontownMode);
+    const setToontownMode = useStore((state) => state.setToontownMode);
+
+    const darkMode = useStore((state) => state.darkMode);
+    const toggleDarkMode = useStore((state) => state.toggleDarkMode);
+
     return (
         <>
             {/* {lightboxData && (
@@ -135,7 +141,7 @@ export default function SettingsModal({
                         {tab == 'Audio' &&
                             <>
                                 <Form.Label className="mb-0">Game Volume</Form.Label>
-                                <Form.Range 
+                                <Form.Range
                                     value={audioSettings?.game_volume}
                                     onChange={(value) => {
                                         console.log("Value", value)
@@ -147,7 +153,7 @@ export default function SettingsModal({
                                 />
 
                                 <Form.Label className="mb-0">Music Volume</Form.Label>
-                                <Form.Range 
+                                <Form.Range
                                     value={audioSettings?.music_volume}
                                     onChange={(value) => {
                                         console.log("Value", value)
@@ -203,7 +209,7 @@ export default function SettingsModal({
                                     type="switch"
                                     id="chat-speech-bubbles-switch"
                                     label="Game chat speech bubbles"
-                                    checked={speechBubblesEnabled}                                    
+                                    checked={speechBubblesEnabled}
                                     onChange={() => {
                                         console.log("TEST")
                                         useChatStore.setState({ speechBubblesEnabled: !speechBubblesEnabled });
@@ -212,20 +218,62 @@ export default function SettingsModal({
                             </div>
                         }
                         {tab == 'Other' &&
-                            <div className="mx-4">
-                                <div className="d-flex align-items-center">
-                                    <Form.Check
-                                        type="switch"
-                                        id="arcade-mode-switch"
-                                        label="Arcade Mode"
-                                        // value={enabled}
-                                        checked={arcadeMode}
-                                        onChange={() => {
-                                            setArcadeMode(!arcadeMode);
-                                        }}
-                                    />
+                            <div className="mx-4 pt-3">
+
+                                <div className="mb-3">
+                                    <div className="d-flex align-items-center">
+                                        <Form.Check
+                                            type="switch"
+                                            id="dark-mode-switch"
+                                            label="Dark Mode"
+                                            // value={enabled}
+                                            checked={darkMode}
+                                            onChange={() => {
+                                                toggleDarkMode();
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="small mt-2">
+                                        {`Dark Mode changes the game's color scheme to be easier on the eyes in low light environments.`}
+                                    </div>
                                 </div>
-                                <div className="small mt-2">Arcade Mode automates the end of game and starting new ones for hands off arcade fun.</div>
+
+                                <hr />
+
+                                <div className="mb-3">
+                                    <div className="d-flex align-items-center">
+                                        <Form.Check
+                                            type="switch"
+                                            id="arcade-mode-switch"
+                                            label="Arcade Mode"
+                                            // value={enabled}
+                                            checked={arcadeMode}
+                                            onChange={() => {
+                                                setArcadeMode(!arcadeMode);
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="small mt-2">Arcade Mode automates the end of game and starting new ones for hands off arcade fun.</div>
+                                </div>
+
+                                <hr />
+
+                                <div className="mb-3">
+                                    <div className="d-flex align-items-center">
+                                        <Form.Check
+                                            type="switch"
+                                            id="toontown-mode-switch"
+                                            label="Toontown Mode"
+                                            // value={enabled}
+                                            checked={toontownMode}
+                                            onChange={() => {
+                                                setToontownMode(!toontownMode);
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="small mt-2">Toontown Mode reskins the game to look like the classic Toontown Online game.</div>
+                                </div>
+
                             </div>
                         }
 

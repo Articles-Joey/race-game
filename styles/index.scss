@@ -11,17 +11,32 @@ i {
 
 input {
     width: 100%;
-    font-size: 1.5rem!important;
+    font-size: 1.5rem !important;
 }
 
 button {
-    font-size: 0.75rem!important;
+    font-size: 0.75rem !important;
 }
 
 .form-check.form-switch {
     margin-bottom: 0;
-    
+
     label {
         margin-top: 0.25rem;
+    }
+}
+
+.badge-hover {
+    cursor: pointer;
+
+    &.bg-danger {
+        opacity: 0.8;
+        transition-duration: 200ms;
+        // background-color: blue!important;
+
+        &:hover {
+            opacity: 1;
+            // background-color: green!important;
+        }
     }
 }

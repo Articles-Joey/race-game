@@ -61,9 +61,11 @@ export default function WinnerModal() {
                 >
                     <div>
 
-                        <div className='mb-2'>{`${gameState?.winner?.peer} has won the race!`}</div>
+                        <div className='my-2'>
+                            <b>{gameState?.winner?.nickname || gameState?.winner?.peer}</b><span>{` has won the race!`}</span>
+                        </div>
 
-                        <div className='fw-bold mb-3'>Congratulations!</div>
+                        {/* <div className='fw-bold mb-3'>Congratulations!</div> */}
 
                     </div>
                    

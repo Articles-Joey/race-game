@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import useGameStore from './hooks/useGameStore';
 import { useSearchParams } from 'next/navigation';
+import { useStore } from './hooks/useStore';
 
 const PeerLogic = () => {
 
@@ -59,18 +60,33 @@ const PeerLogic = () => {
         }
     };
 
+    const nickname = useStore((state) => state.nickname)
+
     useEffect(() => {
+
+        if (!hostConn || !nickname) return;
 
         setTargetId('')
 
+        sendToHost({
+            event: "PlayerNickname",
+            nickname: nickname
+        })
+
     }, [
-        myId, hostConn
+        myId, hostConn, nickname
     ]);
 
     const shouldBecomeHost = useRef(false);
     useEffect(() => {
 
-        if (server_type == "room-play" && !server_id) {
+        if (server_type == "room-play" && !server_id && !shouldBecomeHost.current) {
+            shouldBecomeHost.current = true;
+            console.log("Auto become host check SET TRUE")
+            handleStartHost();
+        }
+
+        if (server_type == "online-peer" && !server_id && !shouldBecomeHost.current) {
             shouldBecomeHost.current = true;
             console.log("Auto become host check SET TRUE")
             handleStartHost();
@@ -84,7 +100,12 @@ const PeerLogic = () => {
     const hasAutoConnected = useRef(false);
     useEffect(() => {
 
-        if (server_type == "room-play") {
+        // Auto connects to room-play and online-peer host when loading page from link
+        if (
+            server_type == "room-play"
+            ||
+            server_type == "online-peer"
+        ) {
 
             console.log(
                 "Auto connect check DETECTED",
@@ -117,153 +138,168 @@ const PeerLogic = () => {
     ]);
 
     return (
-        <div style={{ padding: '20px', border: '1px solid #ccc', borderRadius: '8px', maxWidth: '400px', background: '#f9f9f9', color: '#333' }}>
+        <div
+            className="peer-logic-component card"
+            style={{
+                maxWidth: '400px',
+                // padding: '20px', 
+                // border: '1px solid #ccc', 
+                // borderRadius: '8px', 
+                // background: '#f9f9f9', 
+                // color: '#333' 
+            }}
+        >
 
-            <h2>Peer Logic Control</h2>
+            <div className='card-body'>
 
-            <div style={{ marginBottom: '10px' }}>
-                <strong>Status: </strong>
-                {myId ? (
-                    <span style={{ color: 'green' }}>Online ({isHost ? 'Host' : 'Client'})</span>
-                ) : (
-                    <span style={{ color: 'red' }}>Offline</span>
+                <h6>PeerLogic.js</h6>
+
+                <div style={{ marginBottom: '10px' }}>
+                    <strong>Status: </strong>
+                    {myId ? (
+                        <span style={{ color: 'green' }}>Online ({isHost ? 'Host' : 'Client'})</span>
+                    ) : (
+                        <span style={{ color: 'red' }}>Offline</span>
+                    )}
+                    {isKicked && <span style={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }}>You have been kicked!</span>}
+                </div>
+    
+                {gameState?.status && (
+                    <div style={{ marginBottom: '10px', wordBreak: 'break-all' }}>
+                        <strong>Status: </strong> {gameState.status}
+                    </div>
                 )}
-                {isKicked && <span style={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }}>You have been kicked!</span>}
+    
+                {myId && (
+                    <div
+                        style={{ marginBottom: '10px', wordBreak: 'break-all' }}
+                        onClick={() => {
+                            navigator.clipboard.writeText(myId);
+                        }}
+                    >
+                        <strong>My ID: </strong> {myId}
+                    </div>
+                )}
+    
+                {!myId && (
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <button onClick={handleStartHost} style={{ padding: '5px 10px' }}>Start as Host</button>
+                        <button onClick={handleStartClient} style={{ padding: '5px 10px' }}>Start as Client</button>
+                    </div>
+                )}
+    
+                {isHost && (
+                    <div>
+    
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            {roomPlayClientRender ? 'True' : 'False'}
+                            <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
+                        </div>
+    
+                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                            <button
+                                onClick={() => {
+                                    setBoardLength(gameState?.boardLength - 1);
+                                }}
+                                style={{ padding: '5px 10px' }}>
+                                -
+                            </button>
+                            {gameState?.boardLength}
+                            <button
+                                onClick={() => {
+                                    setBoardLength(gameState?.boardLength + 1);
+                                }}
+                                style={{ padding: '5px 10px' }}>
+                                +
+                            </button>
+                        </div>
+    
+                    </div>
+                )}
+    
+                {myId && !isHost && !hostConn && (
+                    <div style={{ marginBottom: '10px' }}>
+                        <input
+                            type="text"
+                            placeholder="Enter Host ID"
+                            value={targetId}
+                            onChange={(e) => setTargetId(e.target.value)}
+                            style={{ marginRight: '5px', padding: '5px' }}
+                        />
+                        <button onClick={handleConnect} style={{ padding: '5px 10px' }}>Connect</button>
+                    </div>
+                )}
+    
+                {myId && (
+                    <div style={{ marginBottom: '10px' }}>
+                        <button onClick={disconnect} style={{ backgroundColor: '#ff4444', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px' }}>
+                            Disconnect
+                        </button>
+                    </div>
+                )}
+    
+                {/* Debug Info */}
+                {myId && (
+                    <div style={{ marginTop: '20px', fontSize: '0.9em', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                        <h4>Connections</h4>
+                        {
+                            // isHost 
+                            true
+                                ? (
+                                    <div>
+                                        Clients: {connections.length}
+                                        <ul>
+                                            {connections.map((c, i) => (
+                                                <li key={i}>
+                                                    {c.peer}
+                                                    <button
+                                                        onClick={() => removeConnection(c.peer)}
+                                                        style={{ marginLeft: '10px', padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                                                    >
+                                                        Kick
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <button onClick={handlePing} style={{ padding: '5px' }}>Broadcast Ping</button>
+                                        <button onClick={() => console.log(gameState)} style={{ padding: '5px' }}>Log gameState</button>
+                                        <ul>
+                                            {gameState?.players?.map((c, i) => (
+                                                <li key={i} style={{ border: '1px solid black' }}>
+                                                    <div>ID: {c.peer}</div>
+                                                    <div>Nickname: {c.nickname}</div>
+                                                    <div>Character: {c.character}</div>
+                                                    <div>Row: {c.row}</div>
+                                                    <div>X: {c.x}</div>
+                                                    <div>Spaces: {c.spaces}</div>
+                                                    <div>race_game_dump:</div>
+                                                    <div className='small'>
+                                                        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                                                            {JSON.stringify(c.race_game, null, 2)}
+                                                        </pre>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => removeConnection(c.peer)}
+                                                        style={{ padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
+                                                    >
+                                                        Kick
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        Host: {hostConn ? hostConn.peer : 'Not connected'}
+                                        <br />
+                                        {hostConn && <button onClick={handlePing} style={{ marginTop: '5px', padding: '5px' }}>Ping Host</button>}
+                                    </div>
+                                )}
+                    </div>
+                )}
+
             </div>
 
-            {gameState?.status && (
-                <div style={{ marginBottom: '10px', wordBreak: 'break-all' }}>
-                    <strong>Status: </strong> {gameState.status}
-                </div>
-            )}
-
-            {myId && (
-                <div
-                    style={{ marginBottom: '10px', wordBreak: 'break-all' }}
-                    onClick={() => {
-                        navigator.clipboard.writeText(myId);
-                    }}
-                >
-                    <strong>My ID: </strong> {myId}
-                </div>
-            )}
-
-            {!myId && (
-                <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                    <button onClick={handleStartHost} style={{ padding: '5px 10px' }}>Start as Host</button>
-                    <button onClick={handleStartClient} style={{ padding: '5px 10px' }}>Start as Client</button>
-                </div>
-            )}
-
-            {isHost && (
-                <div>
-
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                        {roomPlayClientRender ? 'True' : 'False'}
-                        <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
-                    </div>
-
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                        <button
-                            onClick={() => {
-                                setBoardLength(gameState?.boardLength - 1);
-                            }}
-                            style={{ padding: '5px 10px' }}>
-                            -
-                        </button>
-                        {gameState?.boardLength}
-                        <button
-                            onClick={() => {
-                                setBoardLength(gameState?.boardLength + 1);
-                            }}
-                            style={{ padding: '5px 10px' }}>
-                            +
-                        </button>
-                    </div>
-
-                </div>
-            )}
-
-            {myId && !isHost && !hostConn && (
-                <div style={{ marginBottom: '10px' }}>
-                    <input
-                        type="text"
-                        placeholder="Enter Host ID"
-                        value={targetId}
-                        onChange={(e) => setTargetId(e.target.value)}
-                        style={{ marginRight: '5px', padding: '5px' }}
-                    />
-                    <button onClick={handleConnect} style={{ padding: '5px 10px' }}>Connect</button>
-                </div>
-            )}
-
-            {myId && (
-                <div style={{ marginBottom: '10px' }}>
-                    <button onClick={disconnect} style={{ backgroundColor: '#ff4444', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px' }}>
-                        Disconnect
-                    </button>
-                </div>
-            )}
-
-            {/* Debug Info */}
-            {myId && (
-                <div style={{ marginTop: '20px', fontSize: '0.9em', borderTop: '1px solid #eee', paddingTop: '10px' }}>
-                    <h4>Connections</h4>
-                    {
-                        // isHost 
-                        true
-                            ? (
-                                <div>
-                                    Clients: {connections.length}
-                                    <ul>
-                                        {connections.map((c, i) => (
-                                            <li key={i}>
-                                                {c.peer}
-                                                <button
-                                                    onClick={() => removeConnection(c.peer)}
-                                                    style={{ marginLeft: '10px', padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                                                >
-                                                    Kick
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                    <button onClick={handlePing} style={{ padding: '5px' }}>Broadcast Ping</button>
-                                    <button onClick={() => console.log(gameState)} style={{ padding: '5px' }}>Log gameState</button>
-                                    <ul>
-                                        {gameState?.players?.map((c, i) => (
-                                            <li key={i} style={{ border: '1px solid black' }}>
-                                                <div>ID: {c.peer}</div>
-                                                <div>Nickname: {c.nickname}</div>
-                                                <div>Character: {c.character}</div>
-                                                <div>Row: {c.row}</div>
-                                                <div>X: {c.x}</div>
-                                                <div>Spaces: {c.spaces}</div>
-                                                <div>race_game_dump:</div>
-                                                <div className='small'>
-                                                    <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-                                                        {JSON.stringify(c.race_game, null, 2)}
-                                                    </pre>
-                                                </div>
-                                                <button
-                                                    onClick={() => removeConnection(c.peer)}
-                                                    style={{ padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                                                >
-                                                    Kick
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ) : (
-                                <div>
-                                    Host: {hostConn ? hostConn.peer : 'Not connected'}
-                                    <br />
-                                    {hostConn && <button onClick={handlePing} style={{ marginTop: '5px', padding: '5px' }}>Ping Host</button>}
-                                </div>
-                            )}
-                </div>
-            )}
         </div>
     );
 };

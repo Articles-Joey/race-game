@@ -23,7 +23,7 @@ Two types of multiplayer networking for this game
 
 Game Server Types
 
-- **Room Play** - Non-player Peer host with single shared screen for players.  
+- **Room Play** - Non-player Peer host with single shared screen for players. Similar to Jackbox Games, game is hosted on single screen and users connect from phones or computer.
 - **Peer Multiplayer** - Player Peer host, all players render their own game.
 - **Socket Multiplayer** - Server hosted games, enables anti cheat, saved stats, rewards, server browser.  
 
@@ -31,12 +31,19 @@ When joining games a server_type is set that handles the different logic needed
 
 ## Roadmap
 
-- Dynamic lane logic for any combination of player count and move count
-- Finish socket multiplayer logic
-- Finish game chat
+- [In Beta!] Dynamic lane logic for any combination of player count and move count
+- Finish socket multiplayer logic. Now in an unknown state after major peer logic changes.
+- Finish mystery spots logic for peer servers
+- Finish game chat for socket games
 - Arcade Mode
 - AMCOT MMO Intergration - Mini-game logic
 - ToonTown Mode - Reskins game to be ToonTown graphics
+
+## Known Bugs
+
+- Fix canMove being 1 round behind in state value
+- Fix move preview in peer servers, always shows row 1 right now
+- Fix darkMode, make sure everything is correct
 
 ## Inspiration
 

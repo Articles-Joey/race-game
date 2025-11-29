@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import Peer from 'peerjs';
+import { useStore } from './useStore';
+import useChatStore from './useChatStore';
 
 function getFirstAvailableRow(players) {
     if (!players || players.length === 0) return 1;
@@ -13,13 +15,13 @@ function getFirstAvailableRow(players) {
 }
 
 // Shared function to minimize code
-function createPlayer(id, players, bot) {
+function createPlayer(id, players, bot, nickname) {
 
     let firstAvailableRow = getFirstAvailableRow(players);
 
     let duplicateStructure = {
         position: 0,
-        nickname: 'Guest',
+        nickname: nickname || 'Guest',
         x: 0,
         row: firstAvailableRow,
         spaces: 0,
@@ -97,6 +99,9 @@ const useGameStore = create((set, get) => ({
         players: [],
         movesShown: 0,
         boardLength: 15,
+        mysterySpots: [
+            // Generate on game start
+        ],
     },
     setGameState: (newState) => {
 
@@ -115,7 +120,8 @@ const useGameStore = create((set, get) => ({
             createPlayer(
                 botId,
                 newPlayers,
-                true
+                true,
+                botId
             ),
         );
         set({
@@ -150,11 +156,14 @@ const useGameStore = create((set, get) => ({
             if (server_type == 'online-peer') {
 
                 let newPlayers = get().gameState.players
+                const nickname = useStore.getState().nickname || "Guest";
 
                 newPlayers.push(
                     createPlayer(
                         id,
-                        newPlayers
+                        newPlayers,
+                        false,
+                        nickname
                     ),
                 );
 
@@ -269,6 +278,77 @@ const useGameStore = create((set, get) => ({
 
                 }
 
+                if (data?.event === 'PlayerNickname') {
+
+                    console.log("PlayerNickname data received", conn.peer, data);
+
+                    // const newCharacterState = data.characterState;
+
+                    let tempPlayers = get().gameState.players;
+
+                    const newPlayers = tempPlayers.map(player => {
+                        if (player.peer === conn.peer) {
+                            return {
+                                ...player,
+                                nickname: data.nickname,
+                                race_game: {
+                                    ...player.race_game,
+                                    nickname: data.nickname
+                                }
+                            };
+                        }
+                        return player;
+                    });
+
+                    set({
+                        gameState: {
+                            ...get().gameState,
+                            players: newPlayers
+                        }
+                    });
+
+                    const { broadcastGameState } = get();
+                    broadcastGameState();
+
+                }
+
+                if (data?.event === 'ChatMessage') {
+
+                    let players = get().gameState.players
+                    let playerNicknameLookup = players.find(p => p.peer === conn.peer);
+
+                    console.log("ChatMessage data received", conn.peer, data, playerNicknameLookup);
+
+                    const simpleCensor = (text) => {
+                        // const bannedWords = ['retard', 'nigger'];
+                        // for (const word of bannedWords) {
+                        //     const regex = new RegExp(word, 'gi');
+                        //     if (regex.test(text)) {
+                        //         return "REDACTED";
+                        //     }
+                        // }
+                        return text;
+                    }
+
+                    let finalMessage = simpleCensor(data.message);
+
+                    // Host adds their own message
+                    const addMessage = useChatStore.getState().addMessage;
+                    addMessage({
+                        sender: conn.peer,
+                        text: finalMessage,
+                        nickname: playerNicknameLookup?.nickname || null
+                    });
+
+                    const { broadcastPeerChatMessage } = get();
+                    broadcastPeerChatMessage(
+                        conn.peer,
+                        finalMessage,
+                        playerNicknameLookup?.nickname || null
+                    );
+
+                }
+
             });
 
             conn.on('close', () => {
@@ -325,6 +405,17 @@ const useGameStore = create((set, get) => ({
                 set({ gameState: data.gameState });
             }
 
+            if (data?.event === 'ChatMessage') {
+                // TODO - Handle incoming chat message
+                console.log('Chat message received:', data);
+                const addMessage = useChatStore.getState().addMessage;
+                addMessage({
+                    ...data,
+                    sender: data.id,
+                    text: data.message
+                });
+            }
+
             if (data?.event === 'ReturnToLobby') {
                 // TODO
             }
@@ -376,6 +467,9 @@ const useGameStore = create((set, get) => ({
     },
 
     removeConnection: (peerId) => {
+
+        console.log("Removing connection for peerId:", peerId);
+
         const { connections } = get();
         const conn = connections.find((c) => c.peer === peerId);
         if (conn) {
@@ -383,6 +477,36 @@ const useGameStore = create((set, get) => ({
             setTimeout(() => conn.close(), 500);
         }
         set((state) => ({ kickedIds: [...state.kickedIds, peerId] }));
+
+        const { broadcastGameState } = get();
+        broadcastGameState();
+
+    },
+
+    removeBot: (id) => {
+
+        console.log("Removing bot for id:", id);
+
+        // const { connections } = get();
+        // const conn = connections.find((c) => c.id === id);
+        // if (conn) {
+        //     conn.send({ event: 'Kicked' });
+        //     setTimeout(() => conn.close(), 500);
+        // }
+        // set((state) => ({ kickedIds: [...state.kickedIds, peerId] }));
+
+        let newPlayers = get().gameState.players;
+        newPlayers = newPlayers.filter((player) => player.peer !== id);
+        set({
+            gameState: {
+                ...get().gameState,
+                players: newPlayers
+            }
+        });
+
+        const { broadcastGameState } = get();
+        broadcastGameState();
+
     },
 
     broadcastGameState: () => {
@@ -397,6 +521,23 @@ const useGameStore = create((set, get) => ({
                 });
             }
         });
+    },
+
+    broadcastPeerChatMessage: (id, message, nickname) => {
+
+        const { connections } = get();
+
+        connections.forEach((conn) => {
+            if (conn.open) {
+                conn.send({
+                    event: 'ChatMessage',
+                    id,
+                    message,
+                    nickname
+                });
+            }
+        });
+
     },
 
     disconnect: () => {
@@ -452,6 +593,8 @@ const useGameStore = create((set, get) => ({
 
                         let newPlayer = { ...player };
                         let newPlayerRaceGame = { ...player?.race_game };
+
+                        newPlayer.canMove = false;
 
                         // If duplicate spaces found, set canMove to false
                         if (spacesCounts[newPlayer.spaces] > 1) {
@@ -576,11 +719,22 @@ const useGameStore = create((set, get) => ({
 
     startGame: () => {
 
+        const currentPlayers = get().gameState.players;
+        const currentBoardLength = get().gameState.boardLength;
+
+        const mysterySpots = Array.from({ length: currentPlayers.length }, () => ({
+            x: Math.floor(Math.random() * currentBoardLength) + 1,
+            row: Math.floor(Math.random() * currentPlayers.length) + 1
+        }));
+
+        console.log("Starting game:", currentPlayers, mysterySpots);
+
         set({
             gameState: {
                 ...get().gameState,
                 status: 'In Progress',
-                time: 10
+                time: 10,
+                mysterySpots,
             }
         });
 

@@ -14,6 +14,7 @@ import SocketLogicHandler from "@/components/SocketLogicHandler";
 import AudioHandler from '@/components/AudioHandler';
 // import PeerHandlerTest from '@/components/PeerHandlerTest';
 import GlobalClientModals from '@/components/UI/GlobalClientModals';
+import DarkModeHandler from '@/components/UI/DarkModeHandler';
 import { Suspense } from 'react';
 // import dynamic from 'next/dynamic';
 
@@ -62,6 +63,7 @@ export default function RootLayout({ children }) {
         <AudioHandler />
 
         <Suspense>
+          <DarkModeHandler />
           <GlobalClientModals />
         </Suspense>
 

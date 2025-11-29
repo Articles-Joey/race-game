@@ -17,6 +17,7 @@ import CameraControls from "./CameraControls";
 import { useSocketStore } from "@/components/hooks/useSocketStore";
 import useCameraStore from "../hooks/useCameraStore";
 import useGameStore from "../hooks/useGameStore";
+import { useStore } from "../hooks/useStore";
 
 function GameCanvas(props) {
 
@@ -24,6 +25,8 @@ function GameCanvas(props) {
 
     // const setCameraState = useCameraStore((state) => state?.setCameraState);
     const cameraState = useCameraStore((state) => state?.cameraState);
+
+    const darkMode = useStore((state) => state.darkMode);
 
     const gameState = useGameStore((state) => state?.gameState);
     const players = useGameStore((state) => state?.gameState?.players);
@@ -88,7 +91,7 @@ function GameCanvas(props) {
 
             <Sky
             // distance={450000}
-            // sunPosition={[0, 1, 0]}
+            sunPosition={[0, darkMode ? -1 : 1, 0]}
             // inclination={0}
             // azimuth={0.25}
             // {...props} 
@@ -111,10 +114,10 @@ function GameCanvas(props) {
             position={[0, -0.3, -10]}
         /> */}
 
-            <ambientLight intensity={1.4} />
+            <ambientLight intensity={darkMode ? 0.2 : 1.4} />
 
-            <spotLight position={[70, 100, 0]} angle={0.5} penumbra={1} intensity={20000} />
-            <pointLight position={[-10, -10, -10]} intensity={20000} />
+            <spotLight position={[70, 100, 0]} angle={0.5} penumbra={1} intensity={darkMode ? 10000 : 20000} />
+            {!darkMode && <pointLight position={[-10, -10, -10]} intensity={10000} />}
 
             <group position={[7, -1.3, -5]} rotation={[0, -Math.PI / 2, 0]}>
                 <BleacherBox

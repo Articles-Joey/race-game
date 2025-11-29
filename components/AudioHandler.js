@@ -12,7 +12,7 @@ export default function AudioHandler() {
 
     if (typeof window !== 'undefined') {
         music = new Audio(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/race-game-audio-loop.mp3`);
-        music.volume = audioSettings.enabled ? (audioSettings?.game_volume / 100) : 0; // Set volume based on initial state
+        music.volume = audioSettings?.enabled ? (audioSettings?.game_volume / 100) : 0; // Set volume based on initial state
     }
 
     useEffect(() => {

@@ -48,11 +48,18 @@ export const useStore = create()(
       arcadeMode: false,
       setArcadeMode: (arcadeMode) => set({ arcadeMode }),
 
+      // Toontown mode changes graphics to be more ToonTown like
+      toontownMode: false,
+      setToontownMode: (toontownMode) => set({ toontownMode }),
+
       character: {
         model: 'Duck',
         color: '#FFD801'
       },
       setCharacter: (character) => set({ character }),
+
+      nickname: "",
+      setNickname: (nickname) => set({ nickname }),
 
       gameState: {},
       setGameState: (gameState) => set({ gameState }),
