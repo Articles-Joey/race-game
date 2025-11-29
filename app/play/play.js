@@ -861,10 +861,12 @@ function MoveButtons({
                         2,
                         3,
                         4,
-                        ...(process.env.NODE_ENV === 'development' &&
+                        ...(process.env.NODE_ENV === 'development' ?
                             [
                                 gameState?.boardLength,
                             ]
+                            :
+                            []
                         )
                     ].map(space => {
 
