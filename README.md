@@ -41,7 +41,6 @@ When joining games a server_type is set that handles the different logic needed
 
 ## Known Bugs
 
-- Fix canMove being 1 round behind in state value
 - Fix move preview in peer servers, always shows row 1 right now
 - Fix darkMode, make sure everything is correct
 

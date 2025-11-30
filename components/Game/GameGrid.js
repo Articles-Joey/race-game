@@ -80,7 +80,7 @@ function Box(props) {
     // Hold state for hovered and clicked events
     const [hovered, hover] = useState(false)
     const [clicked, click] = useState(false)
-    
+
     // Subscribe this component to the render-loop, rotate the mesh every frame
     // useFrame((state, delta) => (ref.current.rotation.x += 0.01))
 
@@ -146,7 +146,7 @@ function Box(props) {
                 onPointerOut={() => hover(false)}
                 rotation={[-Math.PI / 2, 0, 0]}
             >
-                <planeGeometry args={[2, 2]}  />
+                <planeGeometry args={[2, 2]} />
                 <meshStandardMaterial
                     color={
                         props.color ?
@@ -175,8 +175,8 @@ function Box(props) {
                     // click(!clicked);
                     // hover(true);
                 }}
-                // onPointerOver={() => hover(true)}
-                // onPointerOut={() => hover(false)}
+            // onPointerOver={() => hover(true)}
+            // onPointerOut={() => hover(false)}
             >
                 <boxGeometry args={[2, 0.5, 2]} />
                 <meshStandardMaterial
@@ -198,7 +198,7 @@ function Box(props) {
 function GameGrid(props) {
 
     const { gameState, player, move } = props
-    const { mystery_spots } = gameState
+    // const { mystery_spots } = gameState
 
     let starRows = []
 
@@ -208,7 +208,7 @@ function GameGrid(props) {
     const mysterySpots = useGameStore((state) => state.gameState.mysterySpots);
 
     useEffect(() => {
-        
+
         if (hoveredList.length > 0) {
             document.body.style.cursor = 'pointer'
         } else {
@@ -239,8 +239,8 @@ function GameGrid(props) {
             let edgeTile = (j == 1 || j == boardLength)
 
             let hasMysteryLookup = (
-                mystery_spots?.find((player) => (player.row === i + 1 && player.x === j - 1))
-                ||
+                // mystery_spots?.find((player) => (player.row === i + 1 && player.x === j - 1))
+                // ||
                 mysterySpots?.find((spot) => (spot.row === i + 1 && spot.x === j - 1))
             );
 
@@ -248,7 +248,8 @@ function GameGrid(props) {
 
             let clickable = false
             if (
-                player?.race_game?.row == (i + 1)
+                // player?.race_game?.row == (i + 1)
+                player?.row == (i + 1)
                 &&
                 (
                     player?.race_game?.x === j - 2
@@ -274,7 +275,14 @@ function GameGrid(props) {
                     key={`box-${i}-${j}`}
                     box_index={j - 1}
                     color={
-                        (edgeTile) ? 'rgb(160, 120, 73)' : (clickable ? 'rgb(19, 197, 197)' : ((hasMysteryLookup && !usedMysteryLookup) ? 'rgb(255, 193, 7)' : ''))
+                        (edgeTile) ?
+                            'rgb(160, 120, 73)'
+                            :
+                            (clickable ?
+                                'rgb(19, 197, 197)'
+                                :
+                                ((hasMysteryLookup && !usedMysteryLookup) ? 'rgb(255, 193, 7)' : '')
+                            )
                     }
                     clickable={clickable}
                     clickableData={{

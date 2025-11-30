@@ -32,6 +32,10 @@ export const useStore = create()(
       setDevDebug: (value) => set({ devDebug: value }),
       toggleDevDebug: () => set({ devDebug: !get().devDebug }),
 
+      sidebar: true,
+      setSidebar: (value) => set({ sidebar: value }),
+      toggleSidebar: () => set({ sidebar: !get().sidebar }),
+
       showMenu: false,
       setShowMenu: (value) => set({ showMenu: value }),
       toggleShowMenu: () => set({ showMenu: !get().showMenu }),

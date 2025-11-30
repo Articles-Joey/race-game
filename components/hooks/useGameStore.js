@@ -388,6 +388,7 @@ const useGameStore = create((set, get) => ({
             conn.on('error', (err) => {
                 console.error('Connection error:', err);
             });
+            
         });
 
         peer.on('error', (err) => {
@@ -595,56 +596,54 @@ const useGameStore = create((set, get) => ({
                 clearInterval(get().timerInterval);
                 set({ timerInterval: null });
                 return;
-            }
+            }            
 
             if (gameState.movesShown > 0) {
+
                 const newMovesShown = gameState.movesShown - 1;
 
                 if (newMovesShown === 0) {
-                    const currentPlayers = get().gameState.players;
-                    const spacesCounts = {};
 
-                    // Count occurrences of each 'spaces' value
-                    currentPlayers.forEach((p) => {
-                        spacesCounts[p.spaces] = (spacesCounts[p.spaces] || 0) + 1;
-                    });
+                    const currentPlayers = get().gameState.players;
 
                     const updatedPlayers = currentPlayers.map((player) => {
 
                         let newPlayer = { ...player };
                         let newPlayerRaceGame = { ...player?.race_game };
 
-                        newPlayer.canMove = false;
-
-                        // If duplicate spaces found, set canMove to false
-                        if (spacesCounts[newPlayer.spaces] > 1) {
-
-                            newPlayer.canMove = false;
-
-                            newPlayer.spaces = 0;
-                            newPlayerRaceGame.spaces = 0;
-                            newPlayer.race_game = newPlayerRaceGame;
-
-                        } else {
-                            // If not colliding, ensure canMove is true (resetting previous state)
-                            newPlayer.canMove = true;
-
+                        if (newPlayer.canMove) {
                             let tempNewPlayerX = (newPlayer.spaces)
-
                             newPlayer.x += tempNewPlayerX;
-                            newPlayer.spaces = 0;
-
-                            // Add spaces to x and reset spaces
-                            // newPlayer.x += newPlayer.spaces;
-                            // newPlayer.spaces = 0;
-
                             newPlayerRaceGame.x += tempNewPlayerX;
-                            newPlayerRaceGame.spaces = 0;
-
-                            newPlayer.race_game = newPlayerRaceGame;
                         }
+
+                        newPlayer.spaces = 0;
+                        newPlayerRaceGame.spaces = 0;
+                        newPlayer.race_game = newPlayerRaceGame;
+
                         return newPlayer;
                     });
+
+                    // Check for mystery spots
+                    let activeMysterySpot = null;
+                    let updatedMysterySpots = [...(get().gameState.mysterySpots || [])];
+
+                    for (const player of updatedPlayers) {
+
+                        const spotIndex = updatedMysterySpots.findIndex(s => s.x === player.x && s.row === player.row);
+
+                        if (spotIndex !== -1) {
+                            const spot = updatedMysterySpots[spotIndex];
+                            activeMysterySpot = {
+                                mysterySpot: spot,
+                                player: player,
+                                timer: 5
+                            };
+                            updatedMysterySpots.splice(spotIndex, 1);
+                            break;
+                        }
+                        
+                    }
 
                     // TODO - If two people win at same time it just picks first one in list, fix that
 
@@ -665,14 +664,45 @@ const useGameStore = create((set, get) => ({
                             movesShown: 0,
                             time: 10,
                             winner: winner || state.gameState.winner,
-                            status: winner ? 'Finished' : state.gameState.status
+                            status: winner ? 'Finished' : state.gameState.status,
+                            activeMysterySpot: activeMysterySpot || null,
+                            mysterySpots: updatedMysterySpots
+                        }
+                    }));
+
+                } else {
+
+                    set((state) => ({
+                        gameState: {
+                            ...state.gameState,
+                            movesShown: newMovesShown
+                        }
+                    }));
+                    
+                }
+
+                broadcastGameState();
+                return;
+            }
+
+            if (gameState.activeMysterySpot) {
+                const newTimer = gameState.activeMysterySpot.timer - 1;
+                
+                if (newTimer <= 0) {
+                     set((state) => ({
+                        gameState: {
+                            ...state.gameState,
+                            activeMysterySpot: null
                         }
                     }));
                 } else {
                     set((state) => ({
                         gameState: {
                             ...state.gameState,
-                            movesShown: newMovesShown
+                            activeMysterySpot: {
+                                ...state.gameState.activeMysterySpot,
+                                timer: newTimer
+                            }
                         }
                     }));
                 }
@@ -691,8 +721,10 @@ const useGameStore = create((set, get) => ({
             if (newTime < 0) {
                 console.log("Timer hit 0");
 
-                const currentPlayers = get().gameState.players;
-                const playersWithBotMoves = currentPlayers.map((player) => {
+                let currentPlayers = get().gameState.players;
+                
+                // 1. Handle Bot Moves
+                currentPlayers = currentPlayers.map((player) => {
                     if (player.bot) {
                         const randomSpaces = Math.floor(Math.random() * 4) + 1;
                         return {
@@ -707,16 +739,29 @@ const useGameStore = create((set, get) => ({
                     return player;
                 });
 
-                set((state) => ({
-                    gameState: {
-                        ...state.gameState,
-                        players: playersWithBotMoves
+                // 2. Calculate Collisions (canMove)
+                const spacesCounts = {};
+                currentPlayers.forEach((p) => {
+                    if (p.spaces > 0) {
+                         spacesCounts[p.spaces] = (spacesCounts[p.spaces] || 0) + 1;
                     }
-                }));
+                });
+
+                const playersWithStatus = currentPlayers.map((player) => {
+                    let newPlayer = { ...player };
+                    // If duplicate spaces found, set canMove to false
+                    if (spacesCounts[newPlayer.spaces] > 1) {
+                        newPlayer.canMove = false;
+                    } else {
+                        newPlayer.canMove = true;
+                    }
+                    return newPlayer;
+                });
 
                 set((state) => ({
                     gameState: {
                         ...state.gameState,
+                        players: playersWithStatus,
                         movesShown: 3
                     }
                 }));

@@ -45,7 +45,13 @@ function RenderCharacter({ character }) {
 
 function Box(props) {
 
-    const { gameState, colPlayer, valid } = props;
+    const { 
+        // gameState, 
+        colPlayer, 
+        valid 
+    } = props;
+
+    const gameState = useGameStore((state) => state?.gameState);
 
     let character = colPlayer?.race_game?.character;
 
@@ -165,7 +171,11 @@ export default function PlayersGrid(props) {
     for (let i = 0; i < lanes; i++) {
         let starCol = [];
 
-        let rowPlayers = players.filter((player) => player.race_game.row === i + 1);
+        let tempPlayers = useGameStore.getState().gameState.players;
+
+        let rowPlayers = tempPlayers.filter((player) => player.race_game.row === i + 1);
+
+        // let rowPlayers = players.filter((player) => player.race_game.row === i + 1);
 
         if (rowPlayers.length > 0) {
             starCol = Array.from({ length: 15 }, (_, j) => {
@@ -177,7 +187,7 @@ export default function PlayersGrid(props) {
                     return (
                         <Box
                             key={`${i}-${j}`}
-                            gameState={gameState}
+                            // gameState={gameState}
                             position={[(j + 1) * 2, 1, i * 2]}
                             colPlayer={colPlayer}
                             valid={

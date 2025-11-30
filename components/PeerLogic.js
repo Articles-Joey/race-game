@@ -156,6 +156,21 @@ const PeerLogic = () => {
 
                 <h6>PeerLogic.js</h6>
 
+                {!isHost &&
+                    <div>
+                        hostConn: {hostConn ? 'Connected' : 'Not Connected'}
+                    </div>
+                }
+
+                {
+                    (!isHost && myId && !hostConn)
+                    &&
+                    <div>
+                        Connection Issues? VPN Strict NAT (type 3) will prevent connections.<br />
+                        Try using a VPN with Open NAT 1 or Moderate NAT 2 settings.<br />
+                    </div>
+                }
+
                 <div style={{ marginBottom: '10px' }}>
                     <strong>Status: </strong>
                     {myId ? (
@@ -165,13 +180,13 @@ const PeerLogic = () => {
                     )}
                     {isKicked && <span style={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }}>You have been kicked!</span>}
                 </div>
-    
+
                 {gameState?.status && (
                     <div style={{ marginBottom: '10px', wordBreak: 'break-all' }}>
                         <strong>Status: </strong> {gameState.status}
                     </div>
                 )}
-    
+
                 {myId && (
                     <div
                         style={{ marginBottom: '10px', wordBreak: 'break-all' }}
@@ -182,22 +197,22 @@ const PeerLogic = () => {
                         <strong>My ID: </strong> {myId}
                     </div>
                 )}
-    
+
                 {!myId && (
                     <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                         <button onClick={handleStartHost} style={{ padding: '5px 10px' }}>Start as Host</button>
                         <button onClick={handleStartClient} style={{ padding: '5px 10px' }}>Start as Client</button>
                     </div>
                 )}
-    
+
                 {isHost && (
                     <div>
-    
+
                         <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                             {roomPlayClientRender ? 'True' : 'False'}
                             <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
                         </div>
-    
+
                         <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                             <button
                                 onClick={() => {
@@ -215,10 +230,10 @@ const PeerLogic = () => {
                                 +
                             </button>
                         </div>
-    
+
                     </div>
                 )}
-    
+
                 {myId && !isHost && !hostConn && (
                     <div style={{ marginBottom: '10px' }}>
                         <input
@@ -231,7 +246,7 @@ const PeerLogic = () => {
                         <button onClick={handleConnect} style={{ padding: '5px 10px' }}>Connect</button>
                     </div>
                 )}
-    
+
                 {myId && (
                     <div style={{ marginBottom: '10px' }}>
                         <button onClick={disconnect} style={{ backgroundColor: '#ff4444', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px' }}>
@@ -239,7 +254,7 @@ const PeerLogic = () => {
                         </button>
                     </div>
                 )}
-    
+
                 {/* Debug Info */}
                 {myId && (
                     <div style={{ marginTop: '20px', fontSize: '0.9em', borderTop: '1px solid #eee', paddingTop: '10px' }}>
@@ -274,6 +289,7 @@ const PeerLogic = () => {
                                                     <div>Row: {c.row}</div>
                                                     <div>X: {c.x}</div>
                                                     <div>Spaces: {c.spaces}</div>
+                                                    <div>canMove: {c.canMove ? 'True' : 'False'}</div>
                                                     <div>race_game_dump:</div>
                                                     <div className='small'>
                                                         <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>

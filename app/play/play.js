@@ -95,10 +95,14 @@ export default function RaceGame() {
     const [showInviteModal, setShowInviteModal] = useState(false)
     // const [showInfoModal, setShowInfoModal] = useState(false)
     // const [showSettingsModal, setShowSettingsModal] = useState(false)
-    const [activeMysterySpot, setActiveMysterySpot] = useState(false)
 
-    const showMenu = useStore((state) => state?.showMenu);
-    const setShowMenu = useStore((state) => state?.setShowMenu);
+    // const [activeMysterySpot, setActiveMysterySpot] = useState(false)
+
+    const character = useStore((state) => state?.character);
+    // const showMenu = useStore((state) => state?.showMenu);
+    // const setShowMenu = useStore((state) => state?.setShowMenu);
+    // const sidebar = useStore((state) => state?.sidebar);
+    // const devDebug = useStore((state) => state?.devDebug);
     // const [showMenu, setShowMenu] = useState(false)
 
     // const [audioSettings, setAudioSettings] = useState({
@@ -106,10 +110,10 @@ export default function RaceGame() {
     //     volume: 0.25
     // })
 
-    const [character, setCharacter] = useLocalStorageNew("game:race-game:character", {
-        model: 'Duck',
-        color: '#000000'
-    })
+    // const [character, setCharacter] = useLocalStorageNew("game:race-game:character", {
+    //     model: 'Duck',
+    //     color: '#000000'
+    // })
 
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
@@ -128,6 +132,7 @@ export default function RaceGame() {
 
     const isHost = useGameStore((state) => state.isHost);
     const gameState = useGameStore((state) => state?.gameState);
+    const activeMysterySpot = useGameStore((state) => state?.gameState?.activeMysterySpot);
     const setGameState = useGameStore((state) => state?.setGameState);
     const players = useGameStore((state) => state?.gameState?.players);
     const createBot = useGameStore((state) => state?.createBot);
@@ -340,7 +345,9 @@ export default function RaceGame() {
                 {(activeMysterySpot?.timer >= 0) &&
                     <ArticlesModal
                         show={(activeMysterySpot?.timer >= 0)}
-                        setShow={setActiveMysterySpot}
+                        setShow={() => {
+                            // setActiveMysterySpot(false)
+                        }}
                         title="Mystery Spot!"
                         disableClose
                     // action={(setShowModal) => {
@@ -400,10 +407,10 @@ export default function RaceGame() {
                                     <div className="card-header  py-3 d-flex flex-column justify-content-center align-items-center">
 
                                         <div
-                                            style={{ height: '150px', position: 'relative' }}
+                                            style={{ height: '200px', position: 'relative' }}
                                             className='d-flex justify-content-center w-100 mb-3'
                                         >
-                                            <div style={{ width: '150px', height: '150px', position: 'relative' }}>
+                                            <div style={{ width: '200px', height: '200px', position: 'relative' }}>
                                                 {mounted &&
                                                     <QRCodeCanvas
                                                         value={
@@ -411,7 +418,7 @@ export default function RaceGame() {
                                                         }
                                                         className=''
 
-                                                        size={150}
+                                                        size={200}
                                                     />
                                                 }
                                             </div>
@@ -421,8 +428,14 @@ export default function RaceGame() {
                                             <i style={{ fontSize: '1.75rem' }} className="fad fa-hourglass fa-spin"></i>
                                         </div>
 
-                                        <b className="mb-0">Waiting on more players | {players.length}/4</b>
+                                        <b className="mb-0">
+                                            <span>Waiting on more players</span>
+                                            {/* <span> | {players.length}/4</span> */}
+                                        </b>
+
                                         <small>Need at least 2 players to start.</small>
+                                        <small>Plays best with 4 players.</small>
+                                        <small>Up to 100 players supported!</small>
 
                                     </div>
 
@@ -438,11 +451,17 @@ export default function RaceGame() {
                                             (
                                                 (
                                                     server_type == "online-peer"
-                                                    ||
-                                                    server_type == "room-play"
                                                 )
                                                 &&
                                                 gameState?.players?.length > 0
+                                            )
+                                            ||
+                                            (
+                                                server_type == "room-play"
+                                                // &&
+                                                // isHost
+                                                // &&
+                                                // myId
                                             )
                                         )
                                             ?
@@ -752,65 +771,135 @@ export default function RaceGame() {
                             </>
                     }
 
-                    <div className='info-controls card card-articles'>
-
-                        <ArticlesButton
-                            className={'d-lg-none'}
-                            active={showMenu}
-                            onClick={() => {
-                                setShowMenu(!showMenu)
-                            }}
-                        >
-                            Menu
-                        </ArticlesButton>
-
-                        <div className="timer">
-
-                            <i style={{ fontSize: '1.75rem' }} className="fad fa-alarm-clock"></i>
-
-                            {gameState?.status == "In Lobby" && <h5 className="mb-0">{"In Lobby"}</h5>}
-                            {gameState?.status == "In Progress" && <h5 className="mb-0">{gameState?.time}</h5>}
-
-                            {/* <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span> */}
-
-                            {(gameState?.status == "In Progress" && gameState?.movesShown !== 0) &&
-                                <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span>
-                            }
-
-                        </div>
-
-                        <div className='small d-none d-lg-block'>
-
-                            <div className='d-flex'>
-                                <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
-                                <div className='me-2'>Y: {cameraState?.position?.y?.toFixed(2)}</div>
-                                <div>Z: {cameraState?.position?.z?.toFixed(2)}</div>
-                            </div>
-
-                            <div className='d-flex'>
-                                <div className='me-2'>X: {cameraState?.rotation?.x.toFixed(2)}</div>
-                                <div className='me-2'>Y: {cameraState?.rotation?.y.toFixed(2)}</div>
-                                <div>Z: {cameraState?.rotation?.z.toFixed(2)}</div>
-                            </div>
-
-                        </div>
-
-                        {/* Never show if room play client */}
-                        {!showRoomPlayMoveButtons &&
-                            <MoveButtons
-                                move={move}
-                            />
-                        }
-
-                    </div>
+                    {/* <InfoControls 
+                        showRoomPlayMoveButtons={showRoomPlayMoveButtons}
+                        move={move}
+                    /> */}
 
                 </div>
+
+                <InfoControls
+                    showRoomPlayMoveButtons={showRoomPlayMoveButtons}
+                    move={move}
+                />
 
             </div>
             {/* } */}
         </>
 
     );
+}
+
+function InfoControls({
+    showRoomPlayMoveButtons,
+    move
+}) {
+
+    const searchParams = useSearchParams()
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    // const server = searchParamsObject?.server_id
+    const { server_id, server_type } = searchParamsObject
+
+    const showMenu = useStore((state) => state?.showMenu);
+    const setShowMenu = useStore((state) => state?.setShowMenu);
+    const sidebar = useStore((state) => state?.sidebar);
+    const devDebug = useStore((state) => state?.devDebug);
+
+    // const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
+    // const setCameraUpdate = useCameraStore((state) => state?.setCameraUpdate);
+    const cameraState = useCameraStore((state) => state?.cameraState);
+    // const setCameraState = useCameraStore((state) => state?.setCameraState);
+
+    // const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
+
+    // const [debugPanel, setDebugPanel] = useState(true);
+    // useHotkeys('esc', () => {
+    //     // setDebugPanel(prev => !prev)
+    //     // dispatch(toggleDevDebug())
+    //     alert("Gotta fix")
+    // });
+
+    // const [mounted, setMounted] = useState(false)
+
+    // const [roundTimer, setRoundTimer] = useState(null);
+
+    // const [players, setPlayers] = useState([]);
+
+    // const isHost = useGameStore((state) => state.isHost);
+    const gameState = useGameStore((state) => state?.gameState);
+    // const setGameState = useGameStore((state) => state?.setGameState);
+    // const players = useGameStore((state) => state?.gameState?.players);
+    // const createBot = useGameStore((state) => state?.createBot);
+
+    // const myId = useGameStore((state) => state?.myId);
+    // const sendToHost = useGameStore((state) => state?.sendToHost);
+    // const startGame = useGameStore((state) => state.startGame);
+    // const removeConnection = useGameStore((state) => state.removeConnection);
+    // const removeBot = useGameStore((state) => state.removeBot);
+    // const [gameState, setGameState] = useState(false)
+
+    // const [renderMode, setRenderMode] = useState('2D');
+    // const renderMode = useStore((state) => state?.renderMode);
+
+    return (
+        <div className='info-controls card card-articles'>
+
+            <ArticlesButton
+                className={sidebar ? 'd-lg-none' : ''}
+                active={showMenu}
+                onClick={() => {
+                    setShowMenu(!showMenu)
+                }}
+            >
+                Menu
+            </ArticlesButton>
+
+            <div className="timer">
+
+                <i style={{ fontSize: '1.75rem' }} className="fad fa-alarm-clock"></i>
+
+                {gameState?.status == "In Lobby" && <h5 className="mb-0">{"In Lobby"}</h5>}
+                {gameState?.status == "In Progress" && <h5 className="mb-0">{gameState?.time}</h5>}
+
+                {/* <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span> */}
+
+                {(gameState?.status == "In Progress" && gameState?.movesShown !== 0) &&
+                    <span className='badge bg-dark ms-2'>{gameState?.movesShown}</span>
+                }
+
+            </div>
+
+            <div className='small d-none d-lg-block'>
+
+                {
+                    devDebug &&
+                    <>
+                        <div className='d-flex'>
+                            <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
+                            <div className='me-2'>Y: {cameraState?.position?.y?.toFixed(2)}</div>
+                            <div>Z: {cameraState?.position?.z?.toFixed(2)}</div>
+                        </div>
+
+                        <div className='d-flex'>
+                            <div className='me-2'>X: {cameraState?.rotation?.x.toFixed(2)}</div>
+                            <div className='me-2'>Y: {cameraState?.rotation?.y.toFixed(2)}</div>
+                            <div>Z: {cameraState?.rotation?.z.toFixed(2)}</div>
+                        </div>
+                    </>
+                }
+
+            </div>
+
+            {/* Never show if room play client */}
+            {!showRoomPlayMoveButtons &&
+                <MoveButtons
+                    move={move}
+                />
+            }
+
+        </div>
+    )
+
 }
 
 function MoveButtons({

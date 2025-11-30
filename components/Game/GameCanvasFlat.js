@@ -3,6 +3,7 @@ import { useEffect, useContext, useRef, useState, Suspense } from 'react';
 import { useStore } from "../hooks/useStore";
 import { useSearchParams } from 'next/navigation';
 import { useSocketStore } from '../hooks/useSocketStore';
+import useGameStore from '../hooks/useGameStore';
 
 export default function GameCanvasFlat() {
 
@@ -30,6 +31,11 @@ export default function GameCanvasFlat() {
     const [threeDimensionalLoaded, setThreeDimensionalLoaded] = useState(false)
 
     const [roundTimer, setRoundTimer] = useState(null);
+
+    const darkMode = useStore((state) => state.darkMode);
+
+    const gameState = useGameStore((state) => state?.gameState);
+    const players = useGameStore((state) => state?.gameState?.players);
 
     useEffect(() => {
 
@@ -106,12 +112,74 @@ export default function GameCanvasFlat() {
         // const context = canvasPlayersRef.current.getContext('2d')
     }
 
+    // useEffect(() => {
+
+    //     // if (server && mounted && !boardPainted) {
+    //     //     drawBoard()
+    //     //     setBoardPainted(true)
+    //     // }
+
+    //     drawBoard()
+    //     setBoardPainted(true)
+
+    // }, [
+    //     // server, mounted
+    // ])
+
     useEffect(() => {
-        if (server && mounted && !boardPainted) {
-            drawBoard()
-            setBoardPainted(true)
-        }
-    }, [server, mounted])
+
+        // if (canvasRef && mounted) {
+        //     setCanvasRefContext(
+        //         canvasRef.current.getContext('2d')
+        //     )
+        // }
+
+        drawBoard()
+        setBoardPainted(true)
+
+    }, [gameState]);
+
+    useEffect(() => {
+
+        const canvasPlayers = canvasPlayersRef.current
+        canvasPlayersRef.current.width = 1500;
+        canvasPlayersRef.current.height = 400;
+
+        const canvas = canvasPlayersRef.current
+        const context = canvas.getContext('2d')
+
+        context.clearRect(0, 0, 1500, 400);
+
+        // msg.map(player => {
+        //     drawPlayer( player.x, player.y, context )
+        // })
+
+        gameState?.mysterySpots?.map(mystery_obj => {
+            drawMysterySpot(
+                (mystery_obj.x * 100),
+                (mystery_obj.y * 100),
+                context,
+                false,
+            )
+        })
+
+        players.map(player_obj => {
+            drawPlayer(
+                (player_obj.race_game.x * 100),
+                (
+                    (player_obj.race_game.row - 1)
+                    *
+                    100
+                ),
+                context,
+                player_obj.id == socket.id,
+                player_obj,
+                gameState?.movesShown,
+            )
+        })
+
+
+    }, [players]);
 
     useEffect(() => {
 
@@ -170,6 +238,7 @@ export default function GameCanvasFlat() {
                 //     drawPlayer( player.x, player.y, context )
                 // })
 
+                // TODO change socket server to mysterySpots
                 data?.game_state?.mystery_spots?.map(mystery_obj => {
                     drawMysterySpot(
                         (mystery_obj.x * 100),
@@ -311,7 +380,9 @@ export default function GameCanvasFlat() {
 
     return (
         <div className={`canvas-flat-wrap ${renderMode == '3D' && 'd-none'}`}>
+
             <canvas onClick={(e) => console.log(e)} className='fill' ref={canvasRef}></canvas>
+
             <canvas onClick={(e) => {
                 const canvas = canvasPlayersRef.current;
                 const rect = canvas.getBoundingClientRect();
@@ -320,6 +391,7 @@ export default function GameCanvasFlat() {
 
                 console.log(`Clicked at coordinates: (${x}, ${y})`);
             }} ref={canvasPlayersRef}></canvas>
+
         </div>
     );
 }
