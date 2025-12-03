@@ -48,6 +48,14 @@ export const useStore = create()(
       },
       setAudioSettings: (settings) => set({ audioSettings: settings }),
 
+      controlSettings: {
+        "Move 1 Space": false,
+        "Move 2 Space": false,
+        "Move 3 Space": false,
+        "Move 4 Space": false,
+      },
+      setControlSettings: (settings) => set({ controlSettings: settings }),
+
       // Automates end of game and starting new ones for hands off arcade fun
       arcadeMode: false,
       setArcadeMode: (arcadeMode) => set({ arcadeMode }),

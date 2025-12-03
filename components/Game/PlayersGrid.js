@@ -45,10 +45,10 @@ function RenderCharacter({ character }) {
 
 function Box(props) {
 
-    const { 
+    const {
         // gameState, 
-        colPlayer, 
-        valid 
+        colPlayer,
+        valid
     } = props;
 
     const gameState = useGameStore((state) => state?.gameState);
@@ -88,11 +88,18 @@ function Box(props) {
 
                 {/* <Tree scale={0.2} /> */}
 
-                {(gameState?.movesShown > 0 && colPlayer?.race_game?.spaces) &&
+                {
+                    (
+                        gameState?.movesShown > 0
+                        // && 
+                        // colPlayer?.race_game?.spaces
+                    )
+                    &&
                     <FloatingOrb
                         position={[0, 2, -1.5]}
-                        number={colPlayer?.race_game?.spaces}
-                        valid={valid}
+                        // TODO - Changes based on OS, needs image
+                        number={colPlayer?.race_game?.spaces || "👻"}
+                        valid={colPlayer?.race_game?.spaces ? valid : false}
                     // cameraInfo={cameraInfo}
                     />
                 }

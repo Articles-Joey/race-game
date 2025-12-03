@@ -1,4 +1,4 @@
-import { memo, useRef } from "react";
+import { memo, useMemo, useRef } from "react";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, Sky, useDetectGPU, useTexture } from "@react-three/drei";
@@ -18,8 +18,13 @@ import { useSocketStore } from "@/components/hooks/useSocketStore";
 import useCameraStore from "../hooks/useCameraStore";
 import useGameStore from "../hooks/useGameStore";
 import { useStore } from "../hooks/useStore";
+import { useSearchParams } from "next/navigation";
 
 function GameCanvas(props) {
+
+    const searchParams = useSearchParams()
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    const { server_type } = searchParamsObject
 
     // const GPUTier = useDetectGPU()
 
@@ -27,6 +32,8 @@ function GameCanvas(props) {
     const cameraState = useCameraStore((state) => state?.cameraState);
 
     const darkMode = useStore((state) => state.darkMode);
+
+    const myId = useGameStore((state) => state.myId);
 
     const gameState = useGameStore((state) => state?.gameState);
     const players = useGameStore((state) => state?.gameState?.players);
@@ -48,6 +55,18 @@ function GameCanvas(props) {
         socket: state.socket,
     }));
 
+    const clientPlayerLookup = useMemo(() => {
+
+        if (server_type == "online-socket" && players) {
+            return players.find(player => player.id == socket.id)
+        }
+
+        if (server_type == "online-peer" && players) {
+            return players.find(player => player.peer == myId)
+        }
+
+    }, [server_type, players, socket.id, myId]);
+
     return (
         <Canvas
             camera={{
@@ -59,10 +78,10 @@ function GameCanvas(props) {
             {/* <CameraController onCameraChange={handleCameraChange} /> */}
 
             <CameraControls
-                // cameraState={cameraState}
-                // onCameraChange={handleCameraChange}
-                // cameraUpdate={cameraUpdate}
-                // setCameraUpdate={setCameraUpdate}
+            // cameraState={cameraState}
+            // onCameraChange={handleCameraChange}
+            // cameraUpdate={cameraUpdate}
+            // setCameraUpdate={setCameraUpdate}
             />
 
             <Ocean position={[0, -0.3, 0]} />
@@ -90,8 +109,8 @@ function GameCanvas(props) {
             </group>
 
             <Sky
-            // distance={450000}
-            sunPosition={[0, darkMode ? -1 : 1, 0]}
+                // distance={450000}
+                sunPosition={[0, darkMode ? -1 : 1, 0]}
             // inclination={0}
             // azimuth={0.25}
             // {...props} 
@@ -136,14 +155,14 @@ function GameCanvas(props) {
             {/* <Bleacher position={[51, -0.5, 7.5]} rotation={[0, 0, 0]} /> */}
 
             <GameGrid
-                player={players.find(player => player.id == socket.id)}
+                player={clientPlayerLookup}
                 gameState={gameState}
                 move={move}
             />
 
             <PlayersGrid
-                // players={players}
-                // gameState={gameState}
+            // players={players}
+            // gameState={gameState}
             // cameraInfo={cameraInfo}
             />
 

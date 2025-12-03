@@ -16,6 +16,7 @@ import AudioHandler from '@/components/AudioHandler';
 import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import DarkModeHandler from '@/components/UI/DarkModeHandler';
 import { Suspense } from 'react';
+import CustomControlsLogic from '@/components/Game/CustomControlsLogic';
 // import dynamic from 'next/dynamic';
 
 // const geistSans = Geist({
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
         {/* <PeerHandler /> */}
         {/* <PeerHandlerTest /> */}
         <AudioHandler />
+        <CustomControlsLogic />
 
         <Suspense>
           <DarkModeHandler />

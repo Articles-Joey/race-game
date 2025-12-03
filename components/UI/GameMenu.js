@@ -135,7 +135,7 @@ function GameMenu({
 
             <div className={
                 classNames(
-                    `menu-card card card-articles`,
+                    `menu-card card card-articles rounded-0`,
                     {
                         show: showMenu,
                         "show-menu": showMenu,

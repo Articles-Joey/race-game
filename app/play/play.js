@@ -174,7 +174,14 @@ export default function RaceGame() {
     function prepareGame() {
 
         if (server_type == "room-play" || server_type == "online-peer") {
-            startGame()
+
+            if (isHost) {
+                startGame()
+            } else {
+                // TODO - Let client start game
+            }
+            
+
         }
 
         if (server_type == "online-socket") {
@@ -703,15 +710,25 @@ export default function RaceGame() {
                                             <i className="fad fa-robot fa-lg ms-2 me-0"></i>
                                         </ArticlesButton>
 
-                                        <ArticlesButton
-                                            onClick={() => prepareGame()}
-                                            className="d-flex justify-content-center align-items-center w-50"
-                                        // disabled={Object.keys(players).length < 2}
-                                        // disabled={gameState?.players?.length < 2}
-                                        >
-                                            Start Game
-                                            <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>
-                                        </ArticlesButton>
+                                        {
+                                            (
+                                                (isHost && server_type == "online-peer")
+                                                ||
+                                                (isHost && server_type == "room-play")
+                                            )
+                                            &&
+                                            <>
+                                                <ArticlesButton
+                                                    onClick={() => prepareGame()}
+                                                    className="d-flex justify-content-center align-items-center w-50"
+                                                // disabled={Object.keys(players).length < 2}
+                                                // disabled={gameState?.players?.length < 2}
+                                                >
+                                                    Start Game
+                                                    <i className="fad fa-arrow-alt-square-right fa-lg ms-2 me-0"></i>
+                                                </ArticlesButton>
+                                            </>
+                                        }
 
                                     </div>
 

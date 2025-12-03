@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "../hooks/useStore";
 import useChatStore from "../hooks/useChatStore";
+
+import "styles/components/SettingsModal.scss";
 
 export default function SettingsModal({
     show,
@@ -21,6 +23,9 @@ export default function SettingsModal({
     const setSocketServerHost = useStore((state) => state.setSocketServerHost);
     const reset = useStore((state) => state.reset);
 
+    const controlSettings = useStore((state) => state.controlSettings);
+    const setControlSettings = useStore((state) => state.setControlSettings);
+
     const enabled = useChatStore((state) => state.enabled);
     const speechBubblesEnabled = useChatStore((state) => state.speechBubblesEnabled);
 
@@ -36,6 +41,64 @@ export default function SettingsModal({
     const darkMode = useStore((state) => state.darkMode);
     const toggleDarkMode = useStore((state) => state.toggleDarkMode);
 
+    const [listenForKey, setListenForKey] = useState(false)
+
+    useEffect(() => {
+        if (listenForKey) {
+            const handleKeyDown = (e) => {
+                e.preventDefault()
+                setListenForKey(prev => ({ ...prev, lastKey: e.key }))
+            }
+            window.addEventListener('keydown', handleKeyDown)
+            return () => window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [listenForKey])
+
+    if (listenForKey) {
+        return (
+            <div className="listen-for-key-overlay d-flex flex-column justify-content-center align-items-center">
+
+                <div className="mb-3">Listening for key...</div>
+
+                <div className="h2 border rounded p-3 px-5 mb-3 bg-dark text-white">
+                    {listenForKey.lastKey || 'Press a key'}
+                </div>
+
+                <div className="d-flex">
+                    <ArticlesButton
+                        variant="warning"
+                        onClick={() => {
+    
+                            setControlSettings({
+                                ...controlSettings,
+                                [listenForKey.action]: false,
+                            })
+    
+                            setListenForKey(false)
+    
+                        }}
+                    >
+                        <i className="fas fa-undo me-2"></i>
+                        Cancel
+                    </ArticlesButton>
+                    <ArticlesButton onClick={() => {
+    
+                        setControlSettings({
+                            ...controlSettings,
+                            [listenForKey.action]: listenForKey.lastKey,
+                        })
+    
+                        setListenForKey(false)
+    
+                    }}>
+                        Confirm
+                    </ArticlesButton>
+                </div>
+
+            </div>
+        )
+    }
+
     return (
         <>
             {/* {lightboxData && (
@@ -49,6 +112,12 @@ export default function SettingsModal({
                     }}
                 />
             )} */}
+
+            {listenForKey && (
+                <div className="listen-for-key-overlay">
+                    Listening for key...
+                </div>
+            )}
 
             <Modal
                 className="articles-modal"
@@ -95,47 +164,64 @@ export default function SettingsModal({
 
                         {tab == 'Controls' &&
                             <div>
-                                {[
-                                    {
-                                        action: 'Move 1 Space',
-                                        defaultKeyboardKey: '1'
-                                    },
-                                    {
-                                        action: 'Move 2 Space',
-                                        defaultKeyboardKey: '2'
-                                    },
-                                    {
-                                        action: 'Move 3 Space',
-                                        defaultKeyboardKey: '3'
-                                    },
-                                    {
-                                        action: 'Move 4 Space',
-                                        defaultKeyboardKey: '4'
-                                    },
-                                ].map(obj =>
-                                    <div key={obj.action}>
-                                        <div className="flex-header border-bottom pb-1 mb-1">
 
-                                            <div>
-                                                <div>{obj.action}</div>
-                                                {obj.emote && <div className="span badge bg-dark">Emote</div>}
-                                            </div>
+                                <div className="small pb-3 pt-2  border-bottom">
+                                    Assign a key to a movement action. 1-4 are the defaults and are already assigned.
+                                </div>
 
-                                            <div>
+                                <div>
+                                    {[
+                                        {
+                                            action: 'Move 1 Space',
+                                            defaultKeyboardKey: '1'
+                                        },
+                                        {
+                                            action: 'Move 2 Space',
+                                            defaultKeyboardKey: '2'
+                                        },
+                                        {
+                                            action: 'Move 3 Space',
+                                            defaultKeyboardKey: '3'
+                                        },
+                                        {
+                                            action: 'Move 4 Space',
+                                            defaultKeyboardKey: '4'
+                                        },
+                                    ].map(obj =>
+                                        <div key={obj.action}>
+                                            <div className="flex-header border-bottom py-1 mb-1">
 
-                                                <div className="badge badge-hover bg-articles me-1">{obj.defaultKeyboardKey}</div>
+                                                <div>
+                                                    <div>{obj.action}</div>
+                                                    {obj.emote && <div className="span badge bg-dark">Emote</div>}
+                                                </div>
 
-                                                <ArticlesButton
-                                                    className=""
-                                                    small
-                                                >
-                                                    Change Key
-                                                </ArticlesButton>
+                                                <div>
 
+                                                    {/* <div className="badge badge-hover bg-articles me-1">{obj.defaultKeyboardKey}</div> */}
+
+                                                    {controlSettings[obj.action] &&
+                                                        <div className="badge bg-secondary me-1">
+                                                            {controlSettings[obj.action]}
+                                                        </div>
+                                                    }
+
+                                                    <ArticlesButton
+                                                        className=""
+                                                        small
+                                                        onClick={() => setListenForKey({
+                                                            action: obj.action,
+                                                            lastKey: false
+                                                        })}
+                                                    >
+                                                        Select Key
+                                                    </ArticlesButton>
+
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         }
                         {tab == 'Audio' &&

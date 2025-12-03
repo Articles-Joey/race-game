@@ -1,3 +1,5 @@
+// README - Zustand store to manage game state and peer-to-peer connections using PeerJS. Also handles the game loop for peer games.
+
 "use client"
 import { create } from 'zustand';
 import Peer from 'peerjs';

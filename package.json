@@ -1,9 +1,9 @@
 {
   "name": "race-game",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 3016",
+    "dev": "next dev -p 3016",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,7 +13,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
-    "@mui/material-nextjs": "^7.3.0",
+    "@mui/material-nextjs": "^7.3.5",
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^10.5.0",
     "@react-three/fiber": "^9.2.0",
@@ -21,23 +21,23 @@
     "bootstrap": "^5.3.7",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
-    "next": "^15.5.6",
+    "next": "^16.0.7",
     "peerjs": "^1.5.5",
     "qrcode.react": "^4.2.0",
-    "react": "^19.2.0",
+    "react": "^19.2.1",
     "react-bootstrap": "^2.10.10",
     "react-color": "^2.19.3",
     "react-countdown": "^2.3.6",
-    "react-dom": "^19.2.0",
+    "react-dom": "^19.2.1",
     "react-hotkeys-hook": "^5.1.0",
-    "sass": "^1.92.1",
+    "sass": "^1.94.2",
     "socket.io-client": "^4.8.1",
-    "swr": "^2.3.4",
+    "swr": "^2.3.7",
     "three": "^0.178.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "eslint": "^9",
-    "eslint-config-next": "^15.5.6"
+    "eslint-config-next": "^16.0.7"
   }
 }
