@@ -98,7 +98,7 @@ function Box(props) {
                     <FloatingOrb
                         position={[0, 2, -1.5]}
                         // TODO - Changes based on OS, needs image
-                        number={colPlayer?.race_game?.spaces || "👻"}
+                        number={colPlayer?.race_game?.spaces || "❌"}
                         valid={colPlayer?.race_game?.spaces ? valid : false}
                     // cameraInfo={cameraInfo}
                     />

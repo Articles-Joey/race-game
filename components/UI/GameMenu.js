@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 import ArticlesButton from '@/components/UI/Button';
 
-import { Form } from 'react-bootstrap';
+import { Dropdown, Form } from 'react-bootstrap';
 
 import IsDev from '@/components/UI/IsDev';
 import { useStore } from '../hooks/useStore';
@@ -100,20 +100,20 @@ function GameMenu({
     })
 
     return (
-        <div 
+        <div
             // className='menu-card-wrapper'
             className={
-                    classNames(
-                        'menu-card-wrapper',
-                        {
-                            show: showMenu,
-                            "show-menu": showMenu,
-                            "hide-menu": !showMenu,
-                            "sidebar-enabled": sidebar,
-                            "sidebar-disabled": !sidebar,
-                        }
-                    )
-                }
+                classNames(
+                    'menu-card-wrapper',
+                    {
+                        show: showMenu,
+                        "show-menu": showMenu,
+                        "hide-menu": !showMenu,
+                        "sidebar-enabled": sidebar,
+                        "sidebar-disabled": !sidebar,
+                    }
+                )
+            }
         >
 
             <div
@@ -709,47 +709,99 @@ function GameMenu({
                         </div>
                     </IsDev>
 
-                    <div className="text-center">
-                        Camera Positions
-                    </div>
+                    <Dropdown className="d-flex w-100 text-center">
 
-                    <div className="camera-controls">
+                        <Dropdown.Toggle variant='articles w-100 d-flex justify-content-center align-items-center text-center'>
+                            Camera Presets
+                        </Dropdown.Toggle>
 
-                        {[
-                            {
-                                name: "Starting",
-                                position: [19, 10, 15]
-                            },
-                            {
-                                name: "Bleacher",
-                                position: [28.32, 5.38, -6.30]
-                            },
-                            {
-                                name: "First Person",
-                                position: [0, 3.5, 0]
-                            },
-                            {
-                                name: "Wind Turbine",
-                                position: [42.50, 16.94, -125.86]
-                            }
-                        ].map(item => {
-                            return (
-                                <ArticlesButton
-                                    key={item.name}
-                                    small
-                                    variant=""
-                                    className=""
-                                    onClick={() => {
-                                        setCameraUpdate({
-                                            position: item.position
-                                        })
-                                    }}
-                                >
-                                    {item.name}
-                                </ArticlesButton>
-                            )
-                        })}
+                        <Dropdown.Menu className="">
 
+                            {
+                                // userReduxState?.friends?
+                                [
+                                    {
+                                        name: "Starting",
+                                        position: [19, 10, 15]
+                                    },
+                                    {
+                                        name: "Bleacher",
+                                        position: [28.32, 5.38, -6.30]
+                                    },
+                                    {
+                                        name: "First Person",
+                                        position: [0, 3.5, 0]
+                                    },
+                                    {
+                                        name: "Wind Turbine",
+                                        position: [42.50, 16.94, -125.86]
+                                    }
+                                ]
+                                    .map((friend, i) => {
+                                        return (
+                                            <Dropdown.Item
+                                                key={`${i}-${friend.name}`}
+                                                onClick={() => {
+                                                    setCameraUpdate({
+                                                        position: friend.position
+                                                    })
+                                                }}
+                                                className=""
+                                                eventKey={i}
+                                            >
+                                                {/* <i className="fad fa-user" aria-hidden="true"></i> */}
+                                                {friend.name}
+                                            </Dropdown.Item>
+                                        )
+                                    })}
+
+                        </Dropdown.Menu>
+
+                    </Dropdown>
+
+                    <div className='d-none'>
+                        <div className="text-center">
+                            Camera Positions
+                        </div>
+    
+                        <div className="camera-controls">
+    
+                            {[
+                                {
+                                    name: "Starting",
+                                    position: [19, 10, 15]
+                                },
+                                {
+                                    name: "Bleacher",
+                                    position: [28.32, 5.38, -6.30]
+                                },
+                                {
+                                    name: "First Person",
+                                    position: [0, 3.5, 0]
+                                },
+                                {
+                                    name: "Wind Turbine",
+                                    position: [42.50, 16.94, -125.86]
+                                }
+                            ].map(item => {
+                                return (
+                                    <ArticlesButton
+                                        key={item.name}
+                                        small
+                                        variant=""
+                                        className=""
+                                        onClick={() => {
+                                            setCameraUpdate({
+                                                position: item.position
+                                            })
+                                        }}
+                                    >
+                                        {item.name}
+                                    </ArticlesButton>
+                                )
+                            })}
+    
+                        </div>
                     </div>
 
                 </div>

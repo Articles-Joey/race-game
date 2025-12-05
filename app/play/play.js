@@ -364,6 +364,10 @@ export default function RaceGame() {
                     >
                         <div>
 
+                            <div className='mb-2'>
+                                {activeMysterySpot?.mysterySpot?.target} - {activeMysterySpot?.mysterySpot?.spaces}
+                            </div>
+
                             <div className='mb-2'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} landed on a mystery spot!`}</div>
 
                             <div className='fw-bold mb-3'>{`${activeMysterySpot?.player?.race_game?.nickname || activeMysterySpot?.player?.user_id} goes ${activeMysterySpot?.action?.direction} ${activeMysterySpot?.action?.spaces} spaces!`}</div>

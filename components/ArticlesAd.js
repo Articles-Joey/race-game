@@ -1,40 +1,60 @@
 import Script from "next/script";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStore } from "@/components/hooks/useStore";
 
 // Non typescript version, if copying consider using the typescript version instead from a repo like amcot or battle-trap
 
-export default function ArticlesAd({ style }) {
+export default function ArticlesAd({
+    section,
+    section_id,
+    style
+}) {
 
     const darkMode = useStore((state) => state.darkMode)
 
+    const [adSrc, setAdSrc] = useState(null);
+    const [cssSrc, setCssSrc] = useState(null);
+
     useEffect(() => {
+
         if (!process.env.NEXT_PUBLIC_ARTICLES_OAUTH_ID) {
             console.log("NEXT_PUBLIC_ARTICLES_OAUTH_ID is not set, skipping Articles Media Sign In button initialization.");
         }
+
+        const checkAdServer = async () => {
+            if (process.env.NODE_ENV === "development") {
+                try {
+                    const res = await fetch(`${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/js/ad.js`, { method: 'HEAD' });
+                    if (res.ok) {
+                        setAdSrc(`${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/js/ad.js`);
+                        setCssSrc(`${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/css/ad.css`);
+                        return;
+                    }
+                } catch (e) {
+                    console.warn("Local ad server unreachable, falling back to production.");
+                }
+            }
+            setAdSrc("https://accounts.articles.media/js/ad.js");
+        };
+
+        checkAdServer();
+        
     }, []);
+
+    if (!adSrc) return null;
 
     return (
         <>
-
-            {process.env.NODE_ENV === "development" ?
-                // `${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/js/ad.js`
+            {cssSrc && (
                 <link
                     rel="stylesheet"
                     crossOrigin="anonymous"
-                    href={`${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/css/ad.css`}
+                    href={cssSrc}
                 />
-                :
-                "https://accounts.articles.media/js/ad.js"
-            }
+            )}
 
             <Script
-                src={process.env.NODE_ENV === "development" ?
-                    `${process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS}/js/ad.js`
-                    // "https://accounts.articles.media/js/signin.js"
-                    :
-                    "https://accounts.articles.media/js/ad.js"
-                }
+                src={adSrc}
                 strategy="afterInteractive"
                 data-version="1"
             // data-articles-color-mode="Dark"

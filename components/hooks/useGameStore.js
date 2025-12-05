@@ -86,6 +86,21 @@ function setPlayerMove(peerId, spaces) {
 
 }
 
+const initialGameStoreState = {
+    // Whether client rendering is enabled in room play, off to preserve client battery and shared experience forcing users to look up.
+    roomPlayClientRender: false,
+    // If user is one away from winning, they must make exact moves to finish, so four would not win
+    strictMovesToFinish: false,
+    time: 0,
+    status: 'In Lobby', // 'In Lobby', 'In Progress', 'Finished'
+    players: [],
+    movesShown: 0,
+    boardLength: 15,
+    mysterySpots: [
+        // Generate on game start
+    ],
+}
+
 const useGameStore = create((set, get) => ({
     peer: null,
     myId: null,
@@ -94,18 +109,7 @@ const useGameStore = create((set, get) => ({
     connections: [],
     timerInterval: null,
     gameState: {
-        // Whether client rendering is enabled in room play, off to preserve client battery and shared experience forcing users to look up.
-        roomPlayClientRender: false,
-        // If user is one away from winning, they must make exact moves to finish, so four would not win
-        strictMovesToFinish: false,
-        time: 0,
-        status: 'In Lobby', // 'In Lobby', 'In Progress', 'Finished'
-        players: [],
-        movesShown: 0,
-        boardLength: 15,
-        mysterySpots: [
-            // Generate on game start
-        ],
+        ...initialGameStoreState
     },
     setGameState: (newState) => {
 
@@ -115,6 +119,13 @@ const useGameStore = create((set, get) => ({
 
         get().handleGameTimer();
 
+    },
+    resetGameState: () => {
+        set({
+            gameState: {
+                ...initialGameStoreState
+            }
+        });
     },
     createBot: () => {
         const botId = `Bot_${Math.floor(Math.random() * 10000)}`;
@@ -297,7 +308,7 @@ const useGameStore = create((set, get) => ({
                 }
 
                 // Does nickname and character state update
-                if (data?.event === 'PlayerNickname') {                    
+                if (data?.event === 'PlayerNickname') {
 
                     console.log("PlayerNickname data received", conn.peer, data);
 
@@ -390,7 +401,7 @@ const useGameStore = create((set, get) => ({
             conn.on('error', (err) => {
                 console.error('Connection error:', err);
             });
-            
+
         });
 
         peer.on('error', (err) => {
@@ -598,7 +609,7 @@ const useGameStore = create((set, get) => ({
                 clearInterval(get().timerInterval);
                 set({ timerInterval: null });
                 return;
-            }            
+            }
 
             if (gameState.movesShown > 0) {
 
@@ -644,7 +655,7 @@ const useGameStore = create((set, get) => ({
                             updatedMysterySpots.splice(spotIndex, 1);
                             break;
                         }
-                        
+
                     }
 
                     // TODO - If two people win at same time it just picks first one in list, fix that
@@ -680,7 +691,7 @@ const useGameStore = create((set, get) => ({
                             movesShown: newMovesShown
                         }
                     }));
-                    
+
                 }
 
                 broadcastGameState();
@@ -689,14 +700,44 @@ const useGameStore = create((set, get) => ({
 
             if (gameState.activeMysterySpot) {
                 const newTimer = gameState.activeMysterySpot.timer - 1;
-                
+
                 if (newTimer <= 0) {
-                     set((state) => ({
+
+                    const { mysterySpot, player: triggeringPlayer } = gameState.activeMysterySpot;
+                    const { target, spaces } = mysterySpot;
+
+                    console.log("Applying mystery spot effect:", target, spaces);
+
+                    const currentPlayers = get().gameState.players;
+                    const updatedPlayers = currentPlayers.map(p => {
+                        // Create a deep copy of the player and race_game to avoid mutation issues
+                        let newP = {
+                            ...p,
+                            race_game: { ...p.race_game }
+                        };
+
+                        if (target === 'Player') {
+                            if (p.peer === triggeringPlayer.peer) {
+                                newP.x = Math.max(0, newP.x + spaces);
+                                newP.race_game.x = newP.x;
+                            }
+                        } else if (target === 'Others') {
+                            if (p.peer !== triggeringPlayer.peer) {
+                                newP.x = Math.max(0, newP.x + spaces);
+                                newP.race_game.x = newP.x;
+                            }
+                        }
+                        return newP;
+                    });
+
+                    set((state) => ({
                         gameState: {
                             ...state.gameState,
+                            players: updatedPlayers,
                             activeMysterySpot: null
                         }
                     }));
+
                 } else {
                     set((state) => ({
                         gameState: {
@@ -724,7 +765,7 @@ const useGameStore = create((set, get) => ({
                 console.log("Timer hit 0");
 
                 let currentPlayers = get().gameState.players;
-                
+
                 // 1. Handle Bot Moves
                 currentPlayers = currentPlayers.map((player) => {
                     if (player.bot) {
@@ -745,7 +786,7 @@ const useGameStore = create((set, get) => ({
                 const spacesCounts = {};
                 currentPlayers.forEach((p) => {
                     if (p.spaces > 0) {
-                         spacesCounts[p.spaces] = (spacesCounts[p.spaces] || 0) + 1;
+                        spacesCounts[p.spaces] = (spacesCounts[p.spaces] || 0) + 1;
                     }
                 });
 
@@ -791,7 +832,11 @@ const useGameStore = create((set, get) => ({
 
         const mysterySpots = Array.from({ length: currentPlayers.length }, () => ({
             x: Math.floor(Math.random() * currentBoardLength) + 1,
-            row: Math.floor(Math.random() * currentPlayers.length) + 1
+            row: Math.floor(Math.random() * currentPlayers.length) + 1,
+
+            // -4 to 4, excluding 0
+            target: Math.random() < 0.5 ? 'Player' : 'Others',
+            spaces: (Math.floor(Math.random() * 4) + 1) * (Math.random() < 0.5 ? -1 : 1),
         }));
 
         console.log("Starting game:", currentPlayers, mysterySpots);
