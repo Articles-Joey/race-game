@@ -890,10 +890,14 @@ export default function RaceGameLandingPage() {
                     </div>
                 }
 
-                {characterEdit &&
+                {/* Node mounting insertBefore issues if mounted now? */}
+                {true &&
                     <div
                         className="card card-articles card-sm"
-                        style={{ "width": "20rem" }}
+                        style={{ 
+                            "width": "20rem",
+                            "display": characterEdit ? 'block' : 'none'
+                        }}
                     >
 
                         <div className="card-header d-flex align-items-center">
