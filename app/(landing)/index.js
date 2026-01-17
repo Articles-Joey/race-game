@@ -17,8 +17,8 @@ const ChromePicker = dynamic(() => import('react-color'), {
 });
 
 const ReturnToLauncherButton = dynamic(() =>
-  import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
-  { ssr: false }
+    import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
+    { ssr: false }
 );
 
 // import useUserDetails from '@/components/hooks/user/useUserDetails';
@@ -81,6 +81,7 @@ const LoginInfoModal = dynamic(
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import { PieMenu } from '@articles-media/articles-gamepad-helper';
 
 const assets_src = 'games/Race Game/'
 
@@ -270,6 +271,47 @@ export default function RaceGameLandingPage() {
     return (
 
         <div className="race-game-landing-page">
+
+            <Suspense>
+                <PieMenu
+                    options={[
+                        {
+                            label: 'Settings',
+                            icon: 'fad fa-cog',
+                            callback: () => {
+                                setShowSettingsModal(prev => !prev)
+                            }
+                        },
+                        {
+                            label: 'Go Back',
+                            icon: 'fad fa-cog',
+                            callback: () => {
+                                window.history.back()
+                            }
+                        },
+                        {
+                            label: 'Credits',
+                            icon: 'fad fa-cog',
+                            callback: () => {
+                                setShowCreditsModal(true)
+                            }
+                        },
+                        {
+                            label: 'Game Launcher',
+                            icon: 'fad fa-cog',
+                            callback: () => {
+                                window.location.href = 'https://games.articles.media';
+                            }
+                        }
+                    ]}
+                    onFinish={(event) => {
+                        console.log("Event", event)
+                        if (event.callback) {
+                            event.callback()
+                        }
+                    }}
+                />
+            </Suspense>
 
             {/* {infoModal &&
                 <InfoModal
