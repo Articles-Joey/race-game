@@ -6,6 +6,7 @@ export const useStore = create()(
     (set, get, store) => ({
 
       darkMode: true,
+      setDarkMode: (value) => set({ darkMode: value }),
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
 
       infoModal: false,

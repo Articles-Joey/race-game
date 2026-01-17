@@ -9,6 +9,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 // import "./globals.css";
 import "@/styles/index.scss";
+
+import "@articles-media/articles-dev-box/dist/style.css";
+
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 // import PeerHandler from '@/components/PeerHandler';
 import AudioHandler from '@/components/AudioHandler';
@@ -17,6 +20,7 @@ import GlobalClientModals from '@/components/UI/GlobalClientModals';
 import DarkModeHandler from '@/components/UI/DarkModeHandler';
 import { Suspense } from 'react';
 import CustomControlsLogic from '@/components/Game/CustomControlsLogic';
+import LayoutClient from './layout-client';
 // import dynamic from 'next/dynamic';
 
 // const geistSans = Geist({
@@ -47,10 +51,16 @@ export default function RootLayout({ children }) {
 
       <head>
 
-        <link
+        {/* <link
           rel="stylesheet"
           href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
-        />
+        /> */}
+
+        {/* <GlobalHead /> */}
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet" />
 
       </head>
 
@@ -58,13 +68,13 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
-        <SocketLogicHandler />
-        {/* <PeerHandler /> */}
-        {/* <PeerHandlerTest /> */}
-        <AudioHandler />
-        <CustomControlsLogic />
-
         <Suspense>
+          <SocketLogicHandler />
+          {/* <PeerHandler /> */}
+          {/* <PeerHandlerTest /> */}
+          <AudioHandler />
+          <CustomControlsLogic />
+          <LayoutClient />
           <DarkModeHandler />
           <GlobalClientModals />
         </Suspense>

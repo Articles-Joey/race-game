@@ -7,12 +7,78 @@
     justify-content: center;
     align-items: center;
     padding: 1rem;
-    min-height: calc(100vh - 100px);
+    min-height: calc(100vh - 0px);
     // margin-bottom: calc(50px + 0.5rem);
 
     // @include media-breakpoint-up(lg) {
     //     height: calc(100vh - 100px);
     // }
+
+    .hero {
+        position: relative;
+        z-index: 0;
+        margin-bottom: 2rem;
+
+        .radial-background-gradient {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            transform: translate(-50%, -50%) scale(5);
+            z-index: -1;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            text-align: center;
+            // margin-bottom: 1rem;
+            color: #f9edcd;
+            -webkit-text-stroke: 4px rgb(160, 120, 73);
+            // letter-spacing: 4px;
+            line-height: 0.8;
+            transform: scale(1.15);
+        }
+
+        .characters {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+
+            // img.dog, img.duck {
+            //     transform: scale(5);
+            // }
+
+            img.dog {
+                transform: scale(5) rotateZ(-10deg) translateY(0px);
+            }
+
+            img.duck {
+                transform: scale(5) rotateZ(10deg) translateY(1.5px);
+            }
+
+            img.witch {
+                transform: scale(5) rotateZ(20deg) translateY(4px);
+            }
+
+            img.bear {
+                transform: scale(5) rotateZ(-20deg) translateY(4px);
+            }
+        }
+
+        .dice {
+            position: absolute;
+            bottom: 0;
+            left: -3rem;
+        }
+
+        .mystery-spot {
+            position: absolute;
+            bottom: 0;
+            right: -4rem;
+        }
+    }
 
     .ad-wrap {
         position: fixed;
@@ -33,6 +99,7 @@
         left: 0;
         width: 100%;
         height: 100%;
+        z-index: -1;
     }
 
     .rules-media-wrap {

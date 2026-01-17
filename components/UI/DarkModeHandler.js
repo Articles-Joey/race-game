@@ -4,7 +4,7 @@ import { useEffect } from "react";
 // import { useEightBallStore } from "@/hooks/useEightBallStore";
 import { useStore } from "../hooks/useStore";
 
-export default function LayoutClient({ children }) {
+export default function DarkModeHandler({ children }) {
 
     // const theme = useEightBallStore(state => state.theme);
     const darkMode = useStore((state) => state.darkMode);
