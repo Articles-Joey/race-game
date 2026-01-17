@@ -16,6 +16,11 @@ const ChromePicker = dynamic(() => import('react-color'), {
     ssr: false,
 });
 
+const ReturnToLauncherButton = dynamic(() =>
+  import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
+  { ssr: false }
+);
+
 // import useUserDetails from '@/components/hooks/user/useUserDetails';
 // import useUserToken from '@/components/hooks/user/useUserToken';
 
@@ -371,7 +376,7 @@ export default function RaceGameLandingPage() {
 
                         </div>
 
-                        <div className="card card-articles card-sm" >
+                        <div className="card card-articles card-sm mb-3" >
 
                             <div className="card-header d-flex align-items-center">
 
@@ -771,6 +776,8 @@ export default function RaceGameLandingPage() {
                             </div>
 
                         </div>
+
+                        <ReturnToLauncherButton />
 
                     </div>
                 }
