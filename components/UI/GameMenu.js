@@ -63,6 +63,9 @@ function GameMenu({
     const sidebar = useStore((state) => state.sidebar)
     const toggleSidebar = useStore((state) => state.toggleSidebar)
 
+    const darkMode = useStore((state) => state.darkMode)
+    const toggleDarkMode = useStore((state) => state.toggleDarkMode)
+
     // const peerId = usePeerConnection((state) => state?.peerId);
 
     // const [players, setPlayers] = useState([]);
@@ -129,6 +132,7 @@ function GameMenu({
                         }
                     )
                 }
+                onClick={() => setShowMenu(false)}
             >
 
             </div>
@@ -515,16 +519,29 @@ function GameMenu({
                                 Info & Rules
                             </ArticlesButton>
 
-                            <ArticlesButton
-                                small
-                                className="w-50"
-                                onClick={() => {
-                                    setShowSettingsModal(true)
-                                }}
+                            <div
+                                className={`w-50 d-flex`}
                             >
-                                <i className="fad fa-cog"></i>
-                                Settings
-                            </ArticlesButton>
+                                <ArticlesButton
+                                    small
+                                    className={`w-100`}
+                                    onClick={() => {
+                                        setShowSettingsModal(true)
+                                    }}
+                                >
+                                    <i className="fad fa-cog"></i>
+                                    Settings
+                                </ArticlesButton>
+                                <ArticlesButton
+
+                                    small
+                                    onClick={() => {
+                                        toggleDarkMode()
+                                    }}
+                                >
+                                    <i className={`fad ${darkMode ? "fa-sun" : "fa-moon"}`}></i>
+                                </ArticlesButton>
+                            </div>
 
                             <ArticlesButton
                                 className={`w-50`}
@@ -763,9 +780,9 @@ function GameMenu({
                         <div className="text-center">
                             Camera Positions
                         </div>
-    
+
                         <div className="camera-controls">
-    
+
                             {[
                                 {
                                     name: "Starting",
@@ -800,7 +817,7 @@ function GameMenu({
                                     </ArticlesButton>
                                 )
                             })}
-    
+
                         </div>
                     </div>
 

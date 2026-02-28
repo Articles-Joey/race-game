@@ -314,6 +314,7 @@
         height: 50px;
         padding: 0 0.5rem;
         z-index: 2;
+        border-radius: 0px;
 
         @include media-breakpoint-up(lg) {
             position: absolute;

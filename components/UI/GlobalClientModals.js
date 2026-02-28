@@ -19,6 +19,11 @@ const InfoModal = dynamic(
     { ssr: false }
 )
 
+const CreditsModal = dynamic(
+    () => import('@/components/UI/CreditsModal'),
+    { ssr: false }
+)
+
 export default function GlobalClientModals() {
 
     const infoModal = useStore((state) => state.infoModal)
@@ -29,6 +34,9 @@ export default function GlobalClientModals() {
 
     const kickedStore = useStore((state) => state?.kicked);
     const setKickedStore = useStore((state) => state?.setKicked);
+
+    const showCreditsModal = useStore((state) => state.showCreditsModal)
+    const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
 
     return (
         <>
@@ -51,6 +59,13 @@ export default function GlobalClientModals() {
                 <SettingsModal
                     show={showSettingsModal}
                     setShow={setShowSettingsModal}
+                />
+            }
+
+            {showCreditsModal &&
+                <CreditsModal
+                    show={showCreditsModal}
+                    setShow={setShowCreditsModal}
                 />
             }
 

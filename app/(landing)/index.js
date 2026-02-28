@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-import GameScoreboard from '@articles-media/articles-dev-box/GameScoreboard';
+// import GameScoreboard from '@articles-media/articles-dev-box/GameScoreboard';
 import Ad from '@articles-media/articles-dev-box/Ad';
 import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
@@ -66,8 +66,8 @@ const Witch = dynamic(
 // import SingleInput from '@/components/Articles/SingleInput';
 import IsDev from '@/components/UI/IsDev';
 import { useSocketStore } from '@/components/hooks/useSocketStore';
-import ArticlesAd from '@/components/ArticlesAd';
-import CreditsModal from '@/components/UI/CreditsModal';
+// import ArticlesAd from '@/components/ArticlesAd';
+// import CreditsModal from '@/components/UI/CreditsModal';
 // import { Settings } from '@mui/icons-material';
 
 import { useStore } from '@/components/hooks/useStore';
@@ -115,7 +115,7 @@ export default function RaceGameLandingPage() {
     const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
     // const toggleSettingsModal = useStore((state) => state.toggleSettingsModal)
 
-    const showCreditsModal = useStore((state) => state.showCreditsModal)
+    // const showCreditsModal = useStore((state) => state.showCreditsModal)
     const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
 
     // const [showInfoModal, setShowInfoModal] = useState(false)
@@ -284,23 +284,30 @@ export default function RaceGameLandingPage() {
                         },
                         {
                             label: 'Go Back',
-                            icon: 'fad fa-cog',
+                            icon: 'fad fa-arrow-left',
                             callback: () => {
                                 window.history.back()
                             }
                         },
                         {
                             label: 'Credits',
-                            icon: 'fad fa-cog',
+                            icon: 'fad fa-info-circle',
                             callback: () => {
                                 setShowCreditsModal(true)
                             }
                         },
                         {
                             label: 'Game Launcher',
-                            icon: 'fad fa-cog',
+                            icon: 'fad fa-gamepad',
                             callback: () => {
                                 window.location.href = 'https://games.articles.media';
+                            }
+                        },
+                        {
+                            label: `${darkMode ? "Light" : "Dark"} Mode`,
+                            icon: 'fad fa-palette',
+                            callback: () => {
+                                toggleDarkMode()
                             }
                         }
                     ]}
@@ -324,26 +331,46 @@ export default function RaceGameLandingPage() {
                 <LoginInfoModal />
             }
 
-            {showCreditsModal &&
-                <CreditsModal
-                    show={showCreditsModal}
-                    setShow={setShowCreditsModal}
-                />
-            }
-
             <div className='background-wrap'>
-                <Image
-                    src={`${process.env.NEXT_PUBLIC_CDN}games/Race Game/background.jpg`}
+                {
+                    darkMode ?
+                        <Image
+                            src={"/img/background-dark.webp"}
+                            fill
+                            alt=""
+                            style={{
+                                objectFit: 'cover',
+                                filter: 'blur(3px)',
+                            }}
+                        />
+                        :
+                        <Image
+                            src={"/img/preview.webp"}
+                            fill
+                            alt=""
+                            style={{
+                                objectFit: 'cover',
+                                filter: 'blur(3px)',
+                            }}
+                        />
+                }
+                {/* <Image
+                    src={
+                        darkMode ?
+                            "img/background-dark.webp"
+                            :
+                            "img/preview.webp"
+                    }
                     fill
                     alt=""
                     style={{
                         objectFit: 'cover',
                         filter: 'blur(3px)',
                     }}
-                />
+                /> */}
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
+            <div className="container d-flex flex-column flex-lg-row justify-content-center align-items-center">
 
                 {(
                     !characterEdit
@@ -1199,11 +1226,11 @@ export default function RaceGameLandingPage() {
                     section_id={'Race Game'}
                 /> */}
 
-                <GameScoreboard
+                {/* <GameScoreboard
                     game={game_name}
                     style="Default"
                     darkMode={darkMode ? true : false}
-                />
+                /> */}
 
                 <Ad
                     style="Default"

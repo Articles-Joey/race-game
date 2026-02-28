@@ -2,7 +2,11 @@ import { useState } from "react";
 
 import { Modal } from "react-bootstrap"
 
+import Link from "next/link";
+
 import ArticlesButton from "./Button";
+
+import { useModalNavigation } from "@/components/hooks/useModalNavigation";
 
 export default function CreditsModal({
     show,
@@ -10,6 +14,9 @@ export default function CreditsModal({
 }) {
 
     const [showModal, setShowModal] = useState(true)
+
+    const elementsRef = useRef([]);
+    useModalNavigation(elementsRef, () => setShowModal(false));
 
     return (
         <>

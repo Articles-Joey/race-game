@@ -3,7 +3,7 @@ import { memo, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, Sky, useDetectGPU, useTexture } from "@react-three/drei";
 
-import Tree from '@/components/Game/Tree'
+
 import Ocean from "./Ocean"
 import { Boat } from "./Boat"
 import { WindTurbine } from "./WindTurbine";
@@ -19,6 +19,7 @@ import useCameraStore from "../hooks/useCameraStore";
 import useGameStore from "../hooks/useGameStore";
 import { useStore } from "../hooks/useStore";
 import { useSearchParams } from "next/navigation";
+import Trees from "./Trees";
 
 function GameCanvas(props) {
 
@@ -118,15 +119,7 @@ function GameCanvas(props) {
 
             <GrassPlane />
 
-            {[...Array(30)].map((item, i) => {
-                return (
-                    <Tree
-                        key={i}
-                        scale={0.2}
-                        position={[((i - 10) * 3), -0.3, -15]}
-                    />
-                )
-            })}
+            <Trees />
 
             {/* <Tree
             scale={0.2}

@@ -12,6 +12,8 @@ import "@/styles/index.scss";
 
 import "@articles-media/articles-dev-box/dist/style.css";
 
+import "@articles-media/articles-gamepad-helper/dist/style.css";
+
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 // import PeerHandler from '@/components/PeerHandler';
 import AudioHandler from '@/components/AudioHandler';
@@ -59,7 +61,7 @@ export default function RootLayout({ children }) {
         {/* <GlobalHead /> */}
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet" />
 
       </head>

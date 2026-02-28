@@ -5,8 +5,8 @@ import { useState, useEffect } from 'react';
 // import { togglePrivacyMode } from "@/redux/actions/siteActions";
 import ArticlesButton from '@/components/UI/Button';
 
-import useUserDetails from '@/components/hooks/user/useUserDetails';
-import useUserToken from '@/components/hooks/user/useUserToken';
+import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
+import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 
 export default function IsDev({className, noOutline, children, inline}) {
 
@@ -19,7 +19,9 @@ export default function IsDev({className, noOutline, children, inline}) {
         error: userTokenError,
         isLoading: userTokenLoading,
         mutate: userTokenMutate
-    } = useUserToken();
+    } = useUserToken(
+        "3016"
+    );
 
     const {
         data: userDetails,
