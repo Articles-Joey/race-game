@@ -1,37 +1,47 @@
 "use client";
 
-import { useEffect } from "react";
-import { useStore } from "./hooks/useStore";
+import { useEffect, useRef } from "react";
+// import { useStore } from "./hooks/useStore";
+import { useAudioStore } from "./hooks/useAudioStore";
 
 export default function AudioHandler() {
 
-    const audioSettings = useStore((state) => state?.audioSettings);
-    const setAudioSettings = useStore((state) => state?.setAudioSettings);
+    const audioSettings = useAudioStore((state) => state?.audioSettings);
+    const musicRef = useRef(null);
 
-    let music
-
-    if (typeof window !== 'undefined') {
-        music = new Audio(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/race-game-audio-loop.mp3`);
-        music.volume = audioSettings?.enabled ? (audioSettings?.game_volume / 100) : 0; // Set volume based on initial state
-    }
-
+    // Create the Audio object once
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const music = new Audio(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/race-game-audio-loop.mp3`);
+        music.onended = function () {
+            music.currentTime = 0;
+            music.play();
+        };
+        musicRef.current = music;
+        return () => {
+            music.pause();
+            musicRef.current = null;
+        };
+    }, []);
 
+    // Start/stop based on enabled state only
+    useEffect(() => {
+        const music = musicRef.current;
+        if (!music) return;
         if (audioSettings?.enabled) {
             music.currentTime = 0;
             music.play();
-
-            music.onended = function () {
-                console.log('audio ended');
-                music.currentTime = 0;
-                music.play();
-            };
-        }
-
-        return () => {
+        } else {
             music.pause();
-        };
-    }, [audioSettings]);
+        }
+    }, [audioSettings?.enabled]);
+
+    // Update volume without restarting
+    useEffect(() => {
+        const music = musicRef.current;
+        if (!music) return;
+        music.volume = (audioSettings?.music_volume ?? 50) / 100;
+    }, [audioSettings?.music_volume]);
 
     return null;
 

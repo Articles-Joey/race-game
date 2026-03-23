@@ -35,7 +35,7 @@ export default function GameInfoModal({
 
                 <Modal.Body className="flex-column p-3">
 
-                    {`Get to the finish line first in this exciting multiplayer racing game! Don't get to greedy though, moving can only happen if no other player picks the same number of spaces as you.`}
+                    {`Get to the finish line first in this exciting multiplayer racing game! Don't get to greedy though, moving can only happen if no other player picks the same number of spaces as you. Mystery spots are scattered across the board, and can either boost you forward or set you back.`}
 
                 </Modal.Body>
 

@@ -5,6 +5,13 @@ export const useStore = create()(
   persist(
     (set, get, store) => ({
 
+      _hasHydrated: false,
+      setHasHydrated: (state) => {
+        set({
+          _hasHydrated: state
+        });
+      },
+
       darkMode: true,
       setDarkMode: (value) => set({ darkMode: value }),
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
@@ -41,13 +48,20 @@ export const useStore = create()(
       setShowMenu: (value) => set({ showMenu: value }),
       toggleShowMenu: () => set({ showMenu: !get().showMenu }),
 
-      audioSettings: {
-        enabled: false,
-        // Stored as number from 0 to 100 and converted to 0 to 1 in AudioHandler
-        game_volume: 50,
-        music_volume: 50,
-      },
-      setAudioSettings: (settings) => set({ audioSettings: settings }),
+      landingModel: false,
+      setLandingModel: (value) => set({ landingModel: value }),
+      toggleLandingModel: () => set({ landingModel: !get().landingModel }),
+
+      graphicsQuality: "High",
+      setGraphicsQuality: (value) => set({ graphicsQuality: value }),
+
+      // audioSettings: {
+      //   enabled: false,
+      //   // Stored as number from 0 to 100 and converted to 0 to 1 in AudioHandler
+      //   game_volume: 50,
+      //   music_volume: 50,
+      // },
+      // setAudioSettings: (settings) => set({ audioSettings: settings }),
 
       controlSettings: {
         "Move 1 Space": false,
@@ -73,6 +87,23 @@ export const useStore = create()(
 
       nickname: "",
       setNickname: (nickname) => set({ nickname }),
+      randomNickname: () => {
+        const adjectives = [
+          "Quacky", "Speedy", "Dashing", "Swift", "Webbed",
+          "Golden", "Rapid", "Turbo", "Feathered", "Brave",
+          "Zippy", "Flashy", "Mighty", "Quick", "Paddling"
+        ];
+        const nouns = [
+          "Racer", "Driver", "Paddler", "Duck", "Mallard",
+          "Waddler", "Sprinter", "Zoomer", "Captain", "Pilot",
+          "Wingman", "Flyer", "Scooter", "Speedster", "Drake"
+        ];
+        const randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+        const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+        const newNickname = `${randomAdjective} ${randomNoun}`;
+        set({ nickname: newNickname });
+        return newNickname;
+      },
 
       gameState: {},
       setGameState: (gameState) => set({ gameState }),
@@ -89,8 +120,29 @@ export const useStore = create()(
 
     }),
     {
-      name: 'race-game-storage', // name of the item in the storage (must be unique)
-      // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      name: 'race-game-storage',
+      version: 1,
+      migrate: (persistedState, version) => {
+        if (version === 0) {
+          // perform migration from version 0 to 1
+        }
+        return persistedState
+      },
+      onRehydrateStorage: () => (state) => {
+        state.setHasHydrated(true)
+      },
+      partialize: (state) => ({
+        darkMode: state.darkMode,
+        renderMode: state.renderMode,
+        // arcadeMode: state.arcadeMode,
+        toontownMode: state.toontownMode,
+        character: state.character,
+        nickname: state.nickname,
+        graphicsQuality: state.graphicsQuality,
+        landingModel: state.landingModel,
+        // audioSettings: state.audioSettings,
+        controlSettings: state.controlSettings,
+      }),
     },
   ),
 )

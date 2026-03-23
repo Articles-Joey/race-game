@@ -58,24 +58,28 @@ export default function LoginInfoModal({
 
                 <Modal.Body className="flex-column p-3">
 
+                    {/* {!userToken &&
+                        <p>You are not logged in.</p>
+                    } */}
+
                     {userDetailsLoading &&
-                        <p>Loading...</p>
+                        <p className="mb-0">Loading...</p>
                     }
 
-                    {userDetailsError &&
-                        <p>Error loading user details.</p>
+                    {(userDetailsError && userToken) &&
+                        <p className="mb-0">Error loading user details.</p>
                     }
 
                     {userDetails &&
                         <div>
                             <p>You are logged in as: </p>
                             <p><strong>Display Name:</strong> {userDetails.display_name}</p>
-                            <p><strong>ID:</strong> {userDetails.user_id}</p>
+                            <p className="mb-0"><strong>ID:</strong> {userDetails.user_id}</p>
                         </div>
                     }
 
                     {!userDetailsLoading && !userDetailsError && !userDetails &&
-                        <p>You are not logged in.</p>
+                        <p className="mb-0">You are not logged in.</p>
                     }
 
                 </Modal.Body>

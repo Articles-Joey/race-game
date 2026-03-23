@@ -79,9 +79,15 @@ const LoginInfoModal = dynamic(
     { ssr: false }
 )
 
+const LandingModel = dynamic(
+    () => import('@/components/Game/LandingModel'),
+    { ssr: false }
+)
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import { PieMenu } from '@articles-media/articles-gamepad-helper';
+import useGameStore from '@/components/hooks/useGameStore';
 
 const assets_src = 'games/Race Game/'
 
@@ -91,6 +97,8 @@ export default function RaceGameLandingPage() {
 
     const darkMode = useStore((state) => state.darkMode)
     const toggleDarkMode = useStore((state) => state.toggleDarkMode)
+
+    const landingModel = useStore((state) => state?.landingModel);
 
     // const peerId = usePeerConnection((state) => state?.peerId);
 
@@ -117,6 +125,8 @@ export default function RaceGameLandingPage() {
 
     // const showCreditsModal = useStore((state) => state.showCreditsModal)
     const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
+
+    const restartGame = useGameStore((state) => state.restartGame)
 
     // const [showInfoModal, setShowInfoModal] = useState(false)
     // const [showCreditsModal, setShowCreditsModal] = useState(false)
@@ -173,6 +183,7 @@ export default function RaceGameLandingPage() {
 
     const nickname = useStore((state) => state.nickname)
     const setNickname = useStore((state) => state.setNickname)
+    const randomNickname = useStore((state) => state.randomNickname)
 
     const [lobbyDetails, setLobbyDetails] = useState({
         players: [],
@@ -201,9 +212,24 @@ export default function RaceGameLandingPage() {
 
     useEffect(() => {
 
-        localStorage.setItem('game:race-game:rulesAnControls', rulesAnControls)
+        const gameState = useGameStore.getState().gameState
+        const setGameState = useGameStore.getState().setGameState
 
-    }, [rulesAnControls])
+        setGameState({
+            ...gameState,
+            players: [],
+            mysterySpots: [],
+        })
+
+        // restartGame();
+
+    }, [])
+
+    // useEffect(() => {
+
+    //     localStorage.setItem('game:race-game:rulesAnControls', rulesAnControls)
+
+    // }, [rulesAnControls])
 
     // useEffect(() => {
 
@@ -271,6 +297,12 @@ export default function RaceGameLandingPage() {
     return (
 
         <div className="race-game-landing-page">
+
+            {landingModel &&
+                <div className='landing-model-wrapper'>
+                    <LandingModel />
+                </div>
+            }
 
             <Suspense>
                 <PieMenu
@@ -453,7 +485,7 @@ export default function RaceGameLandingPage() {
 
                                     <div style={{ width: '75px', height: '75px' }} >
                                         <div
-                                            className="ratio ratio-1x1 mb-1"
+                                            className="ratio ratio-1x1 mb-1 border"
 
                                         >
                                             <div>
@@ -488,20 +520,34 @@ export default function RaceGameLandingPage() {
                                             label="Nickname"
                                             noMargin
                                         /> */}
-                                        <input
-                                            autoComplete='off'
-                                            // id={item_key}
-                                            type="text"
-                                            className=''
-                                            // autoFocus={autoFocus && true}
-                                            // onBlur={onBlur}
-                                            // placeholder={placeholder}
-                                            value={nickname}
-                                            // onKeyDown={onKeyDown}
-                                            onChange={(e) => {
-                                                setNickname(e.target.value)
-                                            }}
-                                        />
+                                        <div className='d-flex'>
+                                            <input
+                                                autoComplete='off'
+                                                // id={item_key}
+                                                type="text"
+                                                className='w-100 form-control-sm'
+                                                style={{
+                                                    // fontSize: "0.1rem!important"
+                                                }}
+                                                // autoFocus={autoFocus && true}
+                                                // onBlur={onBlur}
+                                                // placeholder={placeholder}
+                                                value={nickname}
+                                                // onKeyDown={onKeyDown}
+                                                onChange={(e) => {
+                                                    setNickname(e.target.value)
+                                                }}
+                                            />
+                                            <ArticlesButton
+                                                small
+                                                className=""
+                                                onClick={() => {
+                                                    randomNickname()
+                                                }}
+                                            >
+                                                <i className='fad fa-dice'></i>
+                                            </ArticlesButton>
+                                        </div>
 
                                         {/* <div className="form-group articles">
                                             <label htmlFor="nickname">Nickname</label>
@@ -524,11 +570,11 @@ export default function RaceGameLandingPage() {
                                             small
                                             onClick={() => {
                                                 !userDetails?.user_id ?
-                                                    window.location.href = process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS + '/login?redirect=' + window.location.href
+                                                    window.location.href = process.env.NEXT_PUBLIC_LOCAL_ACCOUNTS_ADDRESS + '/login?redirect=' + window.location.href + `&utm_source=${game_name}`
                                                     :
                                                     fetch('/api/logout', { method: 'POST' }).then(() => {
-                                                        userTokenMutate()
-                                                        userDetailsMutate()
+                                                        userTokenMutate(false)
+                                                        userDetailsMutate(false)
                                                     })
                                             }}
                                         >
@@ -586,7 +632,10 @@ export default function RaceGameLandingPage() {
                                         </Popover>
                                     }
                                 >
-                                    <Link href="/play?server_id=&server_type=room-play">
+                                    <Link
+                                        href="/play?server_id=&server_type=room-play"
+                                        prefetch={false}
+                                    >
                                         <ArticlesButton
                                             className={`w-100 mb-2`}
                                             small
@@ -617,7 +666,10 @@ export default function RaceGameLandingPage() {
                                         </Popover>
                                     }
                                 >
-                                    <Link href="/play?server_id=&server_type=online-peer">
+                                    <Link
+                                        href="/play?server_id=&server_type=online-peer"
+                                        prefetch={false}
+                                    >
                                         <ArticlesButton
                                             className={`w-100 mb-2`}
                                             small
@@ -720,6 +772,7 @@ export default function RaceGameLandingPage() {
 
                                                         <Link
                                                             className={``}
+                                                            prefetch={false}
                                                             href={{
                                                                 pathname: `/play`,
                                                                 query: {

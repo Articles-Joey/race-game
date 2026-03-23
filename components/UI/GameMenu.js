@@ -20,6 +20,7 @@ import useFullscreen from '../hooks/useFullScreen';
 import useCameraStore from '../hooks/useCameraStore';
 import GameChat from './GameChat';
 import classNames from 'classnames';
+import { useAudioStore } from '../hooks/useAudioStore';
 
 function GameMenu({
     // isFullscreen,
@@ -47,8 +48,8 @@ function GameMenu({
     const gameState = useStore((state) => state?.gameState);
     const setGameState = useStore((state) => state?.setGameState);
 
-    const audioSettings = useStore((state) => state?.audioSettings);
-    const setAudioSettings = useStore((state) => state?.setAudioSettings);
+    const audioSettings = useAudioStore((state) => state?.audioSettings);
+    const setAudioSettings = useAudioStore((state) => state?.setAudioSettings);
 
     const renderMode = useStore((state) => state?.renderMode);
     const setRenderMode = useStore((state) => state?.setRenderMode)
@@ -654,7 +655,7 @@ function GameMenu({
 
                     </div>
 
-                    {audioSettings?.enabled && <div className="volume-control card-body text-center border p-1 py-2">
+                    {/* {audioSettings?.enabled && <div className="volume-control card-body text-center border p-1 py-2">
                         <Form.Label className="small mb-0">Volume: {(audioSettings?.volume * 100).toFixed()}%</Form.Label>
                         <Form.Range
                             className="mb-0"
@@ -672,7 +673,7 @@ function GameMenu({
 
                             }}
                         />
-                    </div>}
+                    </div>} */}
 
                     {/* <hr className='my-4' /> */}
 

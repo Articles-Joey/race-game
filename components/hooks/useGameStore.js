@@ -830,13 +830,20 @@ const useGameStore = create((set, get) => ({
         const currentPlayers = get().gameState.players;
         const currentBoardLength = get().gameState.boardLength;
 
+        const randomSpaces = (Math.floor(Math.random() * 4) + 1) * (Math.random() < 0.5 ? -1 : 1);
+
         const mysterySpots = Array.from({ length: currentPlayers.length }, () => ({
             x: Math.floor(Math.random() * currentBoardLength) + 1,
             row: Math.floor(Math.random() * currentPlayers.length) + 1,
 
             // -4 to 4, excluding 0
             target: Math.random() < 0.5 ? 'Player' : 'Others',
-            spaces: (Math.floor(Math.random() * 4) + 1) * (Math.random() < 0.5 ? -1 : 1),
+            spaces: randomSpaces,
+
+            action: {
+                direction: randomSpaces,
+                spaces: randomSpaces > 0 ? 'Forward' : 'Backward',
+            }
         }));
 
         console.log("Starting game:", currentPlayers, mysterySpots);

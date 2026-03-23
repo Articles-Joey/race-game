@@ -10,7 +10,7 @@ const KickedModal = dynamic(
 )
 
 const SettingsModal = dynamic(
-    () => import('@/components/UI/SettingsModal'),
+    () => import('@/components/UI/Settings/SettingsModal'),
     { ssr: false }
 )
 

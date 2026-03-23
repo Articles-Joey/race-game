@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
-import { useStore } from "../hooks/useStore";
-import useChatStore from "../hooks/useChatStore";
+import { useStore } from "../../hooks/useStore";
+import useChatStore from "../../hooks/useChatStore";
 
 import "styles/components/SettingsModal.scss";
+import AudioTab from "./AudioTab";
+import GraphicsTab from "./GraphicsTab";
 
 export default function SettingsModal({
     show,
@@ -29,8 +31,8 @@ export default function SettingsModal({
     const enabled = useChatStore((state) => state.enabled);
     const speechBubblesEnabled = useChatStore((state) => state.speechBubblesEnabled);
 
-    const audioSettings = useStore((state) => state.audioSettings);
-    const setAudioSettings = useStore((state) => state.setAudioSettings);
+    // const audioSettings = useAudioStore((state) => state.audioSettings);
+    // const setAudioSettings = useAudioStore((state) => state.setAudioSettings);
 
     const arcadeMode = useStore((state) => state.arcadeMode);
     const setArcadeMode = useStore((state) => state.setArcadeMode);
@@ -143,9 +145,10 @@ export default function SettingsModal({
                     <div className='p-2'>
                         {[
                             'Controls',
+                            'Graphics',
                             'Audio',
                             'Multiplayer',
-                            'Chat',
+                            // 'Chat',
                             'Other',
                         ].map(item =>
                             <ArticlesButton
@@ -224,33 +227,15 @@ export default function SettingsModal({
                                 </div>
                             </div>
                         }
-                        {tab == 'Audio' &&
-                            <>
-                                <Form.Label className="mb-0">Game Volume</Form.Label>
-                                <Form.Range
-                                    value={audioSettings?.game_volume}
-                                    onChange={(value) => {
-                                        console.log("Value", value)
-                                        setAudioSettings({
-                                            ...audioSettings,
-                                            game_volume: value.target.value
-                                        });
-                                    }}
-                                />
 
-                                <Form.Label className="mb-0">Music Volume</Form.Label>
-                                <Form.Range
-                                    value={audioSettings?.music_volume}
-                                    onChange={(value) => {
-                                        console.log("Value", value)
-                                        setAudioSettings({
-                                            ...audioSettings,
-                                            music_volume: value.target.value
-                                        });
-                                    }}
-                                />
-                            </>
+                        {tab == 'Graphics' &&
+                            <GraphicsTab/>
                         }
+
+                        {tab == 'Audio' &&
+                            <AudioTab/>
+                        }
+
                         {tab == 'Multiplayer' &&
                             <div className="p-2">
 
