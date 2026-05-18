@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
-import useGameStore from './hooks/useGameStore';
+import useGameStore from '@/hooks/useGameStore';
 import { useSearchParams } from 'next/navigation';
-import { useStore } from './hooks/useStore';
+import { useStore } from '@/hooks/useStore';
 
 const PeerLogic = () => {
 
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
     const {
-        server_id,
+        server,
         server_type
     } = searchParamsObject
 
@@ -82,13 +82,13 @@ const PeerLogic = () => {
     const shouldBecomeHost = useRef(false);
     useEffect(() => {
 
-        if (server_type == "room-play" && !server_id && !shouldBecomeHost.current) {
-            shouldBecomeHost.current = true;
-            console.log("Auto become host check SET TRUE")
-            handleStartHost();
-        }
+        // if (server_type == "room-play" && !server && !shouldBecomeHost.current) {
+        //     shouldBecomeHost.current = true;
+        //     console.log("Auto become host check SET TRUE")
+        //     handleStartHost();
+        // }
 
-        if (server_type == "online-peer" && !server_id && !shouldBecomeHost.current) {
+        if (server_type == "online-peer" && !server && !shouldBecomeHost.current) {
             shouldBecomeHost.current = true;
             console.log("Auto become host check SET TRUE")
             handleStartHost();
@@ -96,7 +96,7 @@ const PeerLogic = () => {
 
     }, [
         server_type,
-        server_id
+        server
     ]);
 
     const hasAutoConnected = useRef(false);
@@ -104,8 +104,8 @@ const PeerLogic = () => {
 
         // Auto connects to room-play and online-peer host when loading page from link
         if (
-            server_type == "room-play"
-            ||
+            // server_type == "room-play"
+            // ||
             server_type == "online-peer"
         ) {
 
@@ -113,11 +113,11 @@ const PeerLogic = () => {
                 "Auto connect check DETECTED",
                 hasAutoConnected.current,
                 hostConn,
-                server_id,
+                server,
                 myId
             )
 
-            if (!hasAutoConnected.current && !hostConn && server_id) {
+            if (!hasAutoConnected.current && !hostConn && server) {
                 startPeer(false);
                 console.log("Auto connect check START CLIENT")
                 // setTargetId(server_id);
@@ -125,18 +125,18 @@ const PeerLogic = () => {
                 hasAutoConnected.current = true;
             }
 
-            if (hasAutoConnected.current && !hostConn && server_id && myId) {
+            if (hasAutoConnected.current && !hostConn && server && myId) {
                 // startPeer(false);
                 console.log("Auto connect check PASSED")
-                setTargetId(server_id);
-                connectToHost(server_id);
+                setTargetId(server);
+                connectToHost(server);
                 // hasAutoConnected.current = true;
             }
 
         }
 
     }, [
-        myId, server_type, server_id, hostConn
+        myId, server_type, server, hostConn
     ]);
 
     return (
@@ -183,7 +183,7 @@ const PeerLogic = () => {
 
                 {gameState?.status && (
                     <div style={{ marginBottom: '10px', wordBreak: 'break-all' }}>
-                        <strong>Status: </strong> {gameState.status}
+                        <strong>Status: </strong> {gameState?.status}
                     </div>
                 )}
 

@@ -1,10 +1,10 @@
 "use client"
 import dynamic from "next/dynamic";
 
-import useGameStore from "../hooks/useGameStore";
+import useGameStore from '@/hooks/useGameStore';
 import ArticlesButton from "./Button";
 import { useEffect } from "react";
-import { useStore } from "../hooks/useStore";
+import { useStore } from "@/hooks/useStore";
 
 const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
     ssr: false,

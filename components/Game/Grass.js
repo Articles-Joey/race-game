@@ -1,6 +1,6 @@
 import { useRef, useMemo, useEffect } from "react";
 import { NearestFilter, RepeatWrapping, TextureLoader, DoubleSide, Object3D } from "three";
-import { useStore } from "../hooks/useStore";
+import { useStore } from "@/hooks/useStore";
 
 const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
 

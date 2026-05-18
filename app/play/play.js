@@ -19,15 +19,15 @@ import { QRCodeCanvas } from 'qrcode.react';
 
 import ArticlesButton from '@/components/UI/Button';
 
-import useFullscreen from '@/components/hooks/useFullScreen';
-import { useLocalStorageNew } from '@/components/hooks/useLocalStorageNew';
+import useFullscreen from '@/hooks/useFullScreen';
+import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 import IsDev from '@/components/UI/IsDev';
-import { useSocketStore } from '@/components/hooks/useSocketStore';
+import { useSocketStore } from '@/hooks/useSocketStore';
 // import usePeerConnection from '@/components/hooks/usePeerConnection';
 
-import { useStore } from '@/components/hooks/useStore';
-import useCameraStore from '@/components/hooks/useCameraStore';
-import useGameStore from '@/components/hooks/useGameStore';
+import { useStore } from '@/hooks/useStore';
+import useCameraStore from '@/hooks/useCameraStore';
+import useGameStore from '@/hooks/useGameStore';
 import classNames from 'classnames';
 
 // import GameCanvasFlat from '@/components/Game/GameCanvasFlat';
@@ -48,10 +48,10 @@ const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
 });
 
-const InviteModal = dynamic(
-    () => import('@/components/UI/InviteModal'),
-    { ssr: false }
-)
+// const InviteModal = dynamic(
+//     () => import('@/components/UI/InviteModal'),
+//     { ssr: false }
+// )
 
 // const InfoModal = dynamic(
 //     () => import('@/components/UI/InfoModal'),
@@ -89,7 +89,11 @@ export default function RaceGame() {
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
     // const server = searchParamsObject?.server_id
-    const { server_id, server_type } = searchParamsObject
+    const {
+        server,
+        server_type,
+        roomPlay,
+    } = searchParamsObject
     // const { server } = router.query
 
     const [showInviteModal, setShowInviteModal] = useState(false)
@@ -98,11 +102,11 @@ export default function RaceGame() {
 
     // const [activeMysterySpot, setActiveMysterySpot] = useState(false)
 
+    const nickname = useStore((state) => state?.nickname);
     const character = useStore((state) => state?.character);
     // const showMenu = useStore((state) => state?.showMenu);
     // const setShowMenu = useStore((state) => state?.setShowMenu);
     // const sidebar = useStore((state) => state?.sidebar);
-    // const devDebug = useStore((state) => state?.devDebug);
     // const [showMenu, setShowMenu] = useState(false)
 
     // const [audioSettings, setAudioSettings] = useState({
@@ -119,8 +123,6 @@ export default function RaceGame() {
 
     const [debugPanel, setDebugPanel] = useState(true);
     useHotkeys('esc', () => {
-        // setDebugPanel(prev => !prev)
-        // dispatch(toggleDevDebug())
         alert("Gotta fix")
     });
 
@@ -158,11 +160,11 @@ export default function RaceGame() {
 
     function rejoin() {
 
-        socket.emit('join-room', `game:race-game-room-${server_id}`, {
+        socket.emit('join-room', `game:race-game-room-${server}`, {
             client_version: '1',
-            game_id: server_id,
+            game_id: server,
             character,
-            nickname: (localStorage.getItem('game:nickname') ? JSON.parse(localStorage.getItem('game:nickname')) : userReduxState.username),
+            nickname: nickname,
             ...(userReduxState?.profile_photo?.location &&
                 { photo_url: userReduxState.profile_photo.location }
             )
@@ -173,21 +175,21 @@ export default function RaceGame() {
 
     function prepareGame() {
 
-        if (server_type == "room-play" || server_type == "online-peer") {
+        if (server_type == "online-peer") {
 
             if (isHost) {
                 startGame()
             } else {
                 // TODO - Let client start game
             }
-            
+
 
         }
 
         if (server_type == "online-socket") {
 
             socket.emit('race-game-start', {
-                server: server_id,
+                server: server,
                 settings: {}
             });
 
@@ -200,8 +202,6 @@ export default function RaceGame() {
     function addBot() {
 
         if (
-            server_type == "room-play"
-            ||
             server_type == "online-peer"
         ) {
             createBot()
@@ -209,7 +209,7 @@ export default function RaceGame() {
 
         if (server_type == "online-socket") {
             socket.emit('game:race-game:add-bot', {
-                server: server_id,
+                server: server,
                 settings: {}
             });
         }
@@ -220,7 +220,7 @@ export default function RaceGame() {
 
     function generateMysterySpots() {
         socket.emit('race-game-generate-mystery-spots', {
-            server: server_id,
+            server: server,
             settings: {}
         });
     }
@@ -228,8 +228,6 @@ export default function RaceGame() {
     function move(spaces) {
 
         if (
-            server_type == "room-play"
-            ||
             (server_type == "online-peer" && isHost === false)
         ) {
 
@@ -282,7 +280,7 @@ export default function RaceGame() {
         if (server_type == "online-socket") {
 
             socket.emit('race-game-player-move', {
-                server: server_id,
+                server: server,
                 spaces: spaces
             });
 
@@ -320,34 +318,16 @@ export default function RaceGame() {
 
     }, [server_type, gameState, isHost]);
 
-    const shareLink = mounted ? `${window?.location?.host}/play?server_type=${server_type}&server_id=${isHost ? myId : server_id}` : '';
+    const shareLink = mounted ? `${window?.location?.host}/play?server_type=${server_type}&server=${isHost ? myId : server}` : '';
 
     return (
 
         <>
             {/* {mounted && */}
-            <div className={`race-game-game-page ${isFullscreen && 'fullscreen'}`} id={'race-game-game-page'}>
-
-                {showInviteModal &&
-                    <InviteModal
-                        show={showInviteModal}
-                        setShow={setShowInviteModal}
-                    />
-                }
-
-                {/* {showInfoModal &&
-                        <InfoModal
-                            show={showInfoModal}
-                            setShow={setShowInfoModal}
-                        />
-                    } */}
-
-                {/* {showSettingsModal &&
-                        <SettingsModal
-                            show={showSettingsModal}
-                            setShow={setShowSettingsModal}
-                        />
-                    } */}
+            <div
+                className={`race-game-game-page ${isFullscreen && 'fullscreen'}`}
+                id={'race-game-game-page'}
+            >
 
                 {(activeMysterySpot?.timer >= 0) &&
                     <ArticlesModal
@@ -385,24 +365,9 @@ export default function RaceGame() {
                 <img
                     className="background"
                     src={`${`${process.env.NEXT_PUBLIC_CDN}games/Race Game/background.jpg`}`}
-                >
+                ></img>
 
-                </img>
-
-                {/* {showMenu &&
-                    <div>
-    
-                    </div>
-                } */}
-
-                <GameMenu
-                // Causes non stop remounts for some reason
-                // {...{
-                //     isFullscreen,
-                //     requestFullscreen,
-                //     exitFullscreen
-                // }}
-                />
+                <GameMenu />
 
                 <div className='game-content'>
 
@@ -466,14 +431,14 @@ export default function RaceGame() {
                                                 &&
                                                 gameState?.players?.length > 0
                                             )
-                                            ||
-                                            (
-                                                server_type == "room-play"
-                                                // &&
-                                                // isHost
-                                                // &&
-                                                // myId
-                                            )
+                                            // ||
+                                            // (
+                                            //     server_type == "room-play"
+                                            //     // &&
+                                            //     // isHost
+                                            //     // &&
+                                            //     // myId
+                                            // )
                                         )
                                             ?
                                             <div className='d-flex flex-column' style={{ minWidth: '200px' }}>
@@ -488,8 +453,8 @@ export default function RaceGame() {
 
                                                     if (
                                                         server_type == "online-peer"
-                                                        ||
-                                                        server_type == "room-play"
+                                                        // ||
+                                                        // server_type == "room-play"
                                                     ) {
                                                         player_lookup = item
                                                     }
@@ -510,7 +475,7 @@ export default function RaceGame() {
                                                             <div>
 
                                                                 <div className='small'>
-                                                                    {player_lookup?.race_game?.nickname || player_lookup?.user_id || 'No Nickname'}
+                                                                    {item?.nickname}
                                                                 </div>
 
                                                                 {/* <div className='small'>
@@ -538,7 +503,11 @@ export default function RaceGame() {
                                                                             )
                                                                             ||
                                                                             (
-                                                                                (server_type == "room-play" || server_type == "online-peer")
+                                                                                (
+                                                                                    // server_type == "room-play"
+                                                                                    // ||
+                                                                                    server_type == "online-peer"
+                                                                                )
                                                                                 &&
                                                                                 true
                                                                             )
@@ -717,8 +686,8 @@ export default function RaceGame() {
                                         {
                                             (
                                                 (isHost && server_type == "online-peer")
-                                                ||
-                                                (isHost && server_type == "room-play")
+                                                // ||
+                                                // (isHost && server_type == "room-play")
                                             )
                                             &&
                                             <>
@@ -819,12 +788,12 @@ function InfoControls({
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
     // const server = searchParamsObject?.server_id
-    const { server_id, server_type } = searchParamsObject
+    // const { server, server_type } = searchParamsObject
 
     const showMenu = useStore((state) => state?.showMenu);
     const setShowMenu = useStore((state) => state?.setShowMenu);
     const sidebar = useStore((state) => state?.sidebar);
-    const devDebug = useStore((state) => state?.devDebug);
+    const debug = useStore((state) => state?.debug);
 
     // const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
     // const setCameraUpdate = useCameraStore((state) => state?.setCameraUpdate);
@@ -893,7 +862,7 @@ function InfoControls({
             <div className='small d-none d-lg-block'>
 
                 {
-                    devDebug &&
+                    debug &&
                     <>
                         <div className='d-flex'>
                             <div className='me-2'>X: {cameraState?.position?.x?.toFixed(2)}</div>
@@ -936,7 +905,7 @@ function MoveButtons({
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
     // const server = searchParamsObject?.server_id
-    const { server_id, server_type } = searchParamsObject
+    const { server, server_type, roomPlay } = searchParamsObject
 
     const isHost = useGameStore((state) => state.isHost);
     const gameState = useGameStore((state) => state?.gameState);
@@ -962,7 +931,7 @@ function MoveButtons({
                 <div className={classNames(
                     `buttons`,
                     {
-                        'd-none': isHost && server_type == "room-play",
+                        'd-none': isHost && roomPlay,
                     }
                 )}>
 
@@ -982,12 +951,12 @@ function MoveButtons({
 
                         let active
 
-                        if (server_type == "room-play") {
-                            // Old socket structure of nested race_game, rather this just be gone
-                            // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
-                            active = players.find(player => player.peer == myId)?.spaces == space
-                            // active = true
-                        }
+                        // if (server_type == "room-play") {
+                        //     // Old socket structure of nested race_game, rather this just be gone
+                        //     // active = players.find(player => player.peer == myId)?.race_game?.spaces == space
+                        //     active = players.find(player => player.peer == myId)?.spaces == space
+                        //     // active = true
+                        // }
 
                         if (server_type == "online-peer") {
                             active = players.find(player => player.peer == myId)?.spaces == space

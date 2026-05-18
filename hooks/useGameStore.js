@@ -156,7 +156,9 @@ const useGameStore = create((set, get) => ({
         const oldPeer = get().peer;
         if (oldPeer) oldPeer.destroy();
 
-        const peer = new Peer();
+        const randomFourDigit = Math.floor(1000 + Math.random() * 9000);
+
+        const peer = new Peer(`articles-media-race-game-${randomFourDigit}`);
 
         peer.on('open', (id) => {
 

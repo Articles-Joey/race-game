@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap"
 
 import ArticlesButton from "./Button";
-import { useStore } from "../hooks/useStore";
+import { useStore } from "@/hooks/useStore";
 import { useSearchParams } from "next/navigation";
 
 export default function KickedModal({

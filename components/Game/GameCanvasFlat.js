@@ -1,9 +1,9 @@
 import { useEffect, useContext, useRef, useState, Suspense } from 'react';
 
-import { useStore } from "../hooks/useStore";
+import { useStore } from "@/hooks/useStore";
 import { useSearchParams } from 'next/navigation';
-import { useSocketStore } from '../hooks/useSocketStore';
-import useGameStore from '../hooks/useGameStore';
+import { useSocketStore } from '@/hooks/useSocketStore';
+import useGameStore from '@/hooks/useGameStore';
 
 export default function GameCanvasFlat() {
 
@@ -15,7 +15,7 @@ export default function GameCanvasFlat() {
 
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const server = searchParamsObject?.server_id
+    const server = searchParamsObject?.server
 
     const renderMode = useStore((state) => state?.renderMode);
     const setRenderMode = useStore((state) => state?.setRenderMode);
@@ -213,9 +213,11 @@ export default function GameCanvasFlat() {
 
                 console.log(data)
 
-                setPlayers(data?.players || [])
+                return
 
-                setGameState(data?.game_state)
+                // setPlayers(data?.players || [])
+
+                // setGameState(data?.game_state)
 
                 if (data?.game_state?.activeMysterySpot) {
                     console.log("activeMysterySpot found", data?.game_state?.activeMysterySpot)
@@ -248,7 +250,7 @@ export default function GameCanvasFlat() {
                     )
                 })
 
-                data?.players.map(player_obj => {
+                data?.game_state?.players?.map(player_obj => {
                     drawPlayer(
                         (player_obj.race_game.x * 100),
                         (player_obj.race_game.y * 100),

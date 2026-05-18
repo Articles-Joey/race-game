@@ -3,7 +3,7 @@ import { add } from 'date-fns';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { useStore } from './useStore';
-import useGameStore from './useGameStore';
+import useGameStore from '@/hooks/useGameStore';
 // import Peer from 'peerjs';
 
 const useChatStore = create(persist((set, get) => ({
@@ -56,8 +56,8 @@ const useChatStore = create(persist((set, get) => ({
 
         if (
             (
-                server_type === "room-play"
-                ||
+                // server_type === "room-play"
+                // ||
                 server_type === "online-peer"
             )
             &&
@@ -98,8 +98,8 @@ const useChatStore = create(persist((set, get) => ({
 
         if (
             (
-                server_type === "room-play"
-                ||
+                // server_type === "room-play"
+                // ||
                 server_type === "online-peer"
             )
             &&

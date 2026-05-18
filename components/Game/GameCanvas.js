@@ -14,10 +14,10 @@ import PlayersGrid from "./PlayersGrid";
 import GrassPlane from "./Grass";
 import CameraControls from "./CameraControls";
 
-import { useSocketStore } from "@/components/hooks/useSocketStore";
-import useCameraStore from "../hooks/useCameraStore";
-import useGameStore from "../hooks/useGameStore";
-import { useStore } from "../hooks/useStore";
+import { useSocketStore } from "@/hooks/useSocketStore";
+import useCameraStore from "@/hooks/useCameraStore";
+import useGameStore from '@/hooks/useGameStore';
+import { useStore } from "@/hooks/useStore";
 import { useSearchParams } from "next/navigation";
 import Trees from "./Trees";
 

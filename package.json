@@ -1,10 +1,11 @@
 {
   "name": "race-game",
+  "description": "Online web game where you compete to get to the end of the board by picking a number. If no other player picks your number then you may proceed. Mystery pickups are scattered around that mix up the game when landing on.",
   "author": {
     "name": "ArticlesJoey"
   },
   "homepage": "https://race-game.articles.media",
-  "version": "0.9.0",
+  "version": "0.9.9",
   "private": false,
   "scripts": {
     "dev": "next dev --webpack -p 3016",
@@ -13,8 +14,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@articles-media/articles-dev-box": "^1.0.16",
-    "@articles-media/articles-gamepad-helper": "^0.0.11",
+    "@articles-media/articles-dev-box": "^1.3.3",
+    "@articles-media/articles-gamepad-helper": "^0.0.13",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.8",
@@ -23,7 +24,6 @@
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
-    "axios": "^1.13.6",
     "bootstrap": "^5.3.8",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",

@@ -20,7 +20,7 @@ export default function IsDev({className, noOutline, children, inline}) {
         isLoading: userTokenLoading,
         mutate: userTokenMutate
     } = useUserToken(
-        "3016"
+        process.env.NEXT_PUBLIC_GAME_PORT
     );
 
     const {

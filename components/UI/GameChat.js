@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 
-import useChatStore from "../hooks/useChatStore";
+import useChatStore from "@/hooks/useChatStore";
 import ArticlesButton from "./Button";
 
-import "styles/components/GameChat.scss";
-import useGameStore from "../hooks/useGameStore";
+import "@/styles/components/GameChat.scss";
+import useGameStore from '@/hooks/useGameStore';
 
 export default function GameChat() {
 

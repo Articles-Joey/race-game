@@ -18,30 +18,8 @@ import Dog from './PlayerModels/Dog';
 import Witch from './PlayerModels/Witch';
 import Bear from './PlayerModels/Bear';
 import { Billboard, Text } from '@react-three/drei';
-import useGameStore from '../hooks/useGameStore';
-
-function RenderCharacter({ character }) {
-
-    switch (character?.model) {
-
-        case 'Dog':
-            return <Dog color={character?.color} />;
-
-        case 'Duck':
-            return <Duck color={character?.color} />;
-
-        case 'Witch':
-            return <Witch color={character?.color} />;
-
-        case 'Bear':
-            return <Bear color={character?.color} />;
-
-        default:
-            return <Duck color={character?.color} />;
-
-    }
-
-}
+import useGameStore from '@/hooks/useGameStore';
+import RenderCharacter from './RenderCharacter';
 
 function Box(props) {
 

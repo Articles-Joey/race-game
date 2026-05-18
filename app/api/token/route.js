@@ -9,14 +9,9 @@ import { NextResponse } from 'next/server';
 export async function GET(req) {
     try {
 
-        // const { searchParams } = new URL(req.url);
-        // const searchParamsObject = Object.fromEntries(searchParams.entries());
-
         const cookieStore = await cookies();
 
         const session_token = cookieStore.get('sess')?.value || null;
-
-        // const oauth_token = session_token;
 
         if (!session_token) {
             return NextResponse.json({ error: 'No session token found' }, { status: 400 });

@@ -10,7 +10,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Line, Plane } from '@react-three/drei';
 import { DoubleSide, Vector3 } from 'three';
 import { Star } from './Star';
-import useGameStore from '../hooks/useGameStore';
+import useGameStore from '@/hooks/useGameStore';
 
 const SquareWithLines = (props) => {
     const squareSize = 2;

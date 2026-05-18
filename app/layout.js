@@ -16,10 +16,10 @@ import "@articles-media/articles-gamepad-helper/dist/style.css";
 
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 // import PeerHandler from '@/components/PeerHandler';
-import AudioHandler from '@/components/AudioHandler';
+// import AudioHandler from '@/components/Game/AudioHandler';
 // import PeerHandlerTest from '@/components/PeerHandlerTest';
-import GlobalClientModals from '@/components/UI/GlobalClientModals';
-import DarkModeHandler from '@/components/UI/DarkModeHandler';
+// import GlobalClientModals from '@/components/UI/GlobalClientModals';
+// import DarkModeHandler from '@/components/UI/DarkModeHandler';
 import { Suspense } from 'react';
 import CustomControlsLogic from '@/components/Game/CustomControlsLogic';
 import LayoutClient from './layout-client';
@@ -70,15 +70,18 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
+        <LayoutClient />
+
         <Suspense>
+
           <SocketLogicHandler />
           {/* <PeerHandler /> */}
           {/* <PeerHandlerTest /> */}
-          <AudioHandler />
+          {/* <AudioHandler /> */}
+
+          {/* Keyboard */}
           <CustomControlsLogic />
-          <LayoutClient />
-          <DarkModeHandler />
-          <GlobalClientModals />
+
         </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
