@@ -15,31 +15,10 @@ import "@articles-media/articles-dev-box/dist/style.css";
 import "@articles-media/articles-gamepad-helper/dist/style.css";
 
 import SocketLogicHandler from "@/components/SocketLogicHandler";
-// import PeerHandler from '@/components/PeerHandler';
-// import AudioHandler from '@/components/Game/AudioHandler';
-// import PeerHandlerTest from '@/components/PeerHandlerTest';
-// import GlobalClientModals from '@/components/UI/GlobalClientModals';
-// import DarkModeHandler from '@/components/UI/DarkModeHandler';
+
 import { Suspense } from 'react';
 import CustomControlsLogic from '@/components/Game/CustomControlsLogic';
 import LayoutClient from './layout-client';
-// import dynamic from 'next/dynamic';
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-// import InfoModal from '@/components/UI/InfoModal';
-// const InfoModal = dynamic(
-//     () => import('@/components/UI/InfoModal'),
-//     { ssr: false }
-// )
 
 export const metadata = {
   title: "Race Game",
@@ -52,13 +31,6 @@ export default function RootLayout({ children }) {
     <html lang="en">
 
       <head>
-
-        {/* <link
-          rel="stylesheet"
-          href={`${process.env.NEXT_PUBLIC_CDN}fonts/fontawsome/css/all.min.css`}
-        /> */}
-
-        {/* <GlobalHead /> */}
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />

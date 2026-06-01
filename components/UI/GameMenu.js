@@ -10,7 +10,7 @@ import { Dropdown, Form } from 'react-bootstrap';
 
 import IsDev from '@/components/UI/IsDev';
 import { useStore } from '@/hooks/useStore';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import usePeerConnection from '@/hooks/usePeerConnection';
 import { memo, Suspense, useEffect, useState } from 'react';
 import { connect } from 'socket.io-client';
@@ -161,6 +161,7 @@ function GameMenu({
                         <GameMenuPrimaryButtonGroup
                             useStore={useStore}
                             type="GameMenu"
+                            useRouter={useRouter}
                         />
                     </div>
 

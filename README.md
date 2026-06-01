@@ -6,7 +6,9 @@ The objective is to reach the finish line first. For every round, players must p
 
 ## Getting Started
 
-First, run the development server:
+First you will need to setup a .env file from the .env.sample provided.
+
+Then development server can be run:
 
 ```bash
 npm run dev
@@ -28,6 +30,10 @@ Game Server Types
 - **Socket Multiplayer** - Server hosted games, enables anti cheat, saved stats, rewards, server browser.  
 
 When joining games a server_type is set that handles the different logic needed
+
+## Scripts
+
+In the scripts folder is reset_public and sync_to_s3. This is only for Articles Media usage. Allows for putting public folder to CloudFront to lower Vercel charges for the public facing site.
 
 ## Roadmap
 
