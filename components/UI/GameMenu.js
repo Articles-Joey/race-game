@@ -1,522 +1,172 @@
-"use client"
+"use client";
 
-import { QRCodeCanvas } from 'qrcode.react';
-
-import Link from 'next/link';
-
-import ArticlesButton from '@/components/UI/Button';
-
-import { Dropdown, Form } from 'react-bootstrap';
-
-import IsDev from '@/components/UI/IsDev';
-import { useStore } from '@/hooks/useStore';
-import { useSearchParams, useRouter } from 'next/navigation';
-import usePeerConnection from '@/hooks/usePeerConnection';
 import { memo, Suspense, useEffect, useState } from 'react';
-import { connect } from 'socket.io-client';
+import { QRCodeCanvas } from 'qrcode.react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
+import Divider from '@mui/material/Divider';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import LinkIcon from '@mui/icons-material/Link';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import ArticlesButton from './Button';
+import DebugPanel from './DebugPanel';
+import GameChat from './GameChat';
 import PeerLogic from '../PeerLogic';
+import { useStore } from '@/hooks/useStore';
+import { useAudioStore } from '@/hooks/useAudioStore';
 import useGameStore from '@/hooks/useGameStore';
 
-import useCameraStore from '@/hooks/useCameraStore';
-import GameChat from './GameChat';
-import classNames from 'classnames';
-import { useAudioStore } from '@/hooks/useAudioStore';
-
-import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
-import DebugPanel from './DebugPanel';
-
-function GameMenu({
-    // isFullscreen,
-    // requestFullscreen,
-    // exitFullscreen
-}) {
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    // const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
-    const setCameraUpdate = useCameraStore((state) => state?.setCameraUpdate);
-
-    // const router = useRouter()
-    // const pathname = usePathname()
-    const searchParams = useSearchParams()
-    const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const {
-        server,
-        server_type
-    } = searchParamsObject
-
-    const showMenu = useStore((state) => state?.showMenu);
-    const setShowMenu = useStore((state) => state?.setShowMenu);
-
-    const gameState = useGameStore((state) => state?.gameState);
-    const setGameState = useGameStore((state) => state?.setGameState);
-    const players = useGameStore((state) => state?.gameState?.players);
-
-    const audioSettings = useAudioStore((state) => state?.audioSettings);
-    const setAudioSettings = useAudioStore((state) => state?.setAudioSettings);
-
-    const renderMode = useStore((state) => state?.renderMode);
-    const setRenderMode = useStore((state) => state?.setRenderMode)
-
-    const setInfoModal = useStore((state) => state.setInfoModal)
-
-    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
-
-    const debug = useStore((state) => state.debug)
-
-    const sidebar = useStore((state) => state.sidebar)
-    const toggleSidebar = useStore((state) => state.toggleSidebar)
-
-    const darkMode = useStore((state) => state.darkMode)
-    const toggleDarkMode = useStore((state) => state.toggleDarkMode)
-
-    // const peerId = usePeerConnection((state) => state?.peerId);
-
-    // const [players, setPlayers] = useState([]);
+function GameMenu() {
+    const searchParams = useSearchParams();
+    const server = searchParams.get('server');
+    const server_type = searchParams.get('server_type');
+    const showMenu = useStore((state) => state.showMenu);
+    const setShowMenu = useStore((state) => state.setShowMenu);
+    const sidebar = useStore((state) => state.sidebar);
+    const debug = useStore((state) => state.debug);
+    const renderMode = useStore((state) => state.renderMode);
+    const setRenderMode = useStore((state) => state.setRenderMode);
+    const audioSettings = useAudioStore((state) => state.audioSettings);
+    const setAudioSettings = useAudioStore((state) => state.setAudioSettings);
+    const gameState = useGameStore((state) => state.gameState);
+    const players = useGameStore((state) => state.gameState?.players);
     const connections = useGameStore((state) => state.connections);
-
     const broadcastGameState = useGameStore((state) => state.broadcastGameState);
     const startGame = useGameStore((state) => state.startGame);
     const myId = useGameStore((state) => state.myId);
     const isHost = useGameStore((state) => state.isHost);
-
     const [peerId, setPeerId] = useState(false);
+    const shareLink = `/play?server=${peerId}&server_type=${server_type || 'error'}`;
 
-    const shareLink = `/play?server=${peerId}&server_type=${server_type || 'error'}`
-
-    // const peerRef = usePeerConnection((state) => state?.peerRef);
-    // const connections = usePeerConnection((state) => state?.connections);
-    // const setConnections = usePeerConnection((state) => state?.setConnections);
-    // const peerId = usePeerConnection((state) => state?.peerId);
-    // const connectPeer = usePeerConnection((state) => state?.connect);
-
-    // useEffect(() => {
-    //     console.log("peerRef:", peerRef?._id)
-    // }, [peerRef])
-
-    // useEffect(() => {
-    //     console.log("peerId:", peerId)
-    // }, [peerId])
-
-    useEffect(() => {
-        setPeerId(myId)
-    }, [myId])
-
-    useEffect(() => {
-        console.log("remount")
-    })
+    useEffect(() => setPeerId(myId), [myId]);
 
     return (
-        <div
-            // className='menu-card-wrapper'
-            className={
-                classNames(
-                    'menu-card-wrapper',
-                    {
-                        show: showMenu,
-                        "show-menu": showMenu,
-                        "hide-menu": !showMenu,
-                        "sidebar-enabled": sidebar,
-                        "sidebar-disabled": !sidebar,
-                    }
-                )
-            }
-        >
-
-            <div
-                className={
-                    classNames(
-                        `menu-card-backdrop`,
-                        {
-                            show: showMenu,
-                            "show-menu": showMenu,
-                            "hide-menu": !showMenu,
-                            "sidebar-enabled": sidebar,
-                            "sidebar-disabled": !sidebar,
-                        }
-                    )
-                }
-                onClick={() => setShowMenu(false)}
+        <Box sx={{ display: showMenu ? 'block' : 'none', '@media (min-width: 992px)': { display: sidebar || showMenu ? 'block' : 'none' } }}>
+            {showMenu && (
+                <Box
+                    onClick={() => setShowMenu(false)}
+                    sx={{ position: 'fixed', inset: 0, width: '100%', height: '100%', bgcolor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(5px)', zIndex: 2 }}
+                />
+            )}
+            <Box
+                sx={{
+                    position: 'fixed',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    maxWidth: 400,
+                    height: 'calc(100vh - 50px)',
+                    top: 'var(--top-position)',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    transitionDuration: '200ms',
+                    zIndex: 10,
+                    mx: 'auto',
+                    overflowY: 'auto',
+                    bgcolor: 'game.card',
+                    color: 'text.primary',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 0,
+                    '@media (min-width: 992px)': sidebar ? {
+                        display: 'block', position: 'relative', top: 0, left: 0, transform: 'none',
+                        width: 300, minWidth: 300, fontSize: '0.8rem',
+                    } : { fontSize: '0.8rem' },
+                }}
             >
-
-            </div>
-
-            <div className={
-                classNames(
-                    `menu-card card card-articles rounded-0`,
-                    {
-                        show: showMenu,
-                        "show-menu": showMenu,
-                        "hide-menu": !showMenu,
-                        "sidebar-enabled": sidebar,
-                        "sidebar-disabled": !sidebar,
-                    }
-                )
-            }>
-
-                <div className="card-body p-2 mt-auto d-flex flex-column">
-
-                    <div className="d-flex flex-wrap w-100 mb-2">
-                        <GameMenuPrimaryButtonGroup
-                            useStore={useStore}
-                            type="GameMenu"
-                            useRouter={useRouter}
-                        />
-                    </div>
-
-                    <div className='d-flex flex-column mb-2 mt-auto'>
-
-                        {server_type == "online-socket" &&
-                            <div className='flex-header bg-dark text-white p-1 mb-2'>
-                                <div>
-                                    <div>Room: {server}</div>
-                                    <div>
+                <Box sx={{ p: 1, mt: 'auto', display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', width: '100%', mb: 1 }}>
+                        <GameMenuPrimaryButtonGroup useStore={useStore} type="GameMenu" useRouter={useRouter} />
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', mb: 1, mt: 'auto' }}>
+                        {server_type === 'online-socket' && (
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', bgcolor: '#212529', color: '#fff', p: 0.5, mb: 1 }}>
+                                <Box>
+                                    <Box>Room: {server}</Box>
+                                    <Box>
                                         <span>Status: </span>
-                                        {gameState?.status == 'In Lobby' &&
-                                            <span className='text-danger'>In Lobby | Need Players</span>
-                                        }
-                                        {gameState?.status == 'In Progress' &&
-                                            <span className='text-success'>In Progress | Pick Space</span>
-                                        }
-                                    </div>
-                                </div>
-                            </div>
-                        }
-
-                        {server_type == "online-peer" &&
-                            <div className='p-1 mb-2'>
-                                <Suspense>
-                                    <PeerLogic />
-                                </Suspense>
-                            </div>
-                        }
-
-                        <div className='border p-1 mb-2'>
-
-                            {/* <ArticlesButton
-                                className={`w-100 mb-2`}
-                                small
-                                // disabled={!connectPeer || !server || !peerReady}
-                                onClick={async () => {
-    
-                                    // if (!connectPeer || !server || !peerReady) {
-                                    //     console.warn("Peer connection not ready or server_id missing", { hasConnect: !!connectPeer, server, peerReady });
-                                    //     return;
-                                    // }
-    
-                                    // try {
-                                    //     const targetPeerId = server.trim();
-                                    //     console.log("Attempting peer connection", { remoteId: targetPeerId });
-                                    //     const connection = await connectPeer(targetPeerId);
-                                    //     console.log("Peer connection established", connection);
-                                    // } catch (error) {
-                                    //     console.error("Failed to connect to peer", error);
-                                    // }
-    
-                                    connectPeer(server_id);
-    
-                                    return
-    
-                                    const conn = peerRef.connect(server_id, {
-                                        reliable: true,
-                                        // metadata 
-                                    });
-                                    const cleanup = () => {
-                                        conn.off("open", handleOpen);
-                                        conn.off("error", handleError);
-                                    };
-                                    const handleOpen = () => {
-                                        cleanup();
-                                        // log("outgoing data connection open", server_id);
-                                        console.log("outgoing data connection open", server_id);
-                                        setupDataConnection(conn);
-                                        resolved = true;
-                                        resolve(conn);
-                                    };
-                                    const handleError = (err) => {
-                                        cleanup();
-                                        if (!resolved) {
-                                            // log("outgoing connection error", err);
-                                            console.log("outgoing connection error", err);
-                                            reject(err);
-                                        }
-                                    };
-    
-                                    conn.on("open", handleOpen);
-                                    conn.on("error", handleError);
-    
-                                }}
-                            >
-                                Test Peer Connection
-                            </ArticlesButton> */}
-
-                            {/* {server_id && <ArticlesButton
-                                className={`w-100 mb-2`}
-                                small
-                                // disabled={!connectPeer || !server || !peerReady}
-                                onClick={async () => {
-    
-                                    setConnections([])
-                                    peerRef.disconnect();
-    
-                                }}
-                            >
-                                Disconnect
-                            </ArticlesButton>} */}
-
-                            {/* <div>{peerId}</div> */}
-
-                            <div className='d-flex'>
-                                {/* <a
-                                    href={shareLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className='w-50'
-                                > */}
-                                {/* {window.location.hostname} */}
+                                        {gameState?.status === 'In Lobby' && <Box component="span" sx={{ color: 'error.main' }}>In Lobby | Need Players</Box>}
+                                        {gameState?.status === 'In Progress' && <Box component="span" sx={{ color: 'success.main' }}>In Progress | Pick Space</Box>}
+                                    </Box>
+                                </Box>
+                            </Box>
+                        )}
+                        {server_type === 'online-peer' && <Box sx={{ p: 0.5, mb: 1 }}><Suspense><PeerLogic /></Suspense></Box>}
+                        <Box sx={{ border: '1px solid', borderColor: 'divider', p: 0.5, mb: 1 }}>
+                            <Box sx={{ display: 'flex' }}>
                                 <ArticlesButton
                                     small
-                                    className="w-50 mb-2"
-                                    // disabled={}
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(`${window.location.host}${shareLink}`);
-                                    }}
+                                    sx={{ width: '50%', mb: 1 }}
+                                    startIcon={<ContentPasteIcon />}
+                                    onClick={() => navigator.clipboard.writeText(`${window.location.host}${shareLink}`)}
                                 >
-                                    <i className="fad fa-clipboard"></i>
                                     Share Link
                                 </ArticlesButton>
-                                {/* </a> */}
-
-                                <a
-                                    href={shareLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className='w-50'
-                                >
-                                    {/* {window.location.hostname} */}
-                                    <ArticlesButton
-                                        small
-                                        className="w-100 mb-2"
-                                        // disabled={}
-                                        onClick={() => {
-
-                                        }}
-                                    >
-                                        <i className="fad fa-link"></i>
-                                        Dev
-                                    </ArticlesButton>
-                                </a>
-                            </div>
-
-                            <div className='d-flex justify-content-center mb-1'>
-                                {peerId &&
-                                    <QRCodeCanvas
-                                        value={`${window.location.host}${shareLink}`}
-                                        className=''
-
-                                        size={150}
-                                    />
-                                }
-                            </div>
-
-                        </div>
-
+                                <ArticlesButton component="a" href={shareLink} target="_blank" rel="noopener noreferrer" small sx={{ width: '50%', mb: 1 }} startIcon={<LinkIcon />}>
+                                    Dev
+                                </ArticlesButton>
+                            </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 0.5 }}>
+                                {peerId && <QRCodeCanvas value={`${window.location.host}${shareLink}`} size={150} />}
+                            </Box>
+                        </Box>
                         <ArticlesButton
                             small
-                            className="w-100 mb-2"
-                            // active={}
-                            disabled={
-                                // Disable for non-hosts
-                                (
-                                    (
-                                        server_type == 'online-peer'
-                                        // ||
-                                        // server_type == 'room-play'
-                                    )
-                                    &&
-                                    !isHost
-                                )
-                                ||
-                                // Disable in progress on hosts
-                                (
-                                    (
-                                        server_type == 'online-peer'
-                                        // ||
-                                        // server_type == 'room-play'
-                                    )
-                                    &&
-                                    gameState?.status == 'In Progress'
-                                    &&
-                                    isHost
-                                )
-                                ||
-                                (server_type == 'online-socket' && false)
-                                // connections.length < 1
-                                // ||
-
-                            }
+                            sx={{ width: '100%', mb: 1 }}
+                            startIcon={<PlayArrowIcon />}
+                            disabled={server_type === 'online-peer' && (!isHost || gameState?.status === 'In Progress')}
                             onClick={() => {
-
-                                // if (server_type == 'room-play') {
-
-                                //     if (isHost) {
-
-                                //         startGame()
-                                //         broadcastGameState()
-
-                                //     }
-
-                                // }
-
-                                if (server_type == 'online-peer') {
-
-                                    if (isHost) {
-
-                                        startGame()
-                                        broadcastGameState()
-
-                                    }
-
+                                if (server_type === 'online-peer' && isHost) {
+                                    startGame();
+                                    broadcastGameState();
                                 }
-
-
-                                // if (server_type == 'online-socket') {
-
-                                // }
-
                             }}
                         >
-                            <i className="fad fa-play"></i>
-                            <span>Start Game</span>
-                            <span className="badge bg-dark ms-2">
-                                {connections?.length || 0} / 2+
-                            </span>
+                            Start Game
+                            <Chip size="small" label={`${connections?.length || 0} / 2+`} sx={{ ml: 1, bgcolor: '#212529', color: '#fff' }} />
                         </ArticlesButton>
-
-                    </div>
-
-                    <hr className='my-2' />
-
-                    <div className='d-flex'>
-
-                        {/* Audio */}
-                        <div className='w-50 m-lg-1'>
-
-                            <div className="small text-center">
-                                Audio
-                            </div>
-
-                            <div className='d-flex'>
-
-                                <ArticlesButton
-                                    small
-                                    className="w-50"
-                                    active={!audioSettings?.enabled}
-                                    onClick={() => {
-                                        setAudioSettings({
-                                            ...audioSettings,
-                                            enabled: false
-                                        })
-                                    }}
-                                >
-                                    Off
-                                </ArticlesButton>
-
-                                <ArticlesButton
-                                    small
-                                    className="w-50"
-                                    active={audioSettings?.enabled}
-                                    onClick={() => {
-                                        setAudioSettings({
-                                            ...audioSettings,
-                                            enabled: true
-                                        })
-                                    }}
-                                >
-                                    On
-                                </ArticlesButton>
-
-                            </div>
-
-                        </div>
-
-                        {/* Rendering */}
-                        <div className="w-50 m-lg-1">
-
-                            <div className="small text-center">
-                                Game Style
-                            </div>
-
-                            <div className='d-flex'>
-
-                                <ArticlesButton
-                                    small
-                                    className="w-50 mb-2"
-                                    active={renderMode == "2D"}
-                                    onClick={() => {
-                                        setRenderMode("2D")
-                                    }}
-                                >
-                                    2D
-                                </ArticlesButton>
-
-                                <ArticlesButton
-                                    small
-                                    className="w-50 mb-2"
-                                    active={renderMode == "3D"}
-                                    onClick={() => {
-                                        setRenderMode("3D")
-                                    }}
-                                >
-                                    3D
-                                </ArticlesButton>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+                    </Box>
+                    <Divider sx={{ my: 1 }} />
+                    <Box sx={{ display: 'flex' }}>
+                        <Box sx={{ width: '50%', '@media (min-width: 992px)': { m: 0.5 } }}>
+                            <Box sx={{ fontSize: '0.875em', textAlign: 'center' }}>Audio</Box>
+                            <Box sx={{ display: 'flex' }}>
+                                {[false, true].map((enabled) => (
+                                    <ArticlesButton key={String(enabled)} small sx={{ width: '50%' }} active={Boolean(audioSettings?.enabled) === enabled} onClick={() => setAudioSettings({ ...audioSettings, enabled })}>
+                                        {enabled ? 'On' : 'Off'}
+                                    </ArticlesButton>
+                                ))}
+                            </Box>
+                        </Box>
+                        <Box sx={{ width: '50%', '@media (min-width: 992px)': { m: 0.5 } }}>
+                            <Box sx={{ fontSize: '0.875em', textAlign: 'center' }}>Game Style</Box>
+                            <Box sx={{ display: 'flex' }}>
+                                {['2D', '3D'].map((mode) => <ArticlesButton key={mode} small sx={{ width: '50%', mb: 1 }} active={renderMode === mode} onClick={() => setRenderMode(mode)}>{mode}</ArticlesButton>)}
+                            </Box>
+                        </Box>
+                    </Box>
+                </Box>
                 <GameChat />
-
-                {debug &&
+                {debug && (
                     <>
-
-                        <div>
-                            <div><b className="mb-0">Players</b></div>
-                            {players?.map((obj, index) => (
-                                <div key={index + '-' + obj.id}>
-                                    <div className="border p-1">
-
-                                        <div>Id: {obj.id}</div>
-                                        {obj.user_id && <div >User: {obj.user_id}</div>}
-
-                                        <div className='d-flex mt-2'>
-                                            <div className='me-4'>X = {obj.race_game.x}</div>
-                                            <div>Y = {obj.race_game.y}</div>
-                                        </div>
-
-                                        <div className='d-flex justify-content-between mt-2'>
-                                            <div className='me-4'>Row = {obj.race_game.row}</div>
-                                            <div>Picked = {obj.race_game.pickedSpace ? 'True' : 'False'} - {obj.race_game.spaces}</div>
-                                        </div>
-
-                                    </div>
-                                </div>
+                        <Box>
+                            <Box><b>Players</b></Box>
+                            {players?.map((player, index) => (
+                                <Box key={`${index}-${player.id}`} sx={{ border: '1px solid', borderColor: 'divider', p: 0.5 }}>
+                                    <Box>Id: {player.id}</Box>
+                                    {player.user_id && <Box>User: {player.user_id}</Box>}
+                                    <Box sx={{ display: 'flex', mt: 1 }}><Box sx={{ mr: 3 }}>X = {player.race_game.x}</Box><Box>Y = {player.race_game.y}</Box></Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}><Box sx={{ mr: 3 }}>Row = {player.race_game.row}</Box><Box>Picked = {player.race_game.pickedSpace ? 'True' : 'False'} - {player.race_game.spaces}</Box></Box>
+                                </Box>
                             ))}
-                        </div>
-
+                        </Box>
                         <DebugPanel />
-
                     </>
-                }
-
-            </div>
-
-        </div>
+                )}
+            </Box>
+        </Box>
     );
 }
 

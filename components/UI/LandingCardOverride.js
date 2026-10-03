@@ -1,4 +1,13 @@
 "use client"
+import Box from "@mui/material/Box";
+import TextField from '@mui/material/TextField';
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import CheckIcon from "@mui/icons-material/Check";
+import PaletteIcon from "@mui/icons-material/Palette";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SaveIcon from "@mui/icons-material/Save";
+import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import React from 'react';
 import dynamic from 'next/dynamic';
 import ArticlesButton from '@/components/UI/Button';
@@ -36,60 +45,55 @@ export default function LandingCardOverride({
 
     if (characterEdit) {
         return (
-            <div
-                className="card card-articles card-sm mb-3"
-                style={{
+            <Box sx={{ ...{"position":"relative","display":"flex","flexDirection":"column","minWidth":0,"bgcolor":"game.card","color":"text.primary","border":"1px solid","borderColor":"divider","borderRadius":"0.375rem","fontSize":"0.875rem","mb":"1rem"}, ...{
                     "width": "20rem",
                     "display": characterEdit ? 'block' : 'none'
-                }}
-            >
+                } }} >
 
-                <div className="card-header d-flex align-items-center">
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderBottom":"1px solid","borderColor":"divider","display":"flex","alignItems":"center"}} >
                     Character Selector
-                </div>
+                </Box>
 
-                <div className="card-body p-2">
-                    <div className="selection-grid mb-2">
+                <Box sx={{"flex":"1 1 auto","p":"0.5rem"}} >
+                    <Box sx={{"display":"grid","gap":"5px","gridTemplateColumns":"repeat(2, minmax(0, 1fr))","mb":"0.5rem"}} >
                         {characters.map(item => {
                             let active = character?.model == item.name
                             return (
-                                <div
+                                <Box
                                     key={item.name}
-                                    className={`item ${active && 'active'}`}
+                                    
                                     onClick={() => {
                                         setCharacter({
                                             ...character,
                                             model: item.name
                                         })
-                                    }}
-                                >
-                                    <div className="ratio ratio-1x1">
+                                    }} sx={{ cursor: "pointer", transition: "transform 200ms, box-shadow 200ms", border: active ? "2px solid #000" : "2px solid transparent", "&:hover": { transform: "scale(1.025)", boxShadow: "0 0 0 1px rgba(0,0,0,0.25), 0 2px 3px rgba(0,0,0,0.2)" } }} >
+                                    <Box sx={{"position":"relative","width":"100%","& > *":{"position":"absolute","inset":0,"width":"100%","height":"100%"},"aspectRatio":"1 / 1"}} >
                                         {active &&
-                                            <div className=''>
+                                            <Box >
                                                 <Viewer>
                                                     <RenderCharacter
                                                         character={item}
                                                     />
                                                 </Viewer>
-                                            </div>
+                                            </Box>
                                         }
 
                                         {!active &&
-                                            <img
-                                                className='img-fluid'
-                                                style={{ objectFit: 'cover' }}
+                                            <Box component="img"
+                                                
+                                                
                                                 src={item.image}
-                                                alt=""
-                                            />
+                                                alt="" sx={{ ...{"maxWidth":"100%","height":"auto"}, ...{ objectFit: 'cover' } }} />
                                         }
-                                    </div>
-                                </div>
+                                    </Box>
+                                </Box>
                             )
                         })}
-                    </div>
+                    </Box>
 
                     {colorEdit &&
-                        <div className='mb-2'>
+                        <Box sx={{"mb":"0.5rem"}} >
                             <ChromePicker
                                 width={"100%"}
                                 color={character?.color || '#000000'}
@@ -100,280 +104,263 @@ export default function LandingCardOverride({
                                     })
                                 }}
                             />
-                        </div>
+                        </Box>
                     }
 
-                    <div className='d-flex justify-content-center'>
+                    <Box sx={{"display":"flex","justifyContent":"center"}} >
                         <ArticlesButton
                             small
-                            className="w-50"
+                            
                             disabled={!character?.color}
                             onClick={() => {
                                 let character_copy = { ...character }
                                 delete character_copy.color
                                 setCharacter(character_copy)
-                            }}
-                        >
-                            <i className="fad fa-redo"></i>
+                            }} sx={{"width":"50%"}} >
+                            <RestartAltIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                             Reset Color
                         </ArticlesButton>
 
                         <ArticlesButton
                             small
-                            className="w-50"
+                            
                             onClick={() => {
                                 setColorEdit(prev => !prev)
-                            }}
-                        >
-                            {colorEdit ? <i className="fad fa-check"></i> : <i className="fad fa-palette"></i>}
+                            }} sx={{"width":"50%"}} >
+                            {colorEdit ? <CheckIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} /> : <PaletteIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />}
                             {colorEdit ? 'Done' : 'Select Color'}
                         </ArticlesButton>
-                    </div>
-                </div>
+                    </Box>
+                </Box>
 
-                <div className="card-footer d-flex justify-content-center">
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderTop":"1px solid","borderColor":"divider","display":"flex","justifyContent":"center"}} >
                     <ArticlesButton
-                        className="w-50"
+                        
                         onClick={() => {
                             setCharacterEdit(false)
-                        }}
-                    >
-                        <i className="fad fa-arrow-alt-left"></i>
+                        }} sx={{"width":"50%"}} >
+                        <ArrowBackIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Return
                     </ArticlesButton>
 
                     <ArticlesButton
-                        className="w-50"
+                        
                         onClick={() => {
                             setCharacterEdit(false)
-                        }}
-                    >
-                        <i className="fad fa-save"></i>
+                        }} sx={{"width":"50%"}} >
+                        <SaveIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Save
                     </ArticlesButton>
-                </div>
-            </div>
+                </Box>
+            </Box>
         )
     }
 
     if (createCustomGame) {
         return (
-            <div
-                className="card card-articles card-sm mb-3"
-                style={{ "width": "20rem" }}
-            >
-                <div className="card-header">
+            <Box sx={{ ...{"position":"relative","display":"flex","flexDirection":"column","minWidth":0,"bgcolor":"game.card","color":"text.primary","border":"1px solid","borderColor":"divider","borderRadius":"0.375rem","fontSize":"0.875rem","mb":"1rem"}, ...{ "width": "20rem" } }} >
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderBottom":"1px solid","borderColor":"divider"}} >
                     Create Custom Game
-                </div>
+                </Box>
 
-                <div className="card-body">
-                    <div className="small text-muted">Game Code</div>
-                    <input
+                <Box sx={{"flex":"1 1 auto","p":"1rem"}} >
+                    <Box sx={{"fontSize":"0.875em","color":"text.secondary"}} >Game Code</Box>
+                    <TextField size="small"
                         autoComplete='off'
                         type="text"
-                        className='text-center w-100 mb-2'
+                        
                         value={createCustomGame?.url || ''}
                         onChange={(e) => {
                             setCreateCustomGame({
                                 ...createCustomGame,
                                 url: e.target.value
                             })
-                        }}
+                        }} sx={{ width: '100%', mb: '0.5rem', '& input': { textAlign: 'center' } }}
+                        slotProps={{ htmlInput: { 'aria-label': 'Game code' } }}
                     />
-                    <div style={{ fontSize: '0.75rem' }} className="text-muted mb-2">Give this to friends once you start the game!</div>
+                    <Box sx={{ ...{"color":"text.secondary","mb":"0.5rem"}, ...{ fontSize: '0.75rem' } }} >Give this to friends once you start the game!</Box>
 
-                    <div className="small text-muted">Players</div>
-                    <div className="d-flex align-items-center mb-3">
+                    <Box sx={{"fontSize":"0.875em","color":"text.secondary"}} >Players</Box>
+                    <Box sx={{"display":"flex","alignItems":"center","mb":"1rem"}} >
                         <ArticlesButton
                             small
                             disabled={createCustomGame?.players <= 2}
-                            className={`px-2`}
+                            
                             onClick={() => {
                                 setCreateCustomGame(prev => ({
                                     ...prev,
                                     players: (prev?.players || 2) - 1
                                 }))
-                            }}
-                        >
+                            }} sx={{"px":"0.5rem"}} >
                             -
                         </ArticlesButton>
-                        <b className='px-2'>{createCustomGame?.players}</b>
+                        <Box component="b" sx={{"px":"0.5rem"}} >{createCustomGame?.players}</Box>
                         <ArticlesButton
                             small
-                            className={`px-2`}
+                            
                             onClick={() => {
                                 setCreateCustomGame(prev => ({
                                     ...prev,
                                     players: (prev?.players || 4) + 1
                                 }))
-                            }}
-                        >
+                            }} sx={{"px":"0.5rem"}} >
                             +
                         </ArticlesButton>
-                    </div>
+                    </Box>
 
-                    <div>
-                        <div className="small text-muted">Board Length</div>
-                        <div className="d-flex align-items-center mb-3">
+                    <Box>
+                        <Box sx={{"fontSize":"0.875em","color":"text.secondary"}} >Board Length</Box>
+                        <Box sx={{"display":"flex","alignItems":"center","mb":"1rem"}} >
                             <ArticlesButton
                                 small
                                 disabled={createCustomGame?.length <= 10}
-                                className={`px-2`}
+                                
                                 onClick={() => {
                                     setCreateCustomGame(prev => ({
                                         ...prev,
                                         length: (prev?.length || 10) - 1
                                     }))
-                                }}
-                            >
+                                }} sx={{"px":"0.5rem"}} >
                                 -
                             </ArticlesButton>
-                            <b className='px-2'>{createCustomGame?.length}</b>
+                            <Box component="b" sx={{"px":"0.5rem"}} >{createCustomGame?.length}</Box>
                             <ArticlesButton
                                 small
                                 disabled={createCustomGame?.length >= 100}
-                                className={`px-2`}
+                                
                                 onClick={() => {
                                     setCreateCustomGame(prev => ({
                                         ...prev,
                                         length: (prev?.length || 10) + 1
                                     }))
-                                }}
-                            >
+                                }} sx={{"px":"0.5rem"}} >
                                 +
                             </ArticlesButton>
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
 
-                    <div>
-                        <div className="small text-muted">Max Moves</div>
-                        <div className="d-flex align-items-center mb-3">
+                    <Box>
+                        <Box sx={{"fontSize":"0.875em","color":"text.secondary"}} >Max Moves</Box>
+                        <Box sx={{"display":"flex","alignItems":"center","mb":"1rem"}} >
                             <ArticlesButton
                                 small
                                 disabled={createCustomGame?.maxMoves <= 4}
-                                className={`px-2`}
+                                
                                 onClick={() => {
                                     setCreateCustomGame(prev => ({
                                         ...prev,
                                         maxMoves: (prev?.maxMoves || 4) - 1
                                     }))
-                                }}
-                            >
+                                }} sx={{"px":"0.5rem"}} >
                                 -
                             </ArticlesButton>
-                            <b className='px-2'>{createCustomGame?.maxMoves}</b>
+                            <Box component="b" sx={{"px":"0.5rem"}} >{createCustomGame?.maxMoves}</Box>
                             <ArticlesButton
                                 small
                                 disabled={createCustomGame?.maxMoves >= 100}
-                                className={`px-2`}
+                                
                                 onClick={() => {
                                     setCreateCustomGame(prev => ({
                                         ...prev,
                                         maxMoves: (prev?.maxMoves || 4) + 1
                                     }))
-                                }}
-                            >
+                                }} sx={{"px":"0.5rem"}} >
                                 +
                             </ArticlesButton>
-                        </div>
-                    </div>
+                        </Box>
+                    </Box>
 
-                    <div>
+                    <Box>
                         Enable Room Play?
-                    </div>
+                    </Box>
 
-                    <div className="small">
+                    <Box sx={{"fontSize":"0.875em"}} >
                         Similar to Jackbox Games, the game will take place on the host's screen and others play on their devices.
-                    </div>
+                    </Box>
 
-                    <div className='d-flex justify-content-center mb-3'>
+                    <Box sx={{"display":"flex","justifyContent":"center","mb":"1rem"}} >
                         <ArticlesButton
                             small
-                            className={`w-50`}
+                            
                             active={!createCustomGame?.roomPlay}
                             onClick={() => {
                                 setCreateCustomGame({
                                     ...createCustomGame,
                                     roomPlay: false
                                 })
-                            }}
-                        >
-                            <i className="fad fa-minus-square"></i>
+                            }} sx={{"width":"50%"}} >
+                            <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                             Disable
                         </ArticlesButton>
                         <ArticlesButton
                             small
-                            className={`w-50`}
+                            
                             active={createCustomGame?.roomPlay}
                             onClick={() => {
                                 setCreateCustomGame({
                                     ...createCustomGame,
                                     roomPlay: true
                                 })
-                            }}
-                        >
-                            <i className="fad fa-minus-square"></i>
+                            }} sx={{"width":"50%"}} >
+                            <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                             Enable
                         </ArticlesButton>
-                    </div>
+                    </Box>
 
-                    <div>
+                    <Box>
                         Enable P2P
-                    </div>
+                    </Box>
 
-                    <div className="small">
+                    <Box sx={{"fontSize":"0.875em"}} >
                         Use Peer to Peer connections instead of server connections. This may reduce latency but can cause connectivity issues for some players.
-                    </div>
+                    </Box>
 
-                    <div className='d-flex justify-content-center mb-3'>
+                    <Box sx={{"display":"flex","justifyContent":"center","mb":"1rem"}} >
                         <ArticlesButton
                             small
-                            className={`w-50`}
+                            
                             active={!createCustomGame?.p2p}
                             onClick={() => {
                                 setCreateCustomGame({
                                     ...createCustomGame,
                                     p2p: false
                                 })
-                            }}
-                        >
-                            <i className="fad fa-minus-square"></i>
+                            }} sx={{"width":"50%"}} >
+                            <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                             Disable
                         </ArticlesButton>
                         <ArticlesButton
                             small
-                            className={`w-50`}
+                            
                             active={createCustomGame?.p2p}
                             onClick={() => {
                                 setCreateCustomGame({
                                     ...createCustomGame,
                                     p2p: true
                                 })
-                            }}
-                        >
-                            <i className="fad fa-minus-square"></i>
+                            }} sx={{"width":"50%"}} >
+                            <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                             Enable
                         </ArticlesButton>
-                    </div>
+                    </Box>
 
-                </div>
+                </Box>
 
-                <div className="card-footer d-flex">
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderTop":"1px solid","borderColor":"divider","display":"flex"}} >
                     <ArticlesButton
                         small
-                        className={`w-50`}
+                        
                         onClick={() => {
                             setCreateCustomGame(false)
-                        }}
-                    >
-                        <i className="fad fa-minus-square"></i>
+                        }} sx={{"width":"50%"}} >
+                        <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Cancel
                     </ArticlesButton>
 
                     <ArticlesButton
                         variant={"success"}
                         small
-                        className={`w-50`}
+                        
                         onClick={() => {
                             let finalLinkSearchParams = new URLSearchParams()
 
@@ -395,49 +382,46 @@ export default function LandingCardOverride({
                             console.log(finalLink)
 
                             router.push(finalLink)
-                        }}
-                    >
-                        <i className="fad fa-check-square"></i>
+                        }} sx={{"width":"50%"}} >
+                        <CheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Start
                     </ArticlesButton>
-                </div>
-            </div>
+                </Box>
+            </Box>
         )
     }
 
     if (joinGame !== false) {
         return (
-            <div
-                className="card card-articles card-sm mb-3"
-                style={{ "width": "20rem" }}
-            >
-                <div className="card-header">
+            <Box sx={{ ...{"position":"relative","display":"flex","flexDirection":"column","minWidth":0,"bgcolor":"game.card","color":"text.primary","border":"1px solid","borderColor":"divider","borderRadius":"0.375rem","fontSize":"0.875rem","mb":"1rem"}, ...{ "width": "20rem" } }} >
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderBottom":"1px solid","borderColor":"divider"}} >
                     Join a Game
-                </div>
+                </Box>
 
-                <div className="card-body">
-                    <div className="small text-muted">Enter Game Code</div>
-                    <input
+                <Box sx={{"flex":"1 1 auto","p":"1rem"}} >
+                    <Box sx={{"fontSize":"0.875em","color":"text.secondary"}} >Enter Game Code</Box>
+                    <TextField size="small"
                         autoComplete='off'
                         type="text"
-                        className='text-center w-100'
+                        
                         value={joinGame.code || ''}
                         onChange={(e) => {
                             setJoinGame({
                                 ...joinGame,
                                 code: e.target.value
                             })
-                        }}
+                        }} sx={{ width: '100%', '& input': { textAlign: 'center' } }}
+                        slotProps={{ htmlInput: { 'aria-label': 'Game code to join' } }}
                     />
-                </div>
+                </Box>
 
-                <div className="card-body">
+                <Box sx={{"flex":"1 1 auto","p":"1rem"}} >
 
-                    <div className="fw-bold mb-1 small text-center">
+                    <Box sx={{"fontWeight":700,"mb":"0.25rem","fontSize":"0.875em","textAlign":"center"}} >
                         Public Servers
-                    </div>
+                    </Box>
 
-                    <div className="servers mb-2">
+                    <Box sx={{"display":"grid","gap":"5px","gridTemplateColumns":"repeat(2, minmax(0, 1fr))","mb":"0.5rem"}} >
 
                         {[1, 2].map(id => {
 
@@ -446,14 +430,14 @@ export default function LandingCardOverride({
                             )
 
                             return (
-                                <div key={id} className="server">
+                                <Box key={id} sx={{"p":"0.5rem","border":"1px solid rgba(0,0,0,0.25)","display":"flex","flexDirection":"column","alignItems":"center"}} >
 
-                                    <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
-                                        <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
-                                        <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
-                                    </div>
+                                    <Box sx={{"display":"flex","justifyContent":"space-between","alignItems":"center","width":"100%","mb":"0.5rem"}} >
+                                        <Box sx={{ ...{"mb":"0px"}, ...{ fontSize: '0.9rem' } }} ><b>Server {id}</b></Box>
+                                        <Box sx={{"mb":"0px"}} >{lobbyLookup?.players?.length || 0}/4</Box>
+                                    </Box>
 
-                                    <div className='d-flex justify-content-around w-100 mb-1'>
+                                    <Box sx={{"display":"flex","justifyContent":"space-around","width":"100%","mb":"0.25rem"}} >
                                         {[1, 2, 3, 4].map(player_count => {
 
                                             let playerLookup = false
@@ -461,10 +445,8 @@ export default function LandingCardOverride({
                                             if (lobbyLookup?.players?.length >= player_count) playerLookup = true
 
                                             return (
-                                                <div
-                                                    key={player_count}
-                                                    className="icon"
-                                                    style={{
+                                                <Box
+                                                    key={player_count} sx={{
                                                         width: '20px',
                                                         height: '20px',
                                                         ...(playerLookup ? {
@@ -473,17 +455,16 @@ export default function LandingCardOverride({
                                                             backgroundColor: 'gray',
                                                         }),
                                                         border: '1px solid black'
-                                                    }}
-                                                >
+                                                    }} >
 
-                                                </div>
+                                                </Box>
                                             )
 
                                         })}
-                                    </div>
+                                    </Box>
 
                                     <Link
-                                        className={``}
+                                        
                                         prefetch={false}
                                         href={{
                                             pathname: `/play`,
@@ -494,47 +475,43 @@ export default function LandingCardOverride({
                                         }}
                                     >
                                         <ArticlesButton
-                                            small
-                                            className="px-5"
-                                        >
+                                            small sx={{"px":"3rem"}} >
                                             Join
                                         </ArticlesButton>
                                     </Link>
 
-                                </div>
+                                </Box>
                             )
 
                         })}
 
-                    </div>
+                    </Box>
 
-                </div>
+                </Box>
 
-                <div className="card-footer d-flex">
+                <Box sx={{"px":"1rem","py":"0.5rem","bgcolor":"action.hover","borderTop":"1px solid","borderColor":"divider","display":"flex"}} >
                     <ArticlesButton
                         small
-                        className={`w-50`}
+                        
                         onClick={() => {
                             setJoinGame(false)
-                        }}
-                    >
-                        <i className="fad fa-minus-square"></i>
+                        }} sx={{"width":"50%"}} >
+                        <IndeterminateCheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Cancel
                     </ArticlesButton>
 
                     <ArticlesButton
                         variant={"success"}
                         small
-                        className={`w-50`}
+                        
                         onClick={() => {
                             // Logic to join the game can be added here or passed via props
-                        }}
-                    >
-                        <i className="fad fa-check-square"></i>
+                        }} sx={{"width":"50%"}} >
+                        <CheckBoxIcon sx={{"fontSize":"1.2em","verticalAlign":"middle","mr":"0.2rem"}} />
                         Start
                     </ArticlesButton>
-                </div>
-            </div>
+                </Box>
+            </Box>
         )
     }
 

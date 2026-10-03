@@ -1,17 +1,15 @@
-"use client"
-import dynamic from "next/dynamic";
+"use client";
 
+import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
+import Box from '@mui/material/Box';
 import useGameStore from '@/hooks/useGameStore';
-import ArticlesButton from "./Button";
-import { useEffect } from "react";
-import { useStore } from "@/hooks/useStore";
+import { useStore } from '@/hooks/useStore';
+import ArticlesButton from './Button';
 
-const ArticlesModal = dynamic(() => import('@/components/UI/ArticlesModal'), {
-    ssr: false,
-});
+const ArticlesModal = dynamic(() => import('./ArticlesModal'), { ssr: false });
 
 export default function WinnerModal() {
-
     const gameState = useGameStore((state) => state.gameState);
     const isHost = useGameStore((state) => state.isHost);
     const broadcastToClients = useGameStore((state) => state.broadcastToClients);
@@ -19,83 +17,38 @@ export default function WinnerModal() {
     const arcadeMode = useStore((state) => state.arcadeMode);
 
     useEffect(() => {
-
-        if (arcadeMode && gameState?.winner) {
-
-            console.log("WinnerModal: Detected winner in arcade mode, restarting game in 5 seconds.");
-
-            setTimeout(() => {
-
-                // Not only restart game but dump all players and connections
-                // restartGame();
-                // setGameState()
-
-                // Easier to just refresh the page, assumes room-play and also dumps all connections and memory to avoid long term leaks
-                window.location.reload();
-
-            }, 5000);
-        }
-
+        if (!arcadeMode || !gameState?.winner) return;
+        const timer = setTimeout(() => window.location.reload(), 5000);
+        return () => clearTimeout(timer);
     }, [gameState, arcadeMode]);
 
+    if (!gameState?.winner) return null;
+
     return (
-        <>
-            {gameState?.winner &&
-                <ArticlesModal
-                    show={true}
-                    setShow={() => { }}
-                    title="Game Over!"
-                    disableClose
-                    footerOverride={
-                        <div>
-
-                            {isHost ?
-                                <div className="w-100 flex-header">
-
-                                    <ArticlesButton
-                                        className=""
-                                        onClick={() => {
-                                            broadcastToClients({ event: 'ReturnToLobby' });
-
-                                            // TODO - Then return self to lobby
-                                            window.location.href = '/';
-                                        }}
-                                    >
-                                        Close Lobby
-                                    </ArticlesButton>
-
-                                    <ArticlesButton
-                                        className=""
-                                        onClick={() => {
-                                            restartGame();
-                                        }}
-                                    >
-                                        Play Again
-                                    </ArticlesButton>
-
-                                </div>
-                                :
-                                <div>
-
-                                </div>
-                            }
-
-                        </div>
-                    }
-                >
-                    <div>
-
-                        <div className='my-2'>
-                            <b>{gameState?.winner?.nickname || gameState?.winner?.peer}</b><span>{` has won the race!`}</span>
-                        </div>
-
-                        {/* <div className='fw-bold mb-3'>Congratulations!</div> */}
-
-                    </div>
-
-                </ArticlesModal>
+        <ArticlesModal
+            show
+            setShow={() => {}}
+            title="Game Over!"
+            disableClose
+            footerOverride={
+                <Box sx={{ width: '100%' }}>
+                    {isHost && (
+                        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <ArticlesButton onClick={() => {
+                                broadcastToClients({ event: 'ReturnToLobby' });
+                                window.location.href = '/';
+                            }}>
+                                Close Lobby
+                            </ArticlesButton>
+                            <ArticlesButton onClick={restartGame}>Play Again</ArticlesButton>
+                        </Box>
+                    )}
+                </Box>
             }
-        </>
-    )
-
+        >
+            <Box sx={{ my: 1 }}>
+                <b>{gameState?.winner?.nickname || gameState?.winner?.peer}</b> has won the race!
+            </Box>
+        </ArticlesModal>
+    );
 }

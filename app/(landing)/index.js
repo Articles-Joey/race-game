@@ -1,157 +1,91 @@
-"use client"
-import { useEffect, useContext, useState, Suspense } from 'react';
+"use client";
 
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
-import useUserToken from '@articles-media/articles-dev-box/useUserToken';
-
+import { useEffect, useState, Suspense } from 'react';
+import Link from 'next/link';
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import Box from '@mui/material/Box';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import InfoIcon from '@mui/icons-material/Info';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import PaletteIcon from '@mui/icons-material/Palette';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import { PieMenu } from '@articles-media/articles-gamepad-helper';
+import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
 import ArticlesButton from '@/components/UI/Button';
 import LandingCardOverride from '@/components/UI/LandingCardOverride';
-
-const Viewer = dynamic(
-    () => import('@/components/Game/Viewer'),
-    { ssr: false }
-)
-
-import IsDev from '@/components/UI/IsDev';
-import { useSocketStore } from '@/hooks/useSocketStore';
-
-import { useStore } from '@/hooks/useStore';
-
-const LandingBackgroundAnimation = dynamic(
-    () => import('@/components/Game/LandingBackgroundAnimation'),
-    { ssr: false }
-)
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
-import { PieMenu } from '@articles-media/articles-gamepad-helper';
-import useGameStore from '@/hooks/useGameStore';
 import RotatingMascot from '@/components/UI/RotatingMascot';
-import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
 import RenderCharacter from '@/components/Game/RenderCharacter';
+import { useSocketStore } from '@/hooks/useSocketStore';
+import { useStore } from '@/hooks/useStore';
+import useGameStore from '@/hooks/useGameStore';
+
+const Viewer = dynamic(() => import('@/components/Game/Viewer'), { ssr: false });
+const LandingBackgroundAnimation = dynamic(() => import('@/components/Game/LandingBackgroundAnimation'), { ssr: false });
 
 export default function RaceGameLandingPage() {
-
-    const connected = useSocketStore((state) => state.connected)
-
-    const darkMode = useStore((state) => state.darkMode)
-    const toggleDarkMode = useStore((state) => state.toggleDarkMode)
-
-    // const showSettingsModal = useStore((state) => state.showSettingsModal)
-    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
-    // const toggleSettingsModal = useStore((state) => state.toggleSettingsModal)
-
-    // const showCreditsModal = useStore((state) => state.showCreditsModal)
-    const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
-
-    const restartGame = useGameStore((state) => state.restartGame)
-
-    const {
-        data: userToken,
-        error: userTokenError,
-        isLoading: userTokenLoading,
-        mutate: userTokenMutate
-    } = useUserToken(
-        process.env.NEXT_PUBLIC_GAME_PORT
-    );
-
-    const {
-        data: userDetails,
-        error: userDetailsError,
-        isLoading: userDetailsLoading,
-        mutate: userDetailsMutate
-    } = useUserDetails({
-        token: userToken
-    });
+    const darkMode = useStore((state) => state.darkMode);
+    const character = useStore((state) => state.character);
+    const setCharacter = useStore((state) => state.setCharacter);
+    const lobbyDetails = useStore((state) => state.lobbyDetails);
+    const characters = useStore((state) => state.characters);
+    const [characterEdit, setCharacterEdit] = useState(false);
+    const [colorEdit, setColorEdit] = useState(false);
+    const [createCustomGame, setCreateCustomGame] = useState(false);
+    const [joinGame, setJoinGame] = useState(false);
 
     useEffect(() => {
-
-        const gameState = useGameStore.getState().gameState
-        const setGameState = useGameStore.getState().setGameState
-
-        setGameState({
-            ...gameState,
-            players: [],
-            mysterySpots: [],
-        })
-
-        // restartGame();
-
-    }, [])
-
-    const character = useStore((state) => state.character)
-    const setCharacter = useStore((state) => state.setCharacter)
-    const lobbyDetails = useStore(state => state.lobbyDetails)
-    const characters = useStore(state => state.characters)
-
-    const [characterEdit, setCharacterEdit] = useState(false)
-    const [colorEdit, setColorEdit] = useState()
-
-    const [createCustomGame, setCreateCustomGame] = useState(false)
-    const [joinGame, setJoinGame] = useState(false)
-
-    const [showServers, setShowServers] = useState(false)
+        const { gameState, setGameState } = useGameStore.getState();
+        setGameState({ ...gameState, players: [], mysterySpots: [] });
+    }, []);
 
     function randomNumbers(length) {
         let result = '';
-        const characters = '0123456789';
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
+        for (let index = 0; index < length; index++) result += Math.floor(Math.random() * 10);
         return result;
     }
 
+    const pieOptions = [
+        { label: 'Settings', Icon: SettingsIcon, callback: () => useStore.getState().setShowSettingsModal(true) },
+        { label: 'Go Back', Icon: ArrowBackIcon, callback: () => window.history.back() },
+        { label: 'Credits', Icon: InfoIcon, callback: () => useStore.getState().setShowCreditsModal(true) },
+        { label: 'Game Launcher', Icon: SportsEsportsIcon, callback: () => { window.location.href = 'https://games.articles.media'; } },
+        { label: `${darkMode ? 'Light' : 'Dark'} Mode`, Icon: PaletteIcon, callback: () => useStore.getState().toggleDarkMode() },
+    ];
+
     return (
-        <>
+        <Box
+            sx={{
+                position: 'relative',
+                isolation: 'isolate',
+                '& .landing-page': {
+                    position: 'relative', width: '100%', display: 'flex', justifyContent: 'center',
+                    alignItems: 'center', p: 2, minHeight: '100vh', overflow: 'hidden',
+                },
+                '& .ad-wrap': {
+                    position: 'fixed', right: '1rem', top: '50%', transform: 'translateY(-50%)',
+                    display: 'none', '@media (min-width: 992px)': { display: 'block' },
+                },
+                '& .background-wrap': { position: 'fixed', inset: 0, width: '100%', height: '100%', zIndex: -1 },
+                '& .landing-model-wrapper': { position: 'fixed', inset: 0, width: '100%', height: '100%', zIndex: 0 },
+                '& .rules-media-wrap img': { position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' },
+                '& .image-wrap': {
+                    position: 'relative', width: '15rem', height: '15rem', mx: 'auto',
+                    '& img': { position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' },
+                },
+                '& .servers': { display: 'grid', gap: '5px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' },
+                '& .server': { p: 1, border: '1px solid rgba(0,0,0,0.25)', display: 'flex', flexDirection: 'column', alignItems: 'center' },
+            }}
+        >
             <Suspense>
                 <PieMenu
-                    options={[
-                        {
-                            label: 'Settings',
-                            icon: 'fad fa-cog',
-                            callback: () => {
-                                setShowSettingsModal(prev => !prev)
-                            }
-                        },
-                        {
-                            label: 'Go Back',
-                            icon: 'fad fa-arrow-left',
-                            callback: () => {
-                                window.history.back()
-                            }
-                        },
-                        {
-                            label: 'Credits',
-                            icon: 'fad fa-info-circle',
-                            callback: () => {
-                                setShowCreditsModal(true)
-                            }
-                        },
-                        {
-                            label: 'Game Launcher',
-                            icon: 'fad fa-gamepad',
-                            callback: () => {
-                                window.location.href = 'https://games.articles.media';
-                            }
-                        },
-                        {
-                            label: `${darkMode ? "Light" : "Dark"} Mode`,
-                            icon: 'fad fa-palette',
-                            callback: () => {
-                                toggleDarkMode()
-                            }
-                        }
-                    ]}
-                    onFinish={(event) => {
-                        console.log("Event", event)
-                        if (event.callback) {
-                            event.callback()
-                        }
-                    }}
+                    options={pieOptions.map(({ label, Icon, callback }) => ({
+                        label: <Box component="span" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}><Icon fontSize="small" />{label}</Box>,
+                        callback,
+                    }))}
+                    onFinish={(event) => event.callback?.()}
                 />
             </Suspense>
             <PageTemplateLandingPage
@@ -159,82 +93,48 @@ export default function RaceGameLandingPage() {
                 useStore={useStore}
                 RotatingMascot={RotatingMascot}
                 Link={Link}
-                // logoImage={logo.src}
-                LandingBackgroundAnimation={
-                    <LandingBackgroundAnimation />
-                }
-                CardOverride={
-                    (characterEdit || joinGame !== false || createCustomGame) ?
-                        <div>
-                            <LandingCardOverride
-                                characterEdit={characterEdit}
-                                setCharacterEdit={setCharacterEdit}
-                                character={character}
-                                setCharacter={setCharacter}
-                                characters={characters}
-                                colorEdit={colorEdit}
-                                setColorEdit={setColorEdit}
-                                createCustomGame={createCustomGame}
-                                setCreateCustomGame={setCreateCustomGame}
-                                joinGame={joinGame}
-                                setJoinGame={setJoinGame}
-                            />
-                        </div>
-                        :
-                        null
-                }
-                CardBodyOverride={<>
-
-                    <div className="p-3">
-
-                        <div className="fw-bold small text-center mb-2">
-                            <div>{lobbyDetails.online_player_count || 0} player{(lobbyDetails.online_player_count !== 1) && 's'} are online.</div>
-                        </div>
-
-                        {/* Old card-body */}
-                        <div className="old-card-body">
-
+                useRouter={useRouter}
+                LandingBackgroundAnimation={<LandingBackgroundAnimation />}
+                CardOverride={(characterEdit || joinGame !== false || createCustomGame) ? (
+                    <Box>
+                        <LandingCardOverride
+                            characterEdit={characterEdit}
+                            setCharacterEdit={setCharacterEdit}
+                            character={character}
+                            setCharacter={setCharacter}
+                            characters={characters}
+                            colorEdit={colorEdit}
+                            setColorEdit={setColorEdit}
+                            createCustomGame={createCustomGame}
+                            setCreateCustomGame={setCreateCustomGame}
+                            joinGame={joinGame}
+                            setJoinGame={setJoinGame}
+                        />
+                    </Box>
+                ) : null}
+                CardBodyOverride={
+                    <Box sx={{ p: 2 }}>
+                        <Box sx={{ fontWeight: 700, fontSize: '0.875em', textAlign: 'center', mb: 1 }}>
+                            {lobbyDetails?.online_player_count || 0} player{lobbyDetails?.online_player_count !== 1 && 's'} are online.
+                        </Box>
+                        <Box>
                             <ArticlesButton
-                                className={`w-100 mb-2`}
                                 small
-                                onClick={() => {
-                                    setCreateCustomGame({
-                                        url: randomNumbers(4),
-                                        players: 4,
-                                        length: 16,
-                                        maxMoves: 4
-                                    })
-                                }}
+                                sx={{ width: '100%', mb: 1 }}
+                                startIcon={<AddIcon />}
+                                onClick={() => setCreateCustomGame({ url: randomNumbers(4), players: 4, length: 16, maxMoves: 4 })}
                             >
-                                <i className='fad fa-plus'></i>
                                 Create Game
                             </ArticlesButton>
-
-                            <ArticlesButton
-                                className={`w-100 mb-2`}
-                                small
-                                onClick={() => {
-                                    setJoinGame({
-                                        code: "",
-                                    })
-                                }}
-                            >
-                                <i className='fad fa-search'></i>
+                            <ArticlesButton small sx={{ width: '100%', mb: 1 }} startIcon={<SearchIcon />} onClick={() => setJoinGame({ code: '' })}>
                                 Join Game
                             </ArticlesButton>
-
-                        </div>
-
-                    </div>
-
-                </>}
-                // disableHero
-                heroOverride={<>
-                    <div
-                        className='hero'
-                    >
-
-                        <div className='radial-background-gradient'>
+                        </Box>
+                    </Box>
+                }
+                heroOverride={
+                    <Box sx={{ position: 'relative', zIndex: 0, mb: '2rem' }}>
+                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', width: '100%', height: '100%', transform: 'translate(-50%, -50%) scale(5)', zIndex: -1 }}>
                             <svg width="100%" height="100%" viewBox="0 0 100 100">
                                 <defs>
                                     <radialGradient id="fade" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
@@ -244,121 +144,49 @@ export default function RaceGameLandingPage() {
                                 </defs>
                                 <circle cx="50" cy="50" r="50" fill="url(#fade)" />
                             </svg>
-                        </div>
-
-                        <div className='characters d-flex justify-content-center'>
-                            <img
-                                width={50}
-                                style={{
-                                    // transform: 'scale(5)'
-                                }}
-                                src="/img/bear.webp"
-                                alt=""
-                                className="bear"
-                            />
-                            <img
-                                width={50}
-                                style={{
-                                    // transform: 'scale(5)'
-                                }}
-                                src="/img/dog.webp"
-                                alt=""
-                                className="dog"
-                            />
-                            <img
-                                width={50}
-                                style={{
-                                    // transform: 'scale(5)'
-                                }}
-                                src="/img/duck.webp"
-                                alt=""
-                                className="duck"
-                            />
-                            <img
-                                width={50}
-                                style={{
-                                    // transform: 'scale(5)'
-                                }}
-                                src="/img/witch.webp"
-                                alt=""
-                                className="witch"
-                            />
-                        </div>
-
-                        <div className="hero-title luckiest-guy-regular">
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', mb: '1rem' }}>
+                            <Box component="img" width={50} src="/img/bear.webp" alt="" sx={{ transform: 'scale(5) rotateZ(-20deg) translateY(4px)' }} />
+                            <Box component="img" width={50} src="/img/dog.webp" alt="" sx={{ transform: 'scale(5) rotateZ(-10deg) translateY(0px)' }} />
+                            <Box component="img" width={50} src="/img/duck.webp" alt="" sx={{ transform: 'scale(5) rotateZ(10deg) translateY(1.5px)' }} />
+                            <Box component="img" width={50} src="/img/witch.webp" alt="" sx={{ transform: 'scale(5) rotateZ(20deg) translateY(4px)' }} />
+                        </Box>
+                        <Box sx={{ fontFamily: '"Luckiest Guy", cursive', fontWeight: 400, fontStyle: 'normal', fontSize: '5rem', textAlign: 'center', color: '#f9edcd', WebkitTextStroke: '4px rgb(160,120,73)', lineHeight: 0.8, transform: 'scale(1.15)' }}>
                             Race Game
-                        </div>
-
-                        <img src="/img/dice.png" alt="" className="dice" />
-                        <img src="/img/mystery-spot.png" alt="" className="mystery-spot" />
-
-                    </div>
-                </>}
-                backgroundImage={
-                    darkMode ? "/img/background-dark.webp" : "/img/preview.webp"
+                        </Box>
+                        <Box component="img" src="/img/dice.png" alt="" sx={{ position: 'absolute', bottom: 0, left: '-3rem' }} />
+                        <Box component="img" src="/img/mystery-spot.png" alt="" sx={{ position: 'absolute', bottom: 0, right: '-4rem' }} />
+                    </Box>
                 }
-                singlePlayerConfig={{
-
-                }}
+                backgroundImage={darkMode ? '/img/background-dark.webp' : '/img/preview.webp'}
+                singlePlayerConfig={{}}
                 NicknameInputConfig={{
-                    PreComponent: <div className='flex-shrink-0 me-2'>
-
-                        <div style={{ width: '75px', height: '75px' }} >
-                            <div
-                                className="ratio ratio-1x1 mb-1 border"
-
-                            >
-                                <div>
-                                    <Suspense>
-                                        <Viewer scale={13}>
-                                            <RenderCharacter
-                                                character={
-                                                    characters.find(item => item.name == character?.model)
-                                                }
-                                            />
-                                        </Viewer>
-                                    </Suspense>
-                                </div>
-                            </div>
-                        </div>
-
-                        <ArticlesButton
-                            small
-                            className="w-100"
-                            onClick={() => {
-                                setCharacterEdit(true)
-                            }}
-                        >
-                            Edit
-                        </ArticlesButton>
-
-                    </div>
+                    PreComponent: (
+                        <Box sx={{ flexShrink: 0, mr: 1 }}>
+                            <Box sx={{ width: 75, height: 75 }}>
+                                <Box sx={{ position: 'relative', width: '100%', aspectRatio: '1 / 1', mb: 0.5, border: '1px solid', borderColor: 'divider' }}>
+                                    <Box sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+                                        <Suspense>
+                                            <Viewer scale={13}><RenderCharacter character={characters.find((item) => item.name === character?.model)} /></Viewer>
+                                        </Suspense>
+                                    </Box>
+                                </Box>
+                            </Box>
+                            <ArticlesButton small sx={{ width: '100%' }} onClick={() => setCharacterEdit(true)}>Edit</ArticlesButton>
+                        </Box>
+                    ),
                 }}
-                multiplayerConfig={{
-                    // type: "WebSocket",
-                    // comingSoon: true,
-                    // defaultServers: 2,
-                    // privateServerSupport: false,
-                }}
+                multiplayerConfig={{}}
                 gameScoreboardConfig={{
-                    append_score_text: "m",
+                    append_score_text: 'm',
                     metrics: [
-                        {
-                            label: 'Games Won',
-                            key: "score",
-                            format: (value) => `${value} m`
-                        },
-                        {
-                            label: 'Distance Traveled',
-                            key: "total_distance",
-                            format: (value) => `${value} m`
-                        }
-                    ]
+                        { label: 'Games Won', key: 'score', format: (value) => `${value} m` },
+                        { label: 'Distance Traveled', key: 'total_distance', format: (value) => `${value} m` },
+                    ],
                 }}
-                // brandingTextClass="jaro-primary"
                 disableGameScoreboard={process.env.NEXT_PUBLIC_ENABLE_ARTICLES !== 'true'}
                 disableAd={process.env.NEXT_PUBLIC_ENABLE_ARTICLES !== 'true'}
             />
-        </>
+        </Box>
     );
 }

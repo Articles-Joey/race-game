@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    transpilePackages: ['@articles-media/articles-dev-box'],
     // TODO - Disable this after production issue is resolved
     // productionBrowserSourceMaps: true,
     // compiler: {

@@ -1,5 +1,8 @@
 "use client";
+import Box from "@mui/material/Box";
 
+import ArticlesButton from "@/components/UI/Button";
+import TextField from "@mui/material/TextField";
 import { useEffect, useRef, useState } from 'react';
 import useGameStore from '@/hooks/useGameStore';
 import { useSearchParams } from 'next/navigation';
@@ -140,185 +143,170 @@ const PeerLogic = () => {
     ]);
 
     return (
-        <div
-            className="peer-logic-component card"
-            style={{
-                maxWidth: '400px',
-                // padding: '20px', 
-                // border: '1px solid #ccc', 
-                // borderRadius: '8px', 
-                // background: '#f9f9f9', 
-                // color: '#333' 
-            }}
-        >
+        <Box sx={{
+            position: 'relative', display: 'flex', flexDirection: 'column', minWidth: 0,
+            bgcolor: 'game.card', color: 'text.primary', border: '1px solid',
+            borderColor: 'divider', borderRadius: '0.375rem', maxWidth: 400,
+        }}>
 
-            <div className='card-body'>
+            <Box sx={{ flex: '1 1 auto', p: 2 }}>
 
                 <h6>PeerLogic.js</h6>
 
                 {!isHost &&
-                    <div>
+                    <Box>
                         hostConn: {hostConn ? 'Connected' : 'Not Connected'}
-                    </div>
+                    </Box>
                 }
 
                 {
                     (!isHost && myId && !hostConn)
                     &&
-                    <div>
+                    <Box>
                         Connection Issues? VPN Strict NAT (type 3) will prevent connections.<br />
                         Try using a VPN with Open NAT 1 or Moderate NAT 2 settings.<br />
-                    </div>
+                    </Box>
                 }
 
-                <div style={{ marginBottom: '10px' }}>
+                <Box sx={{ marginBottom: '10px' }} >
                     <strong>Status: </strong>
                     {myId ? (
-                        <span style={{ color: 'green' }}>Online ({isHost ? 'Host' : 'Client'})</span>
+                        <Box component="span" sx={{ color: 'green' }} >Online ({isHost ? 'Host' : 'Client'})</Box>
                     ) : (
-                        <span style={{ color: 'red' }}>Offline</span>
+                        <Box component="span" sx={{ color: 'red' }} >Offline</Box>
                     )}
-                    {isKicked && <span style={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }}>You have been kicked!</span>}
-                </div>
+                    {isKicked && <Box component="span" sx={{ color: 'red', marginLeft: '10px', fontWeight: 'bold' }} >You have been kicked!</Box>}
+                </Box>
 
                 {gameState?.status && (
-                    <div style={{ marginBottom: '10px', wordBreak: 'break-all' }}>
+                    <Box sx={{ marginBottom: '10px', wordBreak: 'break-all' }} >
                         <strong>Status: </strong> {gameState?.status}
-                    </div>
+                    </Box>
                 )}
 
                 {myId && (
-                    <div
-                        style={{ marginBottom: '10px', wordBreak: 'break-all' }}
+                    <Box
+                        
                         onClick={() => {
                             navigator.clipboard.writeText(myId);
-                        }}
-                    >
+                        }} sx={{ marginBottom: '10px', wordBreak: 'break-all' }} >
                         <strong>My ID: </strong> {myId}
-                    </div>
+                    </Box>
                 )}
 
                 {!myId && (
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                        <button onClick={handleStartHost} style={{ padding: '5px 10px' }}>Start as Host</button>
-                        <button onClick={handleStartClient} style={{ padding: '5px 10px' }}>Start as Client</button>
-                    </div>
+                    <Box sx={{ display: 'flex', gap: '10px', marginBottom: '10px' }} >
+                        <ArticlesButton onClick={handleStartHost} sx={{ padding: '5px 10px' }} >Start as Host</ArticlesButton>
+                        <ArticlesButton onClick={handleStartClient} sx={{ padding: '5px 10px' }} >Start as Client</ArticlesButton>
+                    </Box>
                 )}
 
                 {isHost && (
-                    <div>
+                    <Box>
 
-                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <Box sx={{ display: 'flex', gap: '10px', marginBottom: '10px' }} >
                             {roomPlayClientRender ? 'True' : 'False'}
-                            <button onClick={toggleRoomPlayClientRender} style={{ padding: '5px 10px' }}>Toggle Client Render</button>
-                        </div>
+                            <ArticlesButton onClick={toggleRoomPlayClientRender} sx={{ padding: '5px 10px' }} >Toggle Client Render</ArticlesButton>
+                        </Box>
 
-                        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                            <button
+                        <Box sx={{ display: 'flex', gap: '10px', marginBottom: '10px' }} >
+                            <ArticlesButton
                                 onClick={() => {
                                     setBoardLength(gameState?.boardLength - 1);
-                                }}
-                                style={{ padding: '5px 10px' }}>
+                                }} sx={{ padding: '5px 10px' }} >
                                 -
-                            </button>
+                            </ArticlesButton>
                             {gameState?.boardLength}
-                            <button
+                            <ArticlesButton
                                 onClick={() => {
                                     setBoardLength(gameState?.boardLength + 1);
-                                }}
-                                style={{ padding: '5px 10px' }}>
+                                }} sx={{ padding: '5px 10px' }} >
                                 +
-                            </button>
-                        </div>
+                            </ArticlesButton>
+                        </Box>
 
-                    </div>
+                    </Box>
                 )}
 
                 {myId && !isHost && !hostConn && (
-                    <div style={{ marginBottom: '10px' }}>
-                        <input
+                    <Box sx={{ marginBottom: '10px' }} >
+                        <TextField size="small"
                             type="text"
                             placeholder="Enter Host ID"
                             value={targetId}
-                            onChange={(e) => setTargetId(e.target.value)}
-                            style={{ marginRight: '5px', padding: '5px' }}
-                        />
-                        <button onClick={handleConnect} style={{ padding: '5px 10px' }}>Connect</button>
-                    </div>
+                            onChange={(e) => setTargetId(e.target.value)} sx={{ marginRight: '5px', padding: '5px' }} />
+                        <ArticlesButton onClick={handleConnect} sx={{ padding: '5px 10px' }} >Connect</ArticlesButton>
+                    </Box>
                 )}
 
                 {myId && (
-                    <div style={{ marginBottom: '10px' }}>
-                        <button onClick={disconnect} style={{ backgroundColor: '#ff4444', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px' }}>
+                    <Box sx={{ marginBottom: '10px' }} >
+                        <ArticlesButton onClick={disconnect} sx={{ backgroundColor: '#ff4444', color: 'white', padding: '5px 10px', border: 'none', borderRadius: '4px' }} >
                             Disconnect
-                        </button>
-                    </div>
+                        </ArticlesButton>
+                    </Box>
                 )}
 
-                {/* Debug Info */}
+                
                 {myId && (
-                    <div style={{ marginTop: '20px', fontSize: '0.9em', borderTop: '1px solid #eee', paddingTop: '10px' }}>
+                    <Box sx={{ marginTop: '20px', fontSize: '0.9em', borderTop: '1px solid #eee', paddingTop: '10px' }} >
                         <h4>Connections</h4>
                         {
                             // isHost 
                             true
                                 ? (
-                                    <div>
+                                    <Box>
                                         Clients: {connections.length}
                                         <ul>
                                             {connections.map((c, i) => (
                                                 <li key={i}>
                                                     {c.peer}
-                                                    <button
-                                                        onClick={() => removeConnection(c.peer)}
-                                                        style={{ marginLeft: '10px', padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                                                    >
+                                                    <ArticlesButton
+                                                        onClick={() => removeConnection(c.peer)} sx={{ marginLeft: '10px', padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }} >
                                                         Kick
-                                                    </button>
+                                                    </ArticlesButton>
                                                 </li>
                                             ))}
                                         </ul>
-                                        <button onClick={handlePing} style={{ padding: '5px' }}>Broadcast Ping</button>
-                                        <button onClick={() => console.log(gameState)} style={{ padding: '5px' }}>Log gameState</button>
+                                        <ArticlesButton onClick={handlePing} sx={{ padding: '5px' }} >Broadcast Ping</ArticlesButton>
+                                        <ArticlesButton onClick={() => console.log(gameState)} sx={{ padding: '5px' }} >Log gameState</ArticlesButton>
                                         <ul>
                                             {gameState?.players?.map((c, i) => (
-                                                <li key={i} style={{ border: '1px solid black' }}>
-                                                    <div>ID: {c.peer}</div>
-                                                    <div>Nickname: {c.nickname}</div>
-                                                    <div>Character: {JSON.stringify(c.character)}</div>
-                                                    <div>Row: {c.row}</div>
-                                                    <div>X: {c.x}</div>
-                                                    <div>Spaces: {c.spaces}</div>
-                                                    <div>canMove: {c.canMove ? 'True' : 'False'}</div>
-                                                    <div>race_game_dump:</div>
-                                                    <div className='small'>
-                                                        <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                                                <Box component="li" key={i} sx={{ border: '1px solid black' }} >
+                                                    <Box>ID: {c.peer}</Box>
+                                                    <Box>Nickname: {c.nickname}</Box>
+                                                    <Box>Character: {JSON.stringify(c.character)}</Box>
+                                                    <Box>Row: {c.row}</Box>
+                                                    <Box>X: {c.x}</Box>
+                                                    <Box>Spaces: {c.spaces}</Box>
+                                                    <Box>canMove: {c.canMove ? 'True' : 'False'}</Box>
+                                                    <Box>race_game_dump:</Box>
+                                                    <Box sx={{"fontSize":"0.875em"}} >
+                                                        <Box component="pre" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }} >
                                                             {JSON.stringify(c.race_game, null, 2)}
-                                                        </pre>
-                                                    </div>
-                                                    <button
-                                                        onClick={() => removeConnection(c.peer)}
-                                                        style={{ padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }}
-                                                    >
+                                                        </Box>
+                                                    </Box>
+                                                    <ArticlesButton
+                                                        onClick={() => removeConnection(c.peer)} sx={{ padding: '2px 5px', fontSize: '0.8em', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '3px', cursor: 'pointer' }} >
                                                         Kick
-                                                    </button>
-                                                </li>
+                                                    </ArticlesButton>
+                                                </Box>
                                             ))}
                                         </ul>
-                                    </div>
+                                    </Box>
                                 ) : (
-                                    <div>
+                                    <Box>
                                         Host: {hostConn ? hostConn.peer : 'Not connected'}
                                         <br />
-                                        {hostConn && <button onClick={handlePing} style={{ marginTop: '5px', padding: '5px' }}>Ping Host</button>}
-                                    </div>
+                                        {hostConn && <ArticlesButton onClick={handlePing} sx={{ marginTop: '5px', padding: '5px' }} >Ping Host</ArticlesButton>}
+                                    </Box>
                                 )}
-                    </div>
+                    </Box>
                 )}
 
-            </div>
+            </Box>
 
-        </div>
+        </Box>
     );
 };
 

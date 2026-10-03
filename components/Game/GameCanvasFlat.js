@@ -1,3 +1,5 @@
+"use client";
+import Box from '@mui/material/Box';
 import { useEffect, useContext, useRef, useState, Suspense } from 'react';
 
 import { useStore } from "@/hooks/useStore";
@@ -381,9 +383,18 @@ export default function GameCanvasFlat() {
     };
 
     return (
-        <div className={`canvas-flat-wrap ${renderMode == '3D' && 'd-none'}`}>
+        <Box sx={{
+            display: renderMode === '3D' ? 'none' : 'block',
+            position: 'relative',
+            width: '100%',
+            maxWidth: 1400,
+            '& canvas': {
+                position: 'absolute', left: 0, top: 0, width: '100%', maxWidth: 1500,
+                mx: 'auto', display: 'block', zIndex: 1, border: '2px solid rgb(0 0 0 / 47%)',
+            },
+        }}>
 
-            <canvas onClick={(e) => console.log(e)} className='fill' ref={canvasRef}></canvas>
+            <Box component="canvas" onClick={(e) => console.log(e)} ref={canvasRef} sx={{ bgcolor: 'rgb(255 255 255 / 35%)', position: 'initial !important' }} />
 
             <canvas onClick={(e) => {
                 const canvas = canvasPlayersRef.current;
@@ -394,6 +405,6 @@ export default function GameCanvasFlat() {
                 console.log(`Clicked at coordinates: (${x}, ${y})`);
             }} ref={canvasPlayersRef}></canvas>
 
-        </div>
+        </Box>
     );
 }

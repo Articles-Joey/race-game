@@ -1,181 +1,92 @@
-"use client"
+"use client";
 
-import { Dropdown, Form } from 'react-bootstrap';
-
-import ArticlesButton from '@/components/UI/Button';
-
-import IsDev from '@/components/UI/IsDev';
+import { useState } from 'react';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ArticlesButton from './Button';
+import IsDev from './IsDev';
 import useCameraStore from '@/hooks/useCameraStore';
 import useGameStore from '@/hooks/useGameStore';
-
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+import { useSocketStore } from '@/hooks/useSocketStore';
 import { useSearchParams } from 'next/navigation';
 
+const cameraPresets = [
+    { name: 'Starting', position: [19, 10, 15] },
+    { name: 'Bleacher', position: [28.32, 5.38, -6.30] },
+    { name: 'First Person', position: [0, 3.5, 0] },
+    { name: 'Wind Turbine', position: [42.50, 16.94, -125.86] },
+];
+
 export default function DebugPanel() {
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    // const cameraUpdate = useCameraStore((state) => state?.cameraUpdate);
-    const setCameraUpdate = useCameraStore((state) => state?.setCameraUpdate);
-
-    // const router = useRouter()
-    // const pathname = usePathname()
-    const searchParams = useSearchParams()
-    const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const {
-        server,
-        server_type
-    } = searchParamsObject
-
+    const setCameraUpdate = useCameraStore((state) => state.setCameraUpdate);
     const startGame = useGameStore((state) => state.startGame);
+    const socket = useSocketStore((state) => state.socket);
+    const searchParams = useSearchParams();
+    const server = searchParams.get('server');
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
 
     return (
-        <div>
+        <Box>
             <IsDev>
-                <hr className='my-2' />
-
-                <div className="small text-center">
-                    Dev Debug
-                </div>
-
-                <div className='d-flex flex-column mb-2'>
-
+                <Divider sx={{ my: 1 }} />
+                <Box sx={{ fontSize: '0.875em', textAlign: 'center' }}>Dev Debug</Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', mb: 1 }}>
+                    <ArticlesButton small variant="warning" sx={{ mb: 1 }} onClick={() => {}}>Reset Room</ArticlesButton>
+                    <ArticlesButton small variant="warning" sx={{ mb: 1 }} onClick={startGame}>Force Start</ArticlesButton>
                     <ArticlesButton
                         small
                         variant="warning"
-                        className="mb-2"
-                        // active={renderMode == "2D"}
-                        onClick={() => {
-                            // setRenderMode("2D")
-                        }}
-                    >
-                        Reset Room
-                    </ArticlesButton>
-
-                    <ArticlesButton
-                        small
-                        variant="warning"
-                        className="mb-2"
-                        // active={renderMode == "2D"}
-                        onClick={() => {
-                            // setRenderMode("2D")
-                            startGame()
-                        }}
-                    >
-                        Force Start
-                    </ArticlesButton>
-
-                    <ArticlesButton
-                        small
-                        variant="warning"
-                        className="mb-2"
-                        // active={renderMode == "2D"}
-                        onClick={() => {
-                            // setRenderMode("2D")
-                            generateMysterySpots()
-                        }}
+                        sx={{ mb: 1 }}
+                        onClick={() => socket?.emit('race-game-generate-mystery-spots', { server, settings: {} })}
                     >
                         Generate Mystery Spots
                     </ArticlesButton>
-
-                </div>
+                </Box>
             </IsDev>
-
-            <Dropdown className="d-flex w-100 text-center">
-
-                <Dropdown.Toggle variant='articles w-100 d-flex justify-content-center align-items-center text-center'>
-                    Camera Presets
-                </Dropdown.Toggle>
-
-                <Dropdown.Menu className="">
-
-                    {
-                        // userReduxState?.friends?
-                        [
-                            {
-                                name: "Starting",
-                                position: [19, 10, 15]
-                            },
-                            {
-                                name: "Bleacher",
-                                position: [28.32, 5.38, -6.30]
-                            },
-                            {
-                                name: "First Person",
-                                position: [0, 3.5, 0]
-                            },
-                            {
-                                name: "Wind Turbine",
-                                position: [42.50, 16.94, -125.86]
-                            }
-                        ]
-                            .map((friend, i) => {
-                                return (
-                                    <Dropdown.Item
-                                        key={`${i}-${friend.name}`}
-                                        onClick={() => {
-                                            setCameraUpdate({
-                                                position: friend.position
-                                            })
-                                        }}
-                                        className=""
-                                        eventKey={i}
-                                    >
-                                        {/* <i className="fad fa-user" aria-hidden="true"></i> */}
-                                        {friend.name}
-                                    </Dropdown.Item>
-                                )
-                            })}
-
-                </Dropdown.Menu>
-
-            </Dropdown>
-
-            <div className='d-none'>
-                <div className="text-center">
-                    Camera Positions
-                </div>
-
-                <div className="camera-controls">
-
-                    {[
-                        {
-                            name: "Starting",
-                            position: [19, 10, 15]
-                        },
-                        {
-                            name: "Bleacher",
-                            position: [28.32, 5.38, -6.30]
-                        },
-                        {
-                            name: "First Person",
-                            position: [0, 3.5, 0]
-                        },
-                        {
-                            name: "Wind Turbine",
-                            position: [42.50, 16.94, -125.86]
-                        }
-                    ].map(item => {
-                        return (
-                            <ArticlesButton
-                                key={item.name}
-                                small
-                                variant=""
-                                className=""
-                                onClick={() => {
-                                    setCameraUpdate({
-                                        position: item.position
-                                    })
-                                }}
-                            >
-                                {item.name}
-                            </ArticlesButton>
-                        )
-                    })}
-
-                </div>
-            </div>
-        </div>
-    )
-
+            <ArticlesButton
+                id="camera-presets-button"
+                sx={{ width: '100%' }}
+                aria-haspopup="menu"
+                aria-controls={open ? 'camera-presets-menu' : undefined}
+                aria-expanded={open ? 'true' : undefined}
+                onClick={(event) => setAnchorEl(event.currentTarget)}
+                endIcon={<ExpandMoreIcon />}
+            >
+                Camera Presets
+            </ArticlesButton>
+            <Menu
+                id="camera-presets-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={() => setAnchorEl(null)}
+                slotProps={{ list: { 'aria-labelledby': 'camera-presets-button' } }}
+            >
+                {cameraPresets.map((preset) => (
+                    <MenuItem
+                        key={preset.name}
+                        onClick={() => {
+                            setCameraUpdate({ position: preset.position });
+                            setAnchorEl(null);
+                        }}
+                    >
+                        {preset.name}
+                    </MenuItem>
+                ))}
+            </Menu>
+            <Box sx={{ display: 'none' }}>
+                <Box sx={{ textAlign: 'center' }}>Camera Positions</Box>
+                <Box sx={{ display: 'grid', gap: '5px', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                    {cameraPresets.map((preset) => (
+                        <ArticlesButton key={preset.name} small onClick={() => setCameraUpdate({ position: preset.position })}>
+                            {preset.name}
+                        </ArticlesButton>
+                    ))}
+                </Box>
+            </Box>
+        </Box>
+    );
 }
